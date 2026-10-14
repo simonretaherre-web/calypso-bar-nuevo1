@@ -72,7 +72,14 @@ let recipes=seed, filter="todos", live=false;
 const $=s=>document.querySelector(s);
 function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function isAlcohol(r){return r.alcohol===true||r.alcohol==="con"||r.type==="con";}
-function render(){const q=$("#search").value.trim().toLowerCase();const list=recipes.filter(r=>(filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)))&&(`${r.name||""} ${r.ingredients||""}`.toLowerCase().includes(q)));$("#count").textContent=`${list.length} recetas`;$("#recipes").innerHTML=list.length?list.map(r=>`<article class="card"><span class="tag">${isAlcohol(r)?"Con alcohol":"Sin alcohol"}</span><h2>${esc(r.name)}</h2><p><strong>Ingredientes</strong><br>${esc(r.ingredients||"Consulta disponibilidad con el bar.")}</p><p><strong>Medidas · 1 porción</strong><br>${esc(r.measure||r.measures||"Medidas por confirmar.")}</p></article>`).join(""):'<div class="empty">No hay recetas para esa búsqueda.</div>';}
+function render(){const q=$("#search").value.trim().toLowerCase();const list=recipes.filter(r=>(filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)))&&(`${r.name||""} ${r.ingredients||""}`.toLowerCase().includes(q)));$("#count").textContent=`${list.length} recetas`;$("#recipes").innerHTML=list.length?
+list.map(r=>`<article class="card">
+${r.image?`<img class="drink-photo" src="${esc(r.image)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">`:""}
+<span class="tag">${isAlcohol(r)?"Con alcohol":"Sin alcohol"}</span>
+<h2>${esc(r.name)}</h2>
+<p><strong>Ingredientes</strong><br>${esc(r.ingredients||"Consulta disponibilidad con el bar.")}</p>
+<p><strong>Medidas · 1 porción</strong><br>${esc(r.measure||r.measures||"Medidas por confirmar.")}</p>
+</article>`).join(""):'<div class="empty">No hay recetas para esa búsqueda.</div>';}
 $("#search").addEventListener("input",render);
 document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()}));
 $("#random").addEventListener("click",()=>{const pool=recipes.filter(r=>filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)));if(!pool.length)return;const r=pool[Math.floor(Math.random()*pool.length)];$("#recBody").innerHTML=`<p><strong>${esc(r.name)}</strong></p><p>${esc(r.ingredients||"")}</p><p><strong>1 porción:</strong> ${esc(r.measure||r.measures||"")}</p>`;$("#recommendation").classList.add("show")});
