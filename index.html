@@ -94,7 +94,37 @@ ${r.image?`<img class="drink-photo" src="${esc(r.image)}" alt="${esc(r.name)}" l
 </article>`).join(""):'<div class="empty">No hay recetas para esa búsqueda.</div>';}
 $("#search").addEventListener("input",render);
 document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()}));
-$("#random").addEventListener("click",()=>{const pool=recipes.filter(r=>filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)));if(!pool.length)return;const r=pool[Math.floor(Math.random()*pool.length)];$("#recBody").innerHTML=`<p><strong>${esc(r.name)}</strong></p><p>${esc(r.ingredients||"")}</p><p><strong>1 porción:</strong> ${esc(r.measure||r.measures||"")}</p>`;$("#recommendation").classList.add("show")});
+$("#random").addEventListener("click",()=>{
+$("#recTitle").textContent="Encuentra tu cóctel";
+$("#recBody").innerHTML=" <p>Encuentra un cóctel según tus preferencias.</p> <label for="prefAlcohol">¿Con alcohol?</label> <select id="prefAlcohol"> <option value="todos">Cualquiera</option> <option value="con">Con alcohol</option> <option value="sin">Sin alcohol</option> </select> <label for="prefSabor">¿Qué sabor prefieres?</label> <select id="prefSabor"> <option value="cualquiera">Cualquiera</option> <option value="dulce">Dulce</option> <option value="citrico">Cítrico</option> <option value="frutal">Frutal</option> <option value="fresco">Fresco</option> </select> <label for="prefEstilo">¿Cómo lo prefieres?</label> <select id="prefEstilo"> <option value="cualquiera">Cualquiera</option> <option value="helado">Helado</option> <option value="refrescante">Refrescante</option> <option value="cremoso">Cremoso</option> </select> <button id="findDrink" style="width:100%;margin-top:16px">Encontrar mi cóctel</button> <div id="drinkResult"></div>";
+$("#recommendation").classList.add("show");
+
+$("#findDrink").addEventListener("click",()=>{
+const alcohol=$("#prefAlcohol").value;
+const sabor=$("#prefSabor").value;
+const estilo=$("#prefEstilo").value;
+const matches=recipes.filter(r=>{
+const text=(r.name+" "+(r.ingredients||"")).toLowerCase();
+if(alcohol==="con"&&!isAlcohol(r))return false;
+if(alcohol==="sin"&&isAlcohol(r))return false;
+if(sabor==="dulce"&&!/azúcar|granadina|coco|piña|fresa|sandía|jarabe/i.test(text))return false;
+if(sabor==="citrico"&&!/lima|limón|limonada/i.test(text))return false;
+if(sabor==="frutal"&&!/piña|fresa|naranja|sandía|fruta/i.test(text))return false;
+if(sabor==="fresco"&&!/menta|hierbabuena|limón|lima|soda|tónica/i.test(text))return false;
+if(estilo==="cremoso"&&!/crema|coco/i.test(text))return false;
+if(estilo==="refrescante"&&!/soda|tónica|menta|hierbabuena|limonada|agua/i.test(text))return false;
+if(estilo==="helado"&&!/hielo|piña|fresa|sandía/i.test(text))return false;
+return true;
+});
+const result=$("#drinkResult");
+if(!matches.length){
+result.innerHTML="<p>No encontramos coincidencias. Prueba otras preferencias.</p>";
+return;
+}
+const r=matches[Math.floor(Math.random()*matches.length)];
+result.innerHTML="<h3>"+esc(r.name)+"</h3><p>"+esc(r.ingredients||"")+"</p><p><strong>Medidas para 1 porción:</strong> "+esc(r.measure||r.measures||"Por confirmar.")+"</p>";
+});
+});
 $("#closeRec").addEventListener("click",()=>$("#recommendation").classList.remove("show"));
 $("#recommendation").addEventListener("click",e=>{if(e.target.id==="recommendation")e.currentTarget.classList.remove("show")});
 render();
