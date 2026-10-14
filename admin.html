@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909"><title>CALYPSO BAR | Administración</title>
+<style>
+:root{--gold:#d8b76d;--gold2:#f5e3aa;--muted:#bdb4a1;--line:#49391c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#2a2110 0,#090909 44%);color:#f7f2e8;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:22px 14px;text-align:center;color:var(--gold2);font-weight:850;letter-spacing:.12em;font-size:25px;border-bottom:1px solid #5a4725}
+main{max-width:1000px;margin:auto;padding:20px 14px 55px}.panel{background:#151515;border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}h1,h2,h3{color:var(--gold2)}label{display:block;margin:11px 0 5px;color:#e6decd}
+input,textarea,select,button{font:inherit;padding:11px 12px;border-radius:10px;width:100%}input,textarea,select{background:#0d0d0d;border:1px solid #514326;color:white}textarea{min-height:75px;resize:vertical}
+button{background:var(--gold);color:#17120a;border:0;font-weight:750;cursor:pointer;margin-top:9px}.secondary{background:#242016;color:var(--gold2);border:1px solid #6c5529}.danger{background:#6b2923;color:white}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.hidden{display:none!important}.note{color:var(--muted);font-size:13px}.status{padding:10px;border-radius:9px;background:#201b11;color:var(--gold2);margin:10px 0;overflow-wrap:anywhere}
+nav{display:flex;flex-wrap:wrap;gap:7px}nav button{flex:1;min-width:105px}.item{padding:13px;border:1px solid #3b301c;border-radius:11px;margin:9px 0;overflow-wrap:anywhere}.item strong{color:var(--gold2)}.item .actions{display:flex;gap:7px}.item .actions button{flex:1}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.topline button{width:auto}.checkline{display:flex;align-items:center;gap:8px}.checkline input{width:auto}
+#video{width:100%;max-height:300px;background:#000;border-radius:12px;margin-top:12px}
+</style>
+</head>
+<body>
+<header>♜ CALYPSO BAR · ADMINISTRACIÓN</header>
+<main>
+<section id="login" class="panel">
+<h1>Acceso privado</h1><p class="note">Inicia sesión con la cuenta autorizada de tu mamá.</p>
+<label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" placeholder="correo autorizado">
+<label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" placeholder="Contraseña">
+<button id="loginBtn">Iniciar sesión</button><div id="loginMsg" class="status">Conecta Firebase y crea la cuenta antes de iniciar sesión.</div>
+</section>
+<section id="app" class="hidden">
+<div class="panel topline"><div><h1 style="margin:0">Panel de administración</h1><div id="who" class="note"></div></div><button id="logout" class="secondary">Cerrar sesión</button></div>
+<nav class="panel" aria-label="Secciones"><button data-tab="recipes">Recetas</button><button data-tab="inventory">Inventario</button><button data-tab="scanner">Escáner</button></nav>
+<section id="tab-recipes" class="panel">
+<h2>Crear o editar receta</h2><input id="recipeId" type="hidden">
+<div class="row"><div><label for="rName">Nombre</label><input id="rName" placeholder="Ej. Mojito"></div><div><label for="rType">Tipo</label><select id="rType"><option value="con">Con alcohol</option><option value="sin">Sin alcohol</option></select></div></div>
+<label for="rIngredients">Ingredientes (visibles a invitados)</label><textarea id="rIngredients" placeholder="Ingredientes separados por coma"></textarea>
+<label for="rMeasures">Medidas para una porción (visibles a invitados)</label><textarea id="rMeasures" placeholder="Ej. 50 ml de ron…"></textarea>
+<label for="rPrep">Preparación privada (solo administración)</label><textarea id="rPrep" placeholder="Pasos de preparación"></textarea>
+<div class="row"><button id="saveRecipe">Guardar receta</button><button id="clearRecipe" class="secondary">Limpiar formulario</button></div>
+<div id="recipeMsg" class="status">Las recetas se guardarán en Firebase cuando esté configurado.</div><h2>Recetas guardadas</h2><div id="recipeList"></div>
+</section>
+<section id="tab-inventory" class="panel hidden">
+<h2>Inventario</h2><input id="invId" type="hidden">
+<div class="row"><div><label for="iName">Producto / botella</label><input id="iName" placeholder="Ej. Gin"></div><div><label for="iCode">Código de barras</label><input id="iCode" placeholder="Código (opcional)"></div></div>
+<div class="row"><div><label for="iQty">Cantidad actual</label><input id="iQty" type="number" min="0" step="0.1" placeholder="Ej. 3"></div><div><label for="iUnit">Unidad</label><select id="iUnit"><option>botellas</option><option>unidades</option><option>ml</option><option>litros</option><option>kg</option><option>g</option></select></div><div><label for="iMin">Stock mínimo</label><input id="iMin" type="number" min="0" step="0.1" value="1"></div></div>
+<label for="iNotes">Notas (opcional)</label><input id="iNotes" placeholder="Marca, tamaño, ubicación…">
+<div class="row"><button id="saveInv">Guardar producto</button><button id="clearInv" class="secondary">Limpiar formulario</button></div>
+<div id="invMsg" class="status">Inventario privado. Solo la cuenta autorizada puede consultarlo.</div><h2>Productos</h2><div id="inventoryList"></div>
+</section>
+<section id="tab-scanner" class="panel hidden">
+<h2>Escáner de códigos de barras</h2><p class="note">Funciona en un navegador compatible, con HTTPS y permiso para usar la cámara. Si no está disponible, puedes escribir el código en el formulario de inventario.</p>
+<button id="startScan">Abrir cámara y escanear</button><button id="stopScan" class="secondary">Detener cámara</button><video id="video" playsinline class="hidden"></video><div id="scanMsg" class="status">Escáner detenido.</div>
+</section>
+</section>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { firebaseConfig, ADMIN_EMAIL } from "./firebase-config.js";
+const $=s=>document.querySelector(s);let app,auth,db,currentUser=null,recipeCache=[],inventoryCache=[],unsubRecipes=null,unsubPrivate=null,unsubInventory=null,stream=null,detector=null,scanActive=false;
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function setMsg(sel,msg){$(sel).textContent=msg}
+function isAuthorized(user){return !!user&&ADMIN_EMAIL!=="CAMBIA_POR_EL_CORREO_DE_TU_MAMA"&&user.email?.toLowerCase()===ADMIN_EMAIL.toLowerCase()}
+function initFirebase(){app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);}
+try{initFirebase();onAuthStateChanged(auth,user=>{currentUser=user;if(user&&isAuthorized(user)){showApp(user)}else{cleanupListeners();$("#app").classList.add("hidden");$("#login").classList.remove("hidden");if(user){signOut(auth);setMsg("#loginMsg","Esta cuenta no está autorizada. Cambia ADMIN_EMAIL en firebase-config.js por el correo de tu mamá y configura las reglas de Firestore.")}}});}catch(e){setMsg("#loginMsg","No se pudo iniciar Firebase. Revisa firebase-config.js: "+e.message)}
+function cleanupListeners(){[unsubRecipes,unsubPrivate,unsubInventory].forEach(fn=>{if(fn)fn()});unsubRecipes=unsubPrivate=unsubInventory=null;stopScanner()}
+function showApp(user){$("#login").classList.add("hidden");$("#app").classList.remove("hidden");$("#who").textContent="Sesión: "+user.email;listenData()}
+function listenData(){cleanupListeners();unsubRecipes=onSnapshot(collection(db,"recipesPublic"),snap=>{recipeCache=snap.docs.map(d=>({id:d.id,...d.data()}));renderRecipes()},e=>setMsg("#recipeMsg","Error de recetas: "+e.message));unsubPrivate=onSnapshot(collection(db,"recipesPrivate"),snap=>{const priv=new Map(snap.docs.map(d=>[d.id,d.data()]));recipeCache=recipeCache.map(r=>({...r,prep:priv.get(r.id)?.prep||""}));renderRecipes()},e=>setMsg("#recipeMsg","Error de preparaciones privadas: "+e.message));unsubInventory=onSnapshot(collection(db,"inventory"),snap=>{inventoryCache=snap.docs.map(d=>({id:d.id,...d.data()}));renderInventory()},e=>setMsg("#invMsg","Error de inventario: "+e.message))}
+$("#loginBtn").addEventListener("click",async()=>{const email=$("#email").value.trim(),password=$("#password").value;if(!email||!password){setMsg("#loginMsg","Escribe el correo y la contraseña.");return}try{setMsg("#loginMsg","Conectando…");await signInWithEmailAndPassword(auth,email,password)}catch(e){setMsg("#loginMsg","No se pudo iniciar sesión: "+e.message)}});
+$("#logout").addEventListener("click",async()=>{await stopScanner();await signOut(auth)});
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[id^=tab-]").forEach(x=>x.classList.add("hidden"));$("#tab-"+b.dataset.tab).classList.remove("hidden")}));
+function clearRecipe(){$("#recipeId").value="";$("#rName").value="";$("#rType").value="con";$("#rIngredients").value="";$("#rMeasures").value="";$("#rPrep").value=""}
+$("#clearRecipe").addEventListener("click",clearRecipe);
+$("#saveRecipe").addEventListener("click",async()=>{if(!currentUser||!isAuthorized(currentUser))return setMsg("#recipeMsg","No autorizado.");const name=$("#rName").value.trim();if(!name)return setMsg("#recipeMsg","Escribe el nombre de la receta.");const id=$("#recipeId").value||crypto.randomUUID();const pub={name,alcohol:$("#rType").value==="con",type:$("#rType").value,ingredients:$("#rIngredients").value.trim(),measure:$("#rMeasures").value.trim(),updatedAt:serverTimestamp()};try{await setDoc(doc(db,"recipesPublic",id),pub,{merge:true});await setDoc(doc(db,"recipesPrivate",id),{prep:$("#rPrep").value.trim(),updatedAt:serverTimestamp()},{merge:true});setMsg("#recipeMsg","Receta guardada. El menú público se actualizará automáticamente.");clearRecipe()}catch(e){setMsg("#recipeMsg","No se pudo guardar: "+e.message)}});
+function renderRecipes(){$("#recipeList").innerHTML=recipeCache.length?recipeCache.map(r=>`<div class="item"><strong>${esc(r.name)}</strong><div class="note">${r.alcohol?"Con alcohol":"Sin alcohol"} · ${esc(r.ingredients||"Sin ingredientes")}</div><div class="actions"><button class="secondary" data-edit="${esc(r.id)}">Editar</button><button class="danger" data-delete="${esc(r.id)}">Eliminar</button></div></div>`).join(""):'<p class="note">Todavía no hay recetas en Firebase. Puedes agregar la primera arriba.</p>';$("#recipeList").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>{const r=recipeCache.find(x=>x.id===b.dataset.edit);if(!r)return;$("#recipeId").value=r.id;$("#rName").value=r.name||"";$("#rType").value=r.alcohol?"con":"sin";$("#rIngredients").value=r.ingredients||"";$("#rMeasures").value=r.measure||r.measures||"";$("#rPrep").value=r.prep||"";window.scrollTo({top:0,behavior:"smooth"})}));$("#recipeList").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",async()=>{const r=recipeCache.find(x=>x.id===b.dataset.delete);if(!r||!confirm(`¿Eliminar ${r.name}?`))return;try{await deleteDoc(doc(db,"recipesPublic",r.id));await deleteDoc(doc(db,"recipesPrivate",r.id));setMsg("#recipeMsg","Receta eliminada.")}catch(e){setMsg("#recipeMsg","No se pudo eliminar: "+e.message)}}))}
+function clearInv(){$("#invId").value="";$("#iName").value="";$("#iCode").value="";$("#iQty").value="";$("#iUnit").value="botellas";$("#iMin").value="1";$("#iNotes").value=""}
+$("#clearInv").addEventListener("click",clearInv);
+$("#saveInv").addEventListener("click",async()=>{if(!currentUser||!isAuthorized(currentUser))return setMsg("#invMsg","No autorizado.");const name=$("#iName").value.trim();if(!name)return setMsg("#invMsg","Escribe el nombre del producto.");const id=$("#invId").value||crypto.randomUUID();const item={name,barcode:$("#iCode").value.trim(),quantity:Number($("#iQty").value||0),unit:$("#iUnit").value,minStock:Number($("#iMin").value||0),notes:$("#iNotes").value.trim(),updatedAt:serverTimestamp()};try{await setDoc(doc(db,"inventory",id),item,{merge:true});setMsg("#invMsg","Producto guardado.");clearInv()}catch(e){setMsg("#invMsg","No se pudo guardar: "+e.message)}});
+function renderInventory(){$("#inventoryList").innerHTML=inventoryCache.length?inventoryCache.map(r=>`<div class="item"><strong>${esc(r.name)}</strong><div>${Number(r.quantity||0)} ${esc(r.unit||"unidades")} · mínimo ${Number(r.minStock||0)} ${esc(r.unit||"")}</div>${Number(r.quantity||0)<=Number(r.minStock||0)?'<div style="color:#ffb5a8;font-weight:700">⚠ Stock bajo</div>':''}<div class="note">${r.barcode?"Código: "+esc(r.barcode):""} ${r.notes?"· "+esc(r.notes):""}</div><div class="actions"><button class="secondary" data-iedit="${esc(r.id)}">Editar</button><button class="danger" data-idelete="${esc(r.id)}">Eliminar</button></div></div>`).join(""):'<p class="note">Inventario vacío. Añade productos arriba.</p>';$("#inventoryList").querySelectorAll("[data-iedit]").forEach(b=>b.addEventListener("click",()=>{const r=inventoryCache.find(x=>x.id===b.dataset.iedit);if(!r)return;$("#invId").value=r.id;$("#iName").value=r.name||"";$("#iCode").value=r.barcode||"";$("#iQty").value=r.quantity??0;$("#iUnit").value=r.unit||"botellas";$("#iMin").value=r.minStock??1;$("#iNotes").value=r.notes||"";window.scrollTo({top:0,behavior:"smooth"})}));$("#inventoryList").querySelectorAll("[data-idelete]").forEach(b=>b.addEventListener("click",async()=>{const r=inventoryCache.find(x=>x.id===b.dataset.idelete);if(r&&confirm(`¿Eliminar ${r.name} del inventario?`))try{await deleteDoc(doc(db,"inventory",r.id))}catch(e){setMsg("#invMsg","No se pudo eliminar: "+e.message)}}))}
+async function startScanner(){if(!("BarcodeDetector"in window)){setMsg("#scanMsg","Este navegador no incluye BarcodeDetector. Usa el campo Código de barras y escribe el número, o prueba Chrome actualizado.");return}try{detector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("#video").srcObject=stream;$("#video").classList.remove("hidden");await $("#video").play();scanActive=true;setMsg("#scanMsg","Cámara activa: apunta al código de barras.");scanFrame()}catch(e){setMsg("#scanMsg","No se pudo abrir la cámara: "+e.message+" Comprueba el permiso y usa HTTPS.")}}
+async function scanFrame(){if(!scanActive||!detector)return;try{const codes=await detector.detect($("#video"));if(codes.length){const value=codes[0].rawValue;$("#iCode").value=value;setMsg("#scanMsg","Código leído: "+value+". Vuelve a Inventario para guardar el producto.");await stopScanner();return}}catch(e){}requestAnimationFrame(scanFrame)}
+async function stopScanner(){scanActive=false;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$("#video").pause?.();$("#video").srcObject=null;$("#video").classList.add("hidden")}
+$("#startScan").addEventListener("click",startScanner);$("#stopScan").addEventListener("click",stopScanner);
+</script>
+</body></html>

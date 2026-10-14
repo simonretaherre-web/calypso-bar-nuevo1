@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>CALYPSO BAR | Menú</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--gold:#d8b76d;--gold2:#f5e3aa;--bg:#090909;--panel:#151515;--muted:#bdb4a1;--line:#49391c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#2a2110 0,#090909 44%);color:#f7f2e8;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:30px 16px 24px;text-align:center;border-bottom:1px solid #5a4725}
+.brand{display:flex;justify-content:center;align-items:center;gap:11px;color:var(--gold2);font-size:clamp(25px,6vw,42px);font-weight:850;letter-spacing:.11em}
+.mark{width:44px;height:44px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:25px;letter-spacing:0}
+header p{color:var(--muted);margin:8px 0 0}
+main{max-width:1100px;margin:auto;padding:22px 16px 55px}
+.controls{display:grid;gap:12px;margin-bottom:16px}
+input,select,button{font:inherit;border-radius:12px;padding:12px 14px}
+input,select{width:100%;background:#111;border:1px solid var(--line);color:#fff}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}.buttons button{flex:1;min-width:125px}
+button{border:1px solid #806633;background:#17130b;color:var(--gold2);cursor:pointer}
+button.active,button:hover{background:var(--gold);color:#15110a}
+.meta{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--muted);font-size:14px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:linear-gradient(145deg,#1d1a14,#111);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 8px 24px #0005}
+.card h2{font-size:20px;color:var(--gold2);margin:0 0 8px}
+.tag{display:inline-block;background:var(--gold);color:#17120a;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700;margin-bottom:11px}
+.card p{margin:8px 0;color:#d7cfbf}.card strong{color:#fff0bc}
+.empty{padding:34px;text-align:center;color:var(--muted);grid-column:1/-1;border:1px dashed var(--line);border-radius:16px}
+.status{font-size:12px;color:#b8ad97;text-align:center;margin-top:18px}
+footer{text-align:center;color:#877b63;border-top:1px solid #332a19;padding:22px 14px;font-size:13px}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.show{display:flex}.modalbox{width:min(500px,100%);background:#151515;border:1px solid var(--gold);border-radius:18px;padding:22px}.modalbox h2{color:var(--gold2)}.close{float:right;width:auto;margin:0}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="mark">♜</span><span>CALYPSO BAR</span></div><p>Una carta para descubrir tu próximo cóctel</p></header>
+<main>
+  <div class="controls">
+    <input id="search" type="search" placeholder="Buscar cóctel o ingrediente…" aria-label="Buscar cóctel">
+    <div class="buttons" role="group" aria-label="Filtros">
+      <button class="active" data-filter="todos">Todos</button><button data-filter="con">Con alcohol</button><button data-filter="sin">Sin alcohol</button><button id="random">¿Qué puedo tomar?</button>
+    </div>
+  </div>
+  <div class="meta"><span id="count">Cargando recetas…</span><span id="connection">Menú</span></div>
+  <section id="recipes" class="grid" aria-live="polite"><div class="empty">Cargando el menú…</div></section>
+</main>
+<footer>CALYPSO BAR · Menú de invitados</footer>
+<div id="recommendation" class="modal" role="dialog" aria-modal="true" aria-labelledby="recTitle"><div class="modalbox"><button class="close" id="closeRec" aria-label="Cerrar">Cerrar</button><h2 id="recTitle">Tu recomendación</h2><div id="recBody"></div></div></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+const seed = [
+{name:"Mojito",alcohol:true,ingredients:"Ron blanco, lima, hierbabuena, azúcar y soda.",measure:"50 ml de ron, 25 ml de lima, azúcar, hierbabuena y soda."},
+{name:"Piña colada",alcohol:true,ingredients:"Ron, crema de coco y jugo de piña.",measure:"45 ml de ron, 30 ml de crema de coco y 90 ml de jugo de piña."},
+{name:"Daiquiri de fresa",alcohol:true,ingredients:"Ron blanco, fresas y lima.",measure:"50 ml de ron, 25 ml de lima y fresas."},
+{name:"Margarita",alcohol:true,ingredients:"Tequila, triple sec y lima.",measure:"50 ml de tequila, 25 ml de triple sec y 25 ml de lima."},
+{name:"Moscow Mule",alcohol:true,ingredients:"Vodka, lima y ginger beer.",measure:"45 ml de vodka, 15 ml de lima y ginger beer."},
+{name:"Aperol Spritz",alcohol:true,ingredients:"Aperol, espumante y soda.",measure:"60 ml de Aperol, 90 ml de espumante y un toque de soda."},
+{name:"Negroni",alcohol:true,ingredients:"Gin, vermut rojo y bitter italiano.",measure:"30 ml de gin, 30 ml de vermut rojo y 30 ml de bitter."},
+{name:"Caipiriña",alcohol:true,ingredients:"Cachaça, lima y azúcar.",measure:"60 ml de cachaça, una lima y azúcar."},
+{name:"Gin tonic",alcohol:true,ingredients:"Gin, agua tónica y limón.",measure:"50 ml de gin y 150 ml de agua tónica."},
+{name:"Tequila Sunrise",alcohol:true,ingredients:"Tequila, jugo de naranja y granadina.",measure:"45 ml de tequila, 90 ml de naranja y 15 ml de granadina."},
+{name:"Limonada de menta",alcohol:false,ingredients:"Limón, menta, agua y azúcar.",measure:"Jugo de un limón, menta, agua fría y azúcar a gusto."},
+{name:"Piña colada sin alcohol",alcohol:false,ingredients:"Jugo de piña y crema de coco.",measure:"120 ml de jugo de piña y 30 ml de crema de coco."},
+{name:"Shirley Temple",alcohol:false,ingredients:"Ginger ale o bebida lima-limón, granadina y cereza.",measure:"150 ml de bebida, 15 ml de granadina y hielo."},
+{name:"San Francisco",alcohol:false,ingredients:"Jugos de naranja, piña y limón con granadina.",measure:"60 ml de naranja, 60 ml de piña, 15 ml de limón y granadina."},
+{name:"Daiquiri clásico",alcohol:true,ingredients:"Ron blanco, lima y azúcar.",measure:"60 ml de ron, 25 ml de lima y 10 ml de jarabe de azúcar."},
+{name:"Agua fresca de sandía",alcohol:false,ingredients:"Sandía, agua, lima y hielo.",measure:"Sandía licuada, agua fría y un toque de lima."}
+];
+let recipes=seed, filter="todos", live=false;
+const $=s=>document.querySelector(s);
+function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function isAlcohol(r){return r.alcohol===true||r.alcohol==="con"||r.type==="con";}
+function render(){const q=$("#search").value.trim().toLowerCase();const list=recipes.filter(r=>(filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)))&&(`${r.name||""} ${r.ingredients||""}`.toLowerCase().includes(q)));$("#count").textContent=`${list.length} recetas`;$("#recipes").innerHTML=list.length?list.map(r=>`<article class="card"><span class="tag">${isAlcohol(r)?"Con alcohol":"Sin alcohol"}</span><h2>${esc(r.name)}</h2><p><strong>Ingredientes</strong><br>${esc(r.ingredients||"Consulta disponibilidad con el bar.")}</p><p><strong>Medidas · 1 porción</strong><br>${esc(r.measure||r.measures||"Medidas por confirmar.")}</p></article>`).join(""):'<div class="empty">No hay recetas para esa búsqueda.</div>';}
+$("#search").addEventListener("input",render);
+document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()}));
+$("#random").addEventListener("click",()=>{const pool=recipes.filter(r=>filter==="todos"||(filter==="con"&&isAlcohol(r))||(filter==="sin"&&!isAlcohol(r)));if(!pool.length)return;const r=pool[Math.floor(Math.random()*pool.length)];$("#recBody").innerHTML=`<p><strong>${esc(r.name)}</strong></p><p>${esc(r.ingredients||"")}</p><p><strong>1 porción:</strong> ${esc(r.measure||r.measures||"")}</p>`;$("#recommendation").classList.add("show")});
+$("#closeRec").addEventListener("click",()=>$("#recommendation").classList.remove("show"));
+$("#recommendation").addEventListener("click",e=>{if(e.target.id==="recommendation")e.currentTarget.classList.remove("show")});
+render();
+try{const app=initializeApp(firebaseConfig);const db=getFirestore(app);onSnapshot(collection(db,"recipesPublic"),snap=>{const docs=snap.docs.map(d=>({id:d.id,...d.data()}));if(docs.length){recipes=docs;live=true;$("#connection").textContent="Menú actualizado";render();}else{$("#connection").textContent="Menú de inicio";}},err=>{$("#connection").textContent="Menú de inicio";console.warn("Firebase no disponible:",err.message)});}catch(e){$("#connection").textContent="Menú de inicio";}
+</script>
+</body></html>

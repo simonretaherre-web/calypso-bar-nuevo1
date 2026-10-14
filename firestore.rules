@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email == "CAMBIA_POR_EL_CORREO_DE_TU_MAMA";
+    }
+
+    // Los invitados pueden leer la carta, pero solo la cuenta autorizada la modifica.
+    match /recipesPublic/{recipeId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Preparación e inventario nunca son públicos.
+    match /recipesPrivate/{recipeId} {
+      allow read, write: if isAdmin();
+    }
+    match /inventory/{itemId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Todo lo demás queda bloqueado por defecto.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
