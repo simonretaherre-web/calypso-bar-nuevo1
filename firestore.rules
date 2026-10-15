@@ -1,28 +1,35 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
+
     function isAdmin() {
-      return signedIn()
+      return request.auth != null
         && request.auth.token.email != null
-        && request.auth.token.email == "CAMBIA_POR_EL_CORREO_DE_TU_MAMA";
+        && (
+          request.auth.token.email == "publicidadherrera@gmail.com"
+          || request.auth.token.email == "simonretaherre@gmail.com"
+        );
     }
 
-    // Los invitados pueden leer la carta, pero solo la cuenta autorizada la modifica.
+    // Carta pública: los invitados pueden leerla.
     match /recipesPublic/{recipeId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    // Preparación e inventario nunca son públicos.
+    // Preparaciones privadas: solo las cuentas autorizadas.
     match /recipesPrivate/{recipeId} {
       allow read, write: if isAdmin();
     }
+
+    // Inventario privado: solo las cuentas autorizadas.
     match /inventory/{itemId} {
       allow read, write: if isAdmin();
     }
 
-    // Todo lo demás queda bloqueado por defecto.
+    // Bloquear el acceso a cualquier otra colección.
     match /{document=**} {
       allow read, write: if false;
     }
