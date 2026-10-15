@@ -8,3 +8,7 @@ export const firebaseConfig = {
   appId: "1:695936854778:web:cbadc99cfafc7553e17743",
   measurementId: "G-NN83N0PDGW"
 };
+
+// Correos autorizados para administrar CALYPSO BAR
+export const ADMIN_EMAIL = "publicidadherrera@gmail.com";
+export const SECOND_ADMIN_EMAIL = "simonretaherre@gmail.com";
