@@ -18,11 +18,9 @@ export const firebaseConfig = {
   measurementId: "G-NN83N0PDGW"
 };
 
-// Cuentas autorizadas para administrar CALYPSO BAR
 export const ADMIN_EMAIL = "publicidadherrera@gmail.com";
 export const SECOND_ADMIN_EMAIL = "simonretaherre@gmail.com";
 
-// Inicialización compartida de Firebase
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
