@@ -1,4 +1,13 @@
 
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { getAuth } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import { getFirestore } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 export const firebaseConfig = {
   apiKey: "AIzaSyC-F_D13-KRZBq1djfU6H9y4zB8yKR3U6E",
   authDomain: "calypso-bar.firebaseapp.com",
@@ -9,6 +18,12 @@ export const firebaseConfig = {
   measurementId: "G-NN83N0PDGW"
 };
 
-// Correos autorizados para administrar CALYPSO BAR
+// Cuentas autorizadas para administrar CALYPSO BAR
 export const ADMIN_EMAIL = "publicidadherrera@gmail.com";
 export const SECOND_ADMIN_EMAIL = "simonretaherre@gmail.com";
+
+// Inicialización compartida de Firebase
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const db = getFirestore(app);
