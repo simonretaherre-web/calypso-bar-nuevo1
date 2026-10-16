@@ -26,6 +26,98 @@ export const CALYPSO_SEED_RECIPES = [
   {id:"rum-fashioned",name:"Rum Fashioned",category:"Clásicos",type:"con",spirit:"ron",flavor:"amargo",strength:"fuerte",photo:"https://loremflickr.com/900/700/rum,old,fashioned,cocktail",ingredients:[["Ron añejo",45,"ml"],["Syrup demerara",15,"ml"],["Bitter Angostura",4,"golpes"]],glassware:"Vaso corto",method:"Añade ron añejo, syrup demerara y Angostura a un vaso mezclador con hielo. Refresca con cuchara y sirve sobre hielo grande en vaso corto.",decoration:"Piel de naranja.",story:"El Rum Fashioned adapta la estructura del Old Fashioned al ron añejo. El demerara y el bitter acompañan sus notas de melaza, madera y especias."}
 ];
 
+
+// Ampliación del catálogo: clásicos internacionales, variaciones y opciones sin alcohol.
+// Se agregan al catálogo base sin alterar las 23 recetas originales.
+const EXTRA_COCKTAILS = [
+  ["Negroni","Clásicos","con","gin","amargo","fuerte","Gin",30,"ml","Campari",30,"ml","Vermut rosso",30,"ml","Vaso corto","Piel de naranja"],
+  ["Gin Tonic","Clásicos","con","gin","refrescante","media","Gin",50,"ml","Agua tónica",150,"ml","Limón",2,"rodajas","Vaso balón","Limón y enebro"],
+  ["Tom Collins","Collins","con","gin","cítrico","media","Gin",50,"ml","Jugo de limón",25,"ml","Syrup",20,"ml","Soda",100,"ml","Vaso largo","Limón y cereza"],
+  ["French 75","Clásicos","con","gin","cítrico","fuerte","Gin",30,"ml","Jugo de limón",15,"ml","Syrup",10,"ml","Espumante",90,"ml","Copa flauta","Piel de limón"],
+  ["Aviation","Clásicos","con","gin","floral","media","Gin",45,"ml","Licor de maraschino",15,"ml","Jugo de limón",15,"ml","Licor violeta",5,"ml","Copa cóctel","Cereza"],
+  ["Bee's Knees","Clásicos","con","gin","cítrico","media","Gin",50,"ml","Jugo de limón",25,"ml","Syrup de miel",20,"ml","Copa cóctel","Piel de limón"],
+  ["Southside","Clásicos","con","gin","refrescante","media","Gin",50,"ml","Jugo de limón",25,"ml","Syrup",20,"ml","Menta",6,"hojas","Copa cóctel","Menta"],
+  ["Clover Club","Clásicos","con","gin","frutal","media","Gin",45,"ml","Jugo de limón",20,"ml","Syrup de frambuesa",15,"ml","Albúmina",15,"ml","Copa cóctel","Frambuesa"],
+  ["Gimlet","Clásicos","con","gin","cítrico","media","Gin",60,"ml","Jugo de lima",25,"ml","Syrup",15,"ml","Copa cóctel","Lima"],
+  ["Martini Dry","Clásicos","con","gin","amargo","fuerte","Gin",60,"ml","Vermut dry",10,"ml","Copa cóctel","Aceituna"],
+  ["Manhattan","Clásicos","con","whisky","amargo","fuerte","Whisky",60,"ml","Vermut rosso",30,"ml","Bitter Angostura",2,"golpes","Copa cóctel","Cereza"],
+  ["Whiskey Sour","Sours","con","whisky","cítrico","media","Bourbon",60,"ml","Jugo de limón",25,"ml","Syrup",20,"ml","Albúmina",15,"ml","Vaso corto","Piel de limón"],
+  ["Mint Julep","Clásicos","con","whisky","refrescante","fuerte","Bourbon",60,"ml","Syrup",15,"ml","Menta",8,"hojas","Vaso metálico","Menta"],
+  ["Boulevardier","Clásicos","con","whisky","amargo","fuerte","Bourbon",45,"ml","Campari",30,"ml","Vermut rosso",30,"ml","Vaso corto","Piel de naranja"],
+  ["Penicillin","Clásicos","con","whisky","especiado","fuerte","Whisky escocés",60,"ml","Jugo de limón",20,"ml","Syrup de miel y jengibre",20,"ml","Vaso corto","Jengibre"],
+  ["Moscow Mule","Clásicos","con","vodka","refrescante","media","Vodka",50,"ml","Jugo de lima",20,"ml","Ginger beer",120,"ml","Taza metálica","Lima"],
+  ["White Russian","Cremosos","con","vodka","dulce","fuerte","Vodka",50,"ml","Licor de café",25,"ml","Crema",25,"ml","Vaso corto","Polvo de cacao"],
+  ["Black Russian","Clásicos","con","vodka","dulce","fuerte","Vodka",50,"ml","Licor de café",25,"ml","Vaso corto","Cereza"],
+  ["Sea Breeze","Frutales","con","vodka","frutal","suave","Vodka",40,"ml","Jugo de cranberry",90,"ml","Jugo de pomelo",60,"ml","Vaso largo","Lima"],
+  ["Sex on the Beach","Frutales","con","vodka","frutal","media","Vodka",40,"ml","Licor de durazno",20,"ml","Jugo de naranja",40,"ml","Jugo de cranberry",40,"ml","Vaso largo","Naranja"],
+  ["Lemon Drop Martini","Clásicos","con","vodka","cítrico","media","Vodka",45,"ml","Triple sec",20,"ml","Jugo de limón",20,"ml","Syrup",10,"ml","Copa cóctel","Azúcar y limón"],
+  ["French Martini","Frutales","con","vodka","frutal","media","Vodka",45,"ml","Licor de frambuesa",15,"ml","Jugo de piña",45,"ml","Copa cóctel","Frambuesa"],
+  ["Long Island Iced Tea","Clásicos","con","varios","cítrico","fuerte","Vodka",15,"ml","Gin",15,"ml","Ron blanco",15,"ml","Tequila",15,"ml","Triple sec",15,"ml","Jugo de limón",25,"ml","Cola",60,"ml","Vaso largo","Limón"],
+  ["Mai Tai","Tiki","con","ron","cítrico","fuerte","Ron añejo",45,"ml","Ron oscuro",15,"ml","Triple sec",15,"ml","Syrup de orgeat",15,"ml","Jugo de lima",25,"ml","Vaso tiki","Menta y lima"],
+  ["Piña Colada","Tropicales","con","ron","dulce","media","Ron blanco",50,"ml","Crema de coco",30,"ml","Jugo de piña",90,"ml","Vaso huracán","Piña"],
+  ["Dark 'n' Stormy","Tiki","con","ron","especiado","media","Ron oscuro",60,"ml","Ginger beer",100,"ml","Jugo de lima",10,"ml","Vaso largo","Lima"],
+  ["Planter's Punch","Tiki","con","ron","frutal","fuerte","Ron oscuro",60,"ml","Jugo de naranja",30,"ml","Jugo de piña",30,"ml","Jugo de lima",15,"ml","Syrup",10,"ml","Vaso largo","Naranja"],
+  ["Hurricane","Tropicales","con","ron","frutal","fuerte","Ron",60,"ml","Ron oscuro",30,"ml","Jugo de maracuyá",60,"ml","Jugo de limón",20,"ml","Syrup",15,"ml","Vaso huracán","Naranja"],
+  ["El Presidente","Clásicos","con","ron","amargo","media","Ron añejo",45,"ml","Vermut dry",25,"ml","Triple sec",10,"ml","Granadina",5,"ml","Copa cóctel","Piel de naranja"],
+  ["Kir Royale","Clásicos","con","licores","frutal","suave","Licor de cassis",15,"ml","Espumante",100,"ml","Copa flauta","Frambuesa"],
+  ["Bellini","Brunch","con","espumante","frutal","suave","Puré de durazno",50,"ml","Espumante",100,"ml","Copa flauta","Durazno"],
+  ["Mimosa","Brunch","con","espumante","cítrico","suave","Jugo de naranja",75,"ml","Espumante",75,"ml","Copa flauta","Naranja"],
+  ["Sangría","Jarras","con","vino","frutal","media","Vino tinto",120,"ml","Jugo de naranja",40,"ml","Brandy",20,"ml","Fruta picada",50,"g","Vaso grande","Fruta fresca"],
+  ["Clericó","Jarras","con","vino","frutal","suave","Vino blanco",120,"ml","Jugo de naranja",30,"ml","Soda",50,"ml","Fruta picada",60,"g","Vaso grande","Fruta fresca"],
+  ["Amaretto Sour","Sours","con","licores","cítrico","media","Amaretto",45,"ml","Jugo de limón",25,"ml","Syrup",10,"ml","Albúmina",15,"ml","Vaso corto","Cereza"],
+  ["Godfather","Clásicos","con","whisky","dulce","fuerte","Scotch whisky",45,"ml","Amaretto",25,"ml","Vaso corto","Piel de naranja"],
+  ["Rusty Nail","Clásicos","con","whisky","amargo","fuerte","Scotch whisky",45,"ml","Licor Drambuie",25,"ml","Vaso corto","Piel de limón"],
+  ["Sazerac","Clásicos","con","whisky","amargo","fuerte","Whisky",50,"ml","Syrup",10,"ml","Peychaud's bitters",3,"golpes","Vaso corto","Piel de limón"],
+  ["Vesper Martini","Clásicos","con","gin","amargo","fuerte","Gin",45,"ml","Vodka",15,"ml","Vermut aperitivo",10,"ml","Copa cóctel","Piel de limón"],
+  ["Paloma","Clásicos","con","tequila","cítrico","media","Tequila blanco",50,"ml","Jugo de pomelo",60,"ml","Soda",60,"ml","Jugo de lima",15,"ml","Vaso largo","Pomelo"],
+  ["Tequila Sunrise","Clásicos","con","tequila","frutal","media","Tequila",45,"ml","Jugo de naranja",90,"ml","Granadina",15,"ml","Vaso largo","Naranja"],
+  ["Mexican Mule","Clásicos","con","tequila","especiado","media","Tequila",50,"ml","Jugo de lima",20,"ml","Ginger beer",120,"ml","Vaso largo","Lima"],
+  ["Batanga","Clásicos","con","tequila","refrescante","media","Tequila",50,"ml","Jugo de lima",15,"ml","Cola",120,"ml","Vaso largo","Sal y lima"],
+  ["Caipifruta","Frutales","con","licores","frutal","media","Cachaça",60,"ml","Fruta fresca",60,"g","Syrup",20,"ml","Vaso corto","Fruta fresca"],
+  ["Kir","Clásicos","con","vino","frutal","suave","Licor de cassis",15,"ml","Vino blanco",100,"ml","Copa de vino","Fruta roja"],
+  ["Bramble","Clásicos","con","gin","frutal","media","Gin",50,"ml","Jugo de limón",25,"ml","Syrup",15,"ml","Licor de mora",15,"ml","Vaso corto","Mora"],
+  ["Ramos Gin Fizz","Clásicos","con","gin","cítrico","media","Gin",45,"ml","Jugo de limón",15,"ml","Jugo de lima",15,"ml","Crema",30,"ml","Syrup",15,"ml","Soda",60,"ml","Vaso alto","Limón"],
+  ["Hugo Spritz","Spritz","con","licores","floral","suave","Licor de flor de saúco",30,"ml","Espumante",90,"ml","Soda",30,"ml","Menta",5,"hojas","Copón","Menta y lima"],
+  ["Garibaldi","Clásicos","con","licores","amargo","suave","Campari",45,"ml","Jugo de naranja",120,"ml","Vaso corto","Naranja"],
+  ["Americano","Clásicos","con","licores","amargo","suave","Campari",30,"ml","Vermut rosso",30,"ml","Soda",60,"ml","Vaso corto","Naranja"],
+  ["Shirley Temple","Sin alcohol","sin","ninguno","dulce","suave","Granadina",20,"ml","Ginger ale",150,"ml","Jugo de limón",10,"ml","Vaso largo","Cereza"],
+  ["Virgin Mojito","Sin alcohol","sin","ninguno","refrescante","suave","Jugo de lima",25,"ml","Syrup",20,"ml","Soda",150,"ml","Menta",8,"hojas","Vaso largo","Menta y lima"],
+  ["Piña Colada sin alcohol","Sin alcohol","sin","ninguno","dulce","suave","Crema de coco",30,"ml","Jugo de piña",120,"ml","Leche",30,"ml","Vaso huracán","Piña"],
+  ["Limonada Menta Jengibre","Sin alcohol","sin","ninguno","refrescante","suave","Jugo de limón",30,"ml","Syrup",20,"ml","Agua",150,"ml","Menta",6,"hojas","Vaso largo","Menta y jengibre"],
+  ["San Francisco","Sin alcohol","sin","ninguno","frutal","suave","Jugo de naranja",60,"ml","Jugo de piña",60,"ml","Jugo de durazno",30,"ml","Granadina",10,"ml","Vaso largo","Naranja"],
+  ["Sunrise sin alcohol","Sin alcohol","sin","ninguno","frutal","suave","Jugo de naranja",120,"ml","Granadina",15,"ml","Vaso largo","Naranja"],
+  ["Arnold Palmer","Sin alcohol","sin","ninguno","cítrico","suave","Té negro frío",100,"ml","Limonada",100,"ml","Vaso largo","Limón"],
+  ["Tónica de pepino","Sin alcohol","sin","ninguno","refrescante","suave","Agua tónica",180,"ml","Pepino",5,"rodajas","Jugo de lima",10,"ml","Vaso largo","Pepino y lima"],
+  ["Margarita sin alcohol","Sin alcohol","sin","ninguno","cítrico","suave","Jugo de lima",30,"ml","Jugo de naranja",60,"ml","Syrup",15,"ml","Soda",60,"ml","Vaso corto","Borde de sal y lima"],
+  ["Berry Fizz sin alcohol","Sin alcohol","sin","ninguno","frutal","suave","Puré de frutos rojos",40,"ml","Jugo de limón",15,"ml","Syrup",15,"ml","Soda",120,"ml","Vaso largo","Frutos rojos"],
+  ["Mango Mule sin alcohol","Sin alcohol","sin","ninguno","frutal","suave","Puré de mango",50,"ml","Jugo de lima",15,"ml","Ginger beer",120,"ml","Vaso largo","Mango y lima"],
+  ["Café Tonic","Sin alcohol","sin","ninguno","amargo","suave","Café espresso frío",30,"ml","Agua tónica",120,"ml","Vaso largo","Piel de naranja"],
+  ["Chocolate frío especiado","Sin alcohol","sin","ninguno","dulce","suave","Leche",180,"ml","Chocolate",25,"g","Canela",1,"pizca","Vaso alto","Canela"],
+  ["Pepino Limón Spritz","Sin alcohol","sin","ninguno","refrescante","suave","Jugo de limón",20,"ml","Syrup",15,"ml","Soda",150,"ml","Pepino",4,"rodajas","Vaso largo","Pepino y limón"]
+];
+
+// Convierte las definiciones compactas en el mismo formato que usa el importador actual.
+function extraRecipe(row) {
+  const [name, category, type, spirit, flavor, strength, ...parts] = row;
+  const ingredients = [];
+  let i = 0;
+  while (i < parts.length && typeof parts[i] === "string" && !["Vaso corto","Vaso largo","Vaso balón","Vaso metálico","Vaso tiki","Vaso huracán","Copa cóctel","Copa flauta","Copa de vino","Copa","Copón","Vaso grande","Vaso alto"].includes(parts[i])) {
+    if (typeof parts[i] === "string" && i + 2 < parts.length && typeof parts[i+1] === "number") {
+      ingredients.push([parts[i], parts[i+1], parts[i+2]]);
+      i += 3;
+    } else break;
+  }
+  const glassware = parts[i] || "Vaso largo";
+  const decoration = parts[i+1] || "Cítrico fresco";
+  const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const method = type === "sin"
+    ? "Añade los ingredientes a un vaso con hielo, mezcla suavemente hasta integrar y sirve frío. Ajusta el dulzor al gusto."
+    : "Mide los ingredientes y prepáralos con hielo según corresponda: agita los cítricos y jarabes en coctelera, o remueve suavemente las mezclas con soda y bebidas gasificadas. Sirve en el vaso indicado.";
+  return {id,name,category,type,spirit,flavor,strength,photo:"https://loremflickr.com/900/700/"+encodeURIComponent(name.toLowerCase().replace(/ /g,","))+",cocktail",ingredients,glassware,method,decoration,story:name+" es una opción de la categoría "+category+". Su combinación de ingredientes ofrece un perfil "+flavor+"; la imagen es ilustrativa y conviene verificar la receta y la foto antes de publicarla."};
+}
+CALYPSO_SEED_RECIPES.push(...EXTRA_COCKTAILS.map(extraRecipe));
+
+
 export function makeSeedDocuments(recipe) {
   const ingredients = recipe.ingredients.map(([name, amount, unit]) => ({name, amount:String(amount), unit}));
   const variant = {
