@@ -901,7 +901,7 @@
         ? '<span class="tag alcohol">Con alcohol</span>'
         : '<span class="tag no-alcohol">Sin alcohol</span>';
 
-      const strengthTag = `<span class="tag">Intensidad: ${escapeHtml(getRecipeStrength(recipe))}</span>`;
+      const strengthTag = `<span class="tag">${escapeHtml(getRecipeStrength(recipe))}</span>`;
 
       const categoryTag = recipe.category
         ? `<span class="tag">${escapeHtml(recipe.category)}</span>`
