@@ -137,6 +137,76 @@ function buildMoreDrink(row) {
 CALYPSO_SEED_RECIPES.push(...MORE_DRINKS.map(buildMoreDrink));
 
 
+// Banco ampliado para alcanzar exactamente 3.000 fichas en el catálogo de importación.
+// Son combinaciones creativas iniciales, no recetas clásicas verificadas: deben revisarse antes de publicarse.
+const GENERATED_TARGET = 3000;
+const GENERATED_FLAVORS = [
+ "frutilla","frambuesa","mora","arándano","cereza","granada","uva","manzana verde","manzana roja","pera",
+ "durazno","damasco","mango","piña","maracuyá","papaya","guayaba","litchi","melón","sandía",
+ "kiwi","plátano","coco","limón","lima","naranja","pomelo","mandarina","pepino","jengibre",
+ "hibisco","vainilla","chocolate","café","caramelo","canela","albahaca","menta","romero","lavanda",
+ "tamarindo","chirimoya","lúcuma","membrillo","calafate","maqui","murta","chirimoya","fruta del dragón","granadilla"
+];
+const GENERATED_PAIRS = [
+ "menta","jengibre","albahaca","romero","pepino","limón","lima","naranja","vainilla","canela",
+ "hibisco","té verde","té negro","manzana","piña","coco","frambuesa","arándano","granada","maracuyá",
+ "soda","agua tónica","agua de coco","leche de avena","yogur","chocolate","café","miel","cardamomo","tomillo",
+ "salvia","lavanda","pimienta rosa","pepino","durazno","mango","guayaba","frutilla","pera","pomelo"
+];
+const GENERATED_STYLES = [
+ ["Mocktail","Sin alcohol","sin","ninguno","frutal","suave"],
+ ["Limonada","Sin alcohol","sin","ninguno","cítrico","suave"],
+ ["Fizz sin alcohol","Sin alcohol","sin","ninguno","refrescante","suave"],
+ ["Soda artesanal","Sin alcohol","sin","ninguno","dulce","suave"],
+ ["Agua fresca","Sin alcohol","sin","ninguno","frutal","suave"],
+ ["Granizado","Granizados","sin","ninguno","frutal","suave"],
+ ["Té frío","Té","sin","ninguno","refrescante","suave"],
+ ["Smoothie","Smoothies","sin","ninguno","frutal","suave"],
+ ["Batido","Batidos","sin","ninguno","dulce","suave"],
+ ["Cóctel de autor","De autor","con","ron","frutal","media"],
+ ["Sour de autor","Sours","con","pisco","cítrico","media"],
+ ["Spritz de autor","Spritz","con","gin","amargo","suave"],
+ ["Collins de autor","Collins","con","gin","cítrico","media"],
+ ["Highball de autor","De autor","con","whisky","refrescante","media"],
+ ["Punch de autor","Ponches","con","ron","frutal","media"]
+];
+function buildGeneratedDrink(row, index) {
+ const [name,category,type,spirit,flavor,strength,fruit,pair] = row;
+ const noAlcohol = type === "sin";
+ const ingredients = noAlcohol
+   ? (category === "Smoothies"
+      ? [["Fruta principal",100,"g"],["Leche o bebida vegetal",150,"ml"],["Hielo",1,"taza"]]
+      : category === "Batidos"
+      ? [["Leche o bebida vegetal",180,"ml"],["Sabor principal",30,"g"],["Hielo",1,"taza"]]
+      : category === "Té"
+      ? [["Té preparado y frío",150,"ml"],["Jugo cítrico",15,"ml"],["Syrup opcional",10,"ml"]]
+      : [["Base de "+fruit,60,"ml"],["Complemento de "+pair,30,"ml"],["Jugo de limón",15,"ml"],["Soda o agua fría",100,"ml"]])
+   : [[spirit==="gin"?"Gin":spirit==="whisky"?"Whisky":spirit==="pisco"?"Pisco":"Ron",45,"ml"],["Base de "+fruit,25,"ml"],["Complemento de "+pair,15,"ml"],["Syrup opcional",10,"ml"]];
+ const id = "idea-" + name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+ return {id,name,category,type,spirit,flavor,strength,photo:"https://loremflickr.com/900/700/"+encodeURIComponent((fruit+" "+pair+" drink").toLowerCase().replace(/ /g,",")),ingredients,glassware:noAlcohol?"Vaso alto":"Vaso según estilo",method:"IDEA DE RECETA NO VERIFICADA: validar sabor, proporciones, alérgenos, técnica e imagen antes de ofrecer al público.",decoration:"Fruta o hierba del perfil elegido",story:name+" es una idea de bebida con perfil "+flavor+". Esta ficha es una propuesta generada para ampliar el catálogo y debe probarse y corregirse antes de publicarse."};
+}
+const generatedRows = [];
+const usedSeedNames = new Set(CALYPSO_SEED_RECIPES.map(r => r.name.toLocaleLowerCase("es")));
+let generatedCounter = 0;
+for (let f = 0; f < GENERATED_FLAVORS.length && generatedRows.length < GENERATED_TARGET; f++) {
+ for (let p = 0; p < GENERATED_PAIRS.length && generatedRows.length < GENERATED_TARGET; p++) {
+  for (let s = 0; s < GENERATED_STYLES.length && generatedRows.length < GENERATED_TARGET; s++) {
+   const style = GENERATED_STYLES[s];
+   const fruit = GENERATED_FLAVORS[f];
+   const pair = GENERATED_PAIRS[p];
+   // Reparto de estilos: las primeras 9 categorías son sin alcohol; el resto con alcohol.
+   const name = style[0] + " de " + fruit + " y " + pair + " " + String(Math.floor(generatedCounter / (GENERATED_FLAVORS.length * GENERATED_PAIRS.length)) + 1);
+   const key = name.toLocaleLowerCase("es");
+   if (usedSeedNames.has(key)) continue;
+   usedSeedNames.add(key);
+   generatedRows.push([name,style[1],style[2],style[3],style[4],style[5],fruit,pair]);
+   generatedCounter++;
+  }
+ }
+}
+const remaining = Math.max(0, GENERATED_TARGET - CALYPSO_SEED_RECIPES.length);
+CALYPSO_SEED_RECIPES.push(...generatedRows.slice(0, remaining).map(buildGeneratedDrink));
+
 export function makeSeedDocuments(recipe) {
   const ingredients = recipe.ingredients.map(([name, amount, unit]) => ({name, amount:String(amount), unit}));
   const variant = {
