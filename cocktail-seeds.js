@@ -137,6 +137,32 @@ function buildMoreDrink(row) {
 CALYPSO_SEED_RECIPES.push(...MORE_DRINKS.map(buildMoreDrink));
 
 
+// Bebidas sin alcohol conocidas, seleccionadas a partir de repertorios de mocktails.
+const CURATED_ZERO_PROOF = [
+ {id:"shirley-temple",name:"Shirley Temple",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"dulce",strength:"suave",photo:"https://loremflickr.com/900/700/shirley,temple,drink",ingredients:[["Ginger ale o bebida lima-limón",180,"ml"],["Granadina",15,"ml"],["Jugo de lima",5,"ml"]],glassware:"Vaso alto",method:"Llena el vaso con hielo. Añade la granadina y el jugo de lima, completa con la bebida gaseosa y remueve suavemente.",decoration:"Cereza y rodaja de cítrico",story:"Clásico sin alcohol de color rojo, dulce y burbujeante."},
+ {id:"virgin-mojito",name:"Mojito sin alcohol",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"refrescante",strength:"suave",photo:"https://loremflickr.com/900/700/virgin,mojito",ingredients:[["Menta",10,"hojas"],["Jugo de lima",25,"ml"],["Syrup",15,"ml"],["Soda",150,"ml"]],glassware:"Vaso alto",method:"Presiona suavemente la menta con el jugo y el syrup. Añade hielo, completa con soda y remueve con cuidado.",decoration:"Menta y lima",story:"Una bebida fresca de menta, lima y burbujas, sin alcohol."},
+ {id:"arnold-palmer",name:"Arnold Palmer",category:"Tés fríos",type:"sin",spirit:"ninguno",flavor:"cítrico",strength:"suave",photo:"https://loremflickr.com/900/700/arnold,palmer,drink",ingredients:[["Té negro frío",120,"ml"],["Limonada",120,"ml"]],glassware:"Vaso alto",method:"Vierte el té frío y la limonada sobre hielo y mezcla.",decoration:"Rodaja de limón",story:"Mezcla sencilla y conocida de té helado y limonada."},
+ {id:"virgin-pina-colada",name:"Piña colada sin alcohol",category:"Tropicales",type:"sin",spirit:"ninguno",flavor:"tropical",strength:"suave",photo:"https://loremflickr.com/900/700/virgin,pina,colada",ingredients:[["Jugo de piña",150,"ml"],["Leche de coco",60,"ml"],["Hielo",1,"taza"]],glassware:"Copa huracán",method:"Licúa el jugo de piña, la leche de coco y el hielo hasta obtener una textura cremosa.",decoration:"Piña",story:"Versión tropical cremosa que combina piña y coco, sin alcohol."},
+ {id:"virgin-mary",name:"Virgin Mary",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"especiado",strength:"suave",photo:"https://loremflickr.com/900/700/virgin,mary,tomato,drink",ingredients:[["Jugo de tomate",180,"ml"],["Jugo de limón",15,"ml"],["Salsa inglesa",2,"ml"],["Sal",1,"pizca"],["Pimienta",1,"pizca"]],glassware:"Vaso alto",method:"Mezcla los ingredientes con hielo y ajusta los condimentos al gusto.",decoration:"Apio y limón",story:"Alternativa salada sin alcohol con tomate y condimentos."},
+ {id:"roy-rogers",name:"Roy Rogers",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"dulce",strength:"suave",photo:"https://loremflickr.com/900/700/roy,rogers,drink",ingredients:[["Cola",180,"ml"],["Granadina",15,"ml"]],glassware:"Vaso alto",method:"Sirve la cola sobre hielo, agrega granadina y remueve suavemente.",decoration:"Cereza",story:"Refresco clásico con cola y granadina."},
+ {id:"cinderella-mocktail",name:"Cinderella",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"frutal",strength:"suave",photo:"https://loremflickr.com/900/700/cinderella,mocktail",ingredients:[["Jugo de naranja",60,"ml"],["Jugo de piña",60,"ml"],["Jugo de limón",15,"ml"],["Granadina",10,"ml"],["Soda",60,"ml"]],glassware:"Vaso alto",method:"Mezcla los jugos y la granadina con hielo. Completa con soda y remueve.",decoration:"Naranja",story:"Mocktail frutal que combina cítricos, piña y un toque de granadina."},
+ {id:"virgin-margarita",name:"Margarita sin alcohol",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"cítrico",strength:"suave",photo:"https://loremflickr.com/900/700/virgin,margarita",ingredients:[["Jugo de lima",30,"ml"],["Jugo de naranja",60,"ml"],["Syrup de agave",15,"ml"],["Soda",60,"ml"]],glassware:"Copa o vaso corto",method:"Agita los jugos y el syrup con hielo, cuela en un vaso con hielo y completa con soda.",decoration:"Lima; sal opcional en el borde",story:"Versión sin alcohol de perfil cítrico, con naranja y lima."},
+ {id:"virgin-moscow-mule",name:"Mule de jengibre sin alcohol",category:"Clásicos sin alcohol",type:"sin",spirit:"ninguno",flavor:"especiado",strength:"suave",photo:"https://loremflickr.com/900/700/ginger,lime,mocktail",ingredients:[["Ginger beer sin alcohol",150,"ml"],["Jugo de lima",20,"ml"],["Soda",30,"ml"]],glassware:"Taza o vaso alto",method:"Sirve sobre hielo el jugo de lima y la ginger beer; añade soda y remueve.",decoration:"Lima y menta",story:"Bebida burbujeante con lima y sabor especiado de jengibre."},
+ {id:"virgin-paloma",name:"Paloma sin alcohol",category:"Cítricos",type:"sin",spirit:"ninguno",flavor:"cítrico",strength:"suave",photo:"https://loremflickr.com/900/700/grapefruit,mocktail",ingredients:[["Jugo de pomelo",90,"ml"],["Jugo de lima",15,"ml"],["Soda",120,"ml"],["Syrup",10,"ml"]],glassware:"Vaso alto",method:"Mezcla los jugos y el syrup con hielo; completa con soda.",decoration:"Pomelo",story:"Refrescante combinación de pomelo, lima y soda."},
+ {id:"virgin-sunrise",name:"Sunrise sin alcohol",category:"Frutales",type:"sin",spirit:"ninguno",flavor:"frutal",strength:"suave",photo:"https://loremflickr.com/900/700/orange,grenadine,mocktail",ingredients:[["Jugo de naranja",180,"ml"],["Granadina",15,"ml"]],glassware:"Vaso alto",method:"Sirve el jugo de naranja sobre hielo y vierte lentamente la granadina para crear un degradado.",decoration:"Naranja",story:"Bebida colorida de naranja y granadina, sin alcohol."},
+ {id:"lime-rickey",name:"Lime Rickey sin alcohol",category:"Cítricos",type:"sin",spirit:"ninguno",flavor:"cítrico",strength:"suave",photo:"https://loremflickr.com/900/700/lime,soda,drink",ingredients:[["Jugo de lima",25,"ml"],["Soda",180,"ml"],["Syrup opcional",10,"ml"]],glassware:"Vaso alto",method:"Añade lima y, si se desea, syrup a un vaso con hielo. Completa con soda.",decoration:"Lima",story:"Bebida chispeante y cítrica con pocos ingredientes."},
+ {id:"limonana",name:"Limonana",category:"Limonadas",type:"sin",spirit:"ninguno",flavor:"cítrico",strength:"suave",photo:"https://loremflickr.com/900/700/mint,lemonade,drink",ingredients:[["Jugo de limón",45,"ml"],["Agua fría",180,"ml"],["Syrup",20,"ml"],["Menta",8,"hojas"],["Hielo",1,"taza"]],glassware:"Vaso alto",method:"Licúa brevemente el limón, el agua, el syrup, la menta y el hielo. Sirve de inmediato.",decoration:"Menta y limón",story:"Limonada fría con menta, conocida por su textura helada y aroma fresco."},
+ {id:"chicha-morada",name:"Chicha morada sin fermentar",category:"Tradicionales",type:"sin",spirit:"ninguno",flavor:"frutal",strength:"suave",photo:"https://loremflickr.com/900/700/chicha,morada,drink",ingredients:[["Infusión fría de maíz morado",200,"ml"],["Jugo de limón",15,"ml"],["Syrup o azúcar",10,"ml"],["Canela",1,"pizca"]],glassware:"Vaso alto",method:"Mezcla la infusión fría con limón y endulzante al gusto. Sirve con hielo.",decoration:"Limón",story:"Bebida tradicional peruana de maíz morado, aquí presentada como mezcla fría sin alcohol."},
+ {id:"mote-con-huesillo-zero",name:"Mote con huesillo sin alcohol añadido",category:"Tradicionales",type:"sin",spirit:"ninguno",flavor:"dulce",strength:"suave",photo:"https://loremflickr.com/900/700/mote,con,huesillo",ingredients:[["Jugo frío de huesillos cocidos",180,"ml"],["Huesillo cocido",1,"unidad"],["Mote cocido",60,"g"],["Hielo",1,"taza"]],glassware:"Vaso grande",method:"Coloca el mote y el huesillo en el vaso. Añade el jugo frío y hielo.",decoration:"Huesillo",story:"Versión servida fría de una preparación tradicional chilena a base de mote y durazno deshidratado."},
+ {id:"cucumber-mint-cooler",name:"Pepino y menta cooler",category:"Refrescantes",type:"sin",spirit:"ninguno",flavor:"refrescante",strength:"suave",photo:"https://loremflickr.com/900/700/cucumber,mint,drink",ingredients:[["Pepino",5,"rodajas"],["Menta",8,"hojas"],["Jugo de lima",20,"ml"],["Soda",160,"ml"]],glassware:"Vaso alto",method:"Presiona ligeramente el pepino y la menta, añade lima y hielo, completa con soda.",decoration:"Pepino y menta",story:"Mezcla ligera de pepino, menta, lima y soda."},
+ {id:"cherry-lime-rickey",name:"Cherry Lime Rickey sin alcohol",category:"Frutales",type:"sin",spirit:"ninguno",flavor:"frutal",strength:"suave",photo:"https://loremflickr.com/900/700/cherry,lime,soda",ingredients:[["Jugo de cereza",45,"ml"],["Jugo de lima",20,"ml"],["Soda",150,"ml"],["Syrup opcional",5,"ml"]],glassware:"Vaso alto",method:"Mezcla los jugos con hielo, completa con soda y remueve.",decoration:"Cereza y lima",story:"Bebida burbujeante de cereza y lima."},
+ {id:"virgin-strawberry-daiquiri",name:"Daiquiri de frutilla sin alcohol",category:"Granizados",type:"sin",spirit:"ninguno",flavor:"frutal",strength:"suave",photo:"https://loremflickr.com/900/700/strawberry,frozen,drink",ingredients:[["Frutillas",120,"g"],["Jugo de lima",20,"ml"],["Syrup",15,"ml"],["Hielo",1,"taza"]],glassware:"Copa",method:"Licúa las frutillas, la lima, el syrup y el hielo hasta lograr textura granizada.",decoration:"Frutilla",story:"Bebida helada de frutilla y lima, preparada sin alcohol."},
+ {id:"coconut-kiss",name:"Coconut Kiss",category:"Tropicales",type:"sin",spirit:"ninguno",flavor:"cremoso",strength:"suave",photo:"https://loremflickr.com/900/700/coconut,pineapple,mocktail",ingredients:[["Jugo de piña",120,"ml"],["Leche de coco",60,"ml"],["Crema",20,"ml"],["Hielo",1,"taza"]],glassware:"Copa tropical",method:"Licúa los ingredientes con hielo y sirve frío.",decoration:"Piña",story:"Bebida tropical cremosa de coco y piña sin alcohol."}
+];
+for (const recipe of CURATED_ZERO_PROOF) {
+ if (!CALYPSO_SEED_RECIPES.some(existing => existing.name.toLocaleLowerCase("es") === recipe.name.toLocaleLowerCase("es"))) CALYPSO_SEED_RECIPES.push(recipe);
+}
+
 // Banco ampliado para alcanzar exactamente 3.000 fichas en el catálogo de importación.
 // Son combinaciones creativas iniciales, no recetas clásicas verificadas: deben revisarse antes de publicarse.
 const GENERATED_TARGET = 3000;
@@ -155,20 +181,20 @@ const GENERATED_PAIRS = [
 ];
 const GENERATED_STYLES = [
  ["Mocktail","Sin alcohol","sin","ninguno","frutal","suave"],
- ["Limonada","Sin alcohol","sin","ninguno","cítrico","suave"],
+ ["Limonada","Limonadas","sin","ninguno","cítrico","suave"],
  ["Fizz sin alcohol","Sin alcohol","sin","ninguno","refrescante","suave"],
- ["Soda artesanal","Sin alcohol","sin","ninguno","dulce","suave"],
- ["Agua fresca","Sin alcohol","sin","ninguno","frutal","suave"],
+ ["Soda artesanal","Sodas","sin","ninguno","dulce","suave"],
+ ["Agua fresca","Aguas frescas","sin","ninguno","frutal","suave"],
  ["Granizado","Granizados","sin","ninguno","frutal","suave"],
  ["Té frío","Té","sin","ninguno","refrescante","suave"],
  ["Smoothie","Smoothies","sin","ninguno","frutal","suave"],
  ["Batido","Batidos","sin","ninguno","dulce","suave"],
- ["Cóctel de autor","De autor","con","ron","frutal","media"],
- ["Sour de autor","Sours","con","pisco","cítrico","media"],
- ["Spritz de autor","Spritz","con","gin","amargo","suave"],
- ["Collins de autor","Collins","con","gin","cítrico","media"],
- ["Highball de autor","De autor","con","whisky","refrescante","media"],
- ["Punch de autor","Ponches","con","ron","frutal","media"]
+ ["Bebida de frutas","Frutales","sin","ninguno","frutal","suave"],
+ ["Limonada herbal","Limonadas","sin","ninguno","cítrico","suave"],
+ ["Soda cítrica","Sodas","sin","ninguno","cítrico","suave"],
+ ["Agua fresca tropical","Aguas frescas","sin","ninguno","frutal","suave"],
+ ["Té botánico frío","Té","sin","ninguno","refrescante","suave"],
+ ["Bebida cremosa","Batidos","sin","ninguno","dulce","suave"]
 ];
 function buildGeneratedDrink(row, index) {
  const [name,category,type,spirit,flavor,strength,fruit,pair] = row;
