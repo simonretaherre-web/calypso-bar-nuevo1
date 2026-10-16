@@ -163,9 +163,9 @@ for (const recipe of CURATED_ZERO_PROOF) {
  if (!CALYPSO_SEED_RECIPES.some(existing => existing.name.toLocaleLowerCase("es") === recipe.name.toLocaleLowerCase("es"))) CALYPSO_SEED_RECIPES.push(recipe);
 }
 
-// Banco ampliado para alcanzar exactamente 3.000 fichas en el catálogo de importación.
+// Banco ampliado para alcanzar exactamente 200 fichas en el catálogo de importación.
 // Son combinaciones creativas iniciales, no recetas clásicas verificadas: deben revisarse antes de publicarse.
-const GENERATED_TARGET = 3000;
+const GENERATED_TARGET = 200;
 const GENERATED_FLAVORS = [
  "frutilla","frambuesa","mora","arándano","cereza","granada","uva","manzana verde","manzana roja","pera",
  "durazno","damasco","mango","piña","maracuyá","papaya","guayaba","litchi","melón","sandía",
