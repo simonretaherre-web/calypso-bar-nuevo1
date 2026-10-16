@@ -422,8 +422,16 @@
                   </select>
                 </div>
                 <div class="field-full">
-                  <label for="withMethod">Instrucciones privadas</label>
-                  <textarea id="withMethod" placeholder="Describe aquí la preparación. Solo será visible desde el panel privado."></textarea>
+                  <label for="withGlassware">Cristalería (privado)</label>
+                  <input id="withGlassware" maxlength="160" placeholder="Ej.: vaso highball, copa coupé">
+                </div>
+                <div class="field-full">
+                  <label for="withMethod">Método de preparación (privado)</label>
+                  <textarea id="withMethod" placeholder="Describe el método y los pasos de preparación. Solo será visible en el panel privado."></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="withDecoration">Decoración (privado)</label>
+                  <textarea id="withDecoration" placeholder="Ej.: rodaja de limón, hojas de menta, garnish"></textarea>
                 </div>
               </div>
             </div>
@@ -457,9 +465,17 @@
                     <option value="amargo">Amargo</option>
                   </select>
                 </div>
-                <div>
-                  <label for="withoutMethod">Instrucciones privadas</label>
-                  <textarea id="withoutMethod" placeholder="Preparación privada de la variante sin alcohol"></textarea>
+                <div class="field-full">
+                  <label for="withoutGlassware">Cristalería (privado)</label>
+                  <input id="withoutGlassware" maxlength="160" placeholder="Ej.: vaso highball, copa hurricane">
+                </div>
+                <div class="field-full">
+                  <label for="withoutMethod">Método de preparación (privado)</label>
+                  <textarea id="withoutMethod" placeholder="Describe el método y los pasos de preparación sin alcohol."></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="withoutDecoration">Decoración (privado)</label>
+                  <textarea id="withoutDecoration" placeholder="Describe la decoración final del trago."></textarea>
                 </div>
               </div>
             </div>
@@ -671,7 +687,9 @@
         flavors: $(prefix + "Flavor")?.value ? [$(prefix + "Flavor").value] : [],
         spirit: isWith ? $("withSpirit").value : "",
         strength: isWith ? $("withStrength").value : "",
-        method: $(prefix + "Method").value.trim()
+        method: $(prefix + "Method").value.trim(),
+        glassware: $(prefix + "Glassware").value.trim(),
+        decoration: $(prefix + "Decoration").value.trim()
       };
     }
 
@@ -683,6 +701,8 @@
       $(prefix + "Published").checked = variant.published === true;
       $(prefix + "Ingredients").value = formatIngredientLines(variant.ingredients);
       $(prefix + "Method").value = variant.method || "";
+      $(prefix + "Glassware").value = variant.glassware || "";
+      $(prefix + "Decoration").value = variant.decoration || "";
 
       const flavor = Array.isArray(variant.flavors) ? variant.flavors[0] : "";
       if ($(prefix + "Flavor")) {
@@ -1106,10 +1126,15 @@
             `<h3>${escapeHTML(publicData.name || privateData.name || "Receta")} · ${portions} ${portions === 1 ? "porción" : "porciones"}</h3><ul>${list}</ul>`;
         }
 
-        if (priv && priv.method) {
+        if (priv && (priv.method || priv.glassware || priv.decoration)) {
           $("privateMethodResult").classList.remove("hidden");
+          const privateDetails = [
+            priv.glassware ? `<p><strong>Cristalería:</strong> ${escapeHTML(priv.glassware)}</p>` : "",
+            priv.method ? `<p><strong>Método de preparación:</strong><br>${escapeHTML(priv.method).replace(/\n/g, "<br>")}</p>` : "",
+            priv.decoration ? `<p><strong>Decoración:</strong><br>${escapeHTML(priv.decoration).replace(/\n/g, "<br>")}</p>` : ""
+          ].filter(Boolean).join("");
           $("privateMethodResult").innerHTML =
-            `<h3>Instrucciones privadas</h3><p>${escapeHTML(priv.method).replace(/\n/g, "<br>")}</p>`;
+            `<h3>Detalles privados de preparación</h3>${privateDetails}`;
         } else {
           $("privateMethodResult").classList.add("hidden");
           $("privateMethodResult").textContent = "";
