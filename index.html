@@ -876,12 +876,32 @@
       return true;
     }
 
+    function getRecipeStrength(recipe) {
+      const saved = text(recipe.strength).toLowerCase().trim();
+      if (["suave", "media", "medio", "fuerte"].includes(saved)) {
+        return saved === "medio" ? "Media" : saved.charAt(0).toUpperCase() + saved.slice(1);
+      }
+
+      // Si una receta antigua no tiene intensidad guardada, mostrar una estimación
+      // conservadora basada en el tipo de bebida, sin cambiar sus datos en Firestore.
+      if (recipe.type === "sin") return "Suave";
+      const ingredientText = (recipe.ingredients || [])
+        .map(item => String(item.name || "").toLowerCase())
+        .join(" ");
+      if (/vodka|ron|gin|ginebra|tequila|whisky|whiskey|bourbon|aguardiente|pisco/.test(ingredientText)) {
+        return "Media (estimada)";
+      }
+      return "Media (estimada)";
+    }
+
     function createCard(recipe) {
       // La carta pública siempre muestra cantidades para una sola porción.
       const servings = 1;
       const alcoholTag = recipe.type === "con"
         ? '<span class="tag alcohol">Con alcohol</span>'
         : '<span class="tag no-alcohol">Sin alcohol</span>';
+
+      const strengthTag = `<span class="tag">Intensidad: ${escapeHtml(getRecipeStrength(recipe))}</span>`;
 
       const categoryTag = recipe.category
         ? `<span class="tag">${escapeHtml(recipe.category)}</span>`
@@ -908,7 +928,7 @@
           ${photoMarkup}
           <div class="recipe-body">
             <h3 class="recipe-title">${escapeHtml(recipe.name)}</h3>
-            <div class="recipe-meta">${alcoholTag}${categoryTag}</div>
+            <div class="recipe-meta">${alcoholTag}${strengthTag}${categoryTag}</div>
             ${recipe.story ? `<p class="recipe-story">${escapeHtml(recipe.story)}</p>` : ""}
             <div class="recipe-section-title">
               Ingredientes · ${servings} ${servings === 1 ? "porción" : "porciones"}
