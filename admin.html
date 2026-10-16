@@ -365,6 +365,18 @@
                 <label for="recipePhoto">URL de la foto (opcional)</label>
                 <input id="recipePhoto" type="url" placeholder="https://...">
               </div>
+              <div class="field-full">
+                <label for="recipeGlassware">Cristalería (general y privada)</label>
+                <input id="recipeGlassware" maxlength="160" placeholder="Ej.: vaso highball, copa coupé">
+              </div>
+              <div class="field-full">
+                <label for="recipeMethod">Método de preparación (general y privado)</label>
+                <textarea id="recipeMethod" placeholder="Describe el método y los pasos de preparación. Solo será visible en el panel privado."></textarea>
+              </div>
+              <div class="field-full">
+                <label for="recipeDecoration">Decoración (general y privada)</label>
+                <textarea id="recipeDecoration" placeholder="Ej.: ramita de menta y rodaja de limón"></textarea>
+              </div>
             </div>
 
             <div class="variant-box">
@@ -421,18 +433,6 @@
                     <option value="fuerte">Fuerte</option>
                   </select>
                 </div>
-                <div class="field-full">
-                  <label for="withGlassware">Cristalería (privado)</label>
-                  <input id="withGlassware" maxlength="160" placeholder="Ej.: vaso highball, copa coupé">
-                </div>
-                <div class="field-full">
-                  <label for="withMethod">Método de preparación (privado)</label>
-                  <textarea id="withMethod" placeholder="Describe el método y los pasos de preparación. Solo será visible en el panel privado."></textarea>
-                </div>
-                <div class="field-full">
-                  <label for="withDecoration">Decoración (privado)</label>
-                  <textarea id="withDecoration" placeholder="Ej.: rodaja de limón, hojas de menta, garnish"></textarea>
-                </div>
               </div>
             </div>
 
@@ -464,18 +464,6 @@
                     <option value="refrescante">Refrescante</option>
                     <option value="amargo">Amargo</option>
                   </select>
-                </div>
-                <div class="field-full">
-                  <label for="withoutGlassware">Cristalería (privado)</label>
-                  <input id="withoutGlassware" maxlength="160" placeholder="Ej.: vaso highball, copa hurricane">
-                </div>
-                <div class="field-full">
-                  <label for="withoutMethod">Método de preparación (privado)</label>
-                  <textarea id="withoutMethod" placeholder="Describe el método y los pasos de preparación sin alcohol."></textarea>
-                </div>
-                <div class="field-full">
-                  <label for="withoutDecoration">Decoración (privado)</label>
-                  <textarea id="withoutDecoration" placeholder="Describe la decoración final del trago."></textarea>
                 </div>
               </div>
             </div>
@@ -687,9 +675,7 @@
         flavors: $(prefix + "Flavor")?.value ? [$(prefix + "Flavor").value] : [],
         spirit: isWith ? $("withSpirit").value : "",
         strength: isWith ? $("withStrength").value : "",
-        method: $(prefix + "Method").value.trim(),
-        glassware: $(prefix + "Glassware").value.trim(),
-        decoration: $(prefix + "Decoration").value.trim()
+        method: ""
       };
     }
 
@@ -700,9 +686,7 @@
       $(prefix + "Enabled").checked = Boolean(variant.enabled || variant.type);
       $(prefix + "Published").checked = variant.published === true;
       $(prefix + "Ingredients").value = formatIngredientLines(variant.ingredients);
-      $(prefix + "Method").value = variant.method || "";
-      $(prefix + "Glassware").value = variant.glassware || "";
-      $(prefix + "Decoration").value = variant.decoration || "";
+      $(prefix + "Method").value = "";
 
       const flavor = Array.isArray(variant.flavors) ? variant.flavors[0] : "";
       if ($(prefix + "Flavor")) {
@@ -726,6 +710,9 @@
       $("withPublished").checked = false;
       $("withoutPublished").checked = false;
       $("cbStory").value = "";
+      $("recipeGlassware").value = "";
+      $("recipeMethod").value = "";
+      $("recipeDecoration").value = "";
     }
 
     $("clearRecipeForm").addEventListener("click", clearRecipeForm);
@@ -763,6 +750,11 @@
         $("recipeCategory").value = publicData.category || privateData.category || "";
         $("recipePhoto").value = publicData.photo || privateData.photo || "";
         $("cbStory").value = publicData.story || privateData.story || "";
+        const legacyVariant = (Array.isArray(privateData.variants) ? privateData.variants : [])
+          .find(item => item.method || item.glassware || item.decoration) || {};
+        $("recipeGlassware").value = privateData.glassware || legacyVariant.glassware || "";
+        $("recipeMethod").value = privateData.method || legacyVariant.method || "";
+        $("recipeDecoration").value = privateData.decoration || legacyVariant.decoration || "";
 
         for (const type of ["con", "sin"]) {
           const priv = privateVariants.find(item => item.type === type) || {};
@@ -854,8 +846,7 @@
         ingredients: variant.ingredients,
         flavors: variant.flavors,
         spirit: variant.spirit,
-        strength: variant.strength,
-        method: variant.method
+        strength: variant.strength
       }));
 
       const publicData = {
@@ -880,6 +871,9 @@
         category,
         photo,
         story,
+        glassware: $("recipeGlassware").value.trim(),
+        method: $("recipeMethod").value.trim(),
+        decoration: $("recipeDecoration").value.trim(),
         variants: privateVariants,
         updatedAt: serverTimestamp(),
         updatedBy: currentUser.uid
@@ -1126,12 +1120,16 @@
             `<h3>${escapeHTML(publicData.name || privateData.name || "Receta")} · ${portions} ${portions === 1 ? "porción" : "porciones"}</h3><ul>${list}</ul>`;
         }
 
-        if (priv && (priv.method || priv.glassware || priv.decoration)) {
+        const legacyDetails = priv || {};
+        const glassware = privateData.glassware || legacyDetails.glassware || "";
+        const method = privateData.method || legacyDetails.method || "";
+        const decoration = privateData.decoration || legacyDetails.decoration || "";
+        if (method || glassware || decoration) {
           $("privateMethodResult").classList.remove("hidden");
           const privateDetails = [
-            priv.glassware ? `<p><strong>Cristalería:</strong> ${escapeHTML(priv.glassware)}</p>` : "",
-            priv.method ? `<p><strong>Método de preparación:</strong><br>${escapeHTML(priv.method).replace(/\n/g, "<br>")}</p>` : "",
-            priv.decoration ? `<p><strong>Decoración:</strong><br>${escapeHTML(priv.decoration).replace(/\n/g, "<br>")}</p>` : ""
+            glassware ? `<p><strong>Cristalería:</strong> ${escapeHTML(glassware)}</p>` : "",
+            method ? `<p><strong>Método de preparación:</strong><br>${escapeHTML(method).replace(/\n/g, "<br>")}</p>` : "",
+            decoration ? `<p><strong>Decoración:</strong><br>${escapeHTML(decoration).replace(/\n/g, "<br>")}</p>` : ""
           ].filter(Boolean).join("");
           $("privateMethodResult").innerHTML =
             `<h3>Detalles privados de preparación</h3>${privateDetails}`;
