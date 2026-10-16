@@ -33,7 +33,7 @@ function ensureUI(){
   const seedBox=document.createElement("div");
   seedBox.className="panel";
   seedBox.id="cbSeedRecipes";
-  seedBox.innerHTML='<h2>Catálogo inicial de cócteles</h2><p class="muted">Añade el catálogo ampliado de 365 bebidas y bebidas, con ingredientes públicos y método, cristalería y decoración privados. Las recetas existentes nunca se sobrescriben; si ya hay una receta con el mismo nombre, se omite para evitar duplicados.</p><div class="actions"><button class="btn" id="cbPublishSeeds" type="button">Agregar las 365 recetas</button></div><p id="cbSeedStatus" class="muted" aria-live="polite"></p><h3>Vista previa de las imágenes</h3><p class="muted">Estas fotos de referencia también se mostrarán en la carta pública cuando agregues las recetas.</p><div id="cbSeedGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:12px"></div>';
+  seedBox.innerHTML='<h2>Catálogo ampliado de bebidas</h2><p class="muted">Añade el catálogo ampliado de 3.000 bebidas y bebidas, con ingredientes públicos y método, cristalería y decoración privados. Las recetas existentes nunca se sobrescriben; si ya hay una receta con el mismo nombre, se omite para evitar duplicados.</p><div class="actions"><button class="btn" id="cbPublishSeeds" type="button">Agregar las 3.000 bebidas</button></div><p id="cbSeedStatus" class="muted" aria-live="polite"></p><h3>Vista previa de las imágenes</h3><p class="muted">Estas fotos de referencia también se mostrarán en la carta pública cuando agregues las recetas.</p><div id="cbSeedGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:12px"></div>';
   const firstPanel=recipesTab.querySelector(".panel");
   if(firstPanel)firstPanel.insertAdjacentElement("beforebegin",seedBox);else recipesTab.prepend(seedBox);
   const gallery=$("cbSeedGallery");
@@ -59,7 +59,7 @@ function wireUI(){
   seedButton.dataset.wired="yes";
   seedButton.addEventListener("click",async()=>{
    if(!user||!allowed(user.email)){status("Inicia sesión con una cuenta autorizada para publicar recetas.","error");return;}
-   if(!confirm("Se revisarán las 365 recetas. Las recetas que ya existan con el mismo nombre no se reemplazarán ni duplicarán. ¿Continuar?"))return;
+   if(!confirm("Se revisarán las 3.000 bebidas. Las recetas que ya existan con el mismo nombre no se reemplazarán ni duplicarán. ¿Continuar?"))return;
    seedButton.disabled=true;
    const output=$("cbSeedStatus");
    if(output)output.textContent="Revisando recetas existentes y publicando las nuevas…";
