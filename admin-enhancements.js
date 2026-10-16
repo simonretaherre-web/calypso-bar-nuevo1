@@ -33,9 +33,11 @@ function ensureUI(){
   const seedBox=document.createElement("div");
   seedBox.className="panel";
   seedBox.id="cbSeedRecipes";
-  seedBox.innerHTML='<h2>Catálogo inicial de cócteles</h2><p class="muted">Añade las 23 recetas dictadas, con ingredientes públicos y método, cristalería y decoración privados. Las recetas existentes nunca se sobrescriben; si ya hay una receta con el mismo nombre, se omite para evitar duplicados.</p><div class="actions"><button class="btn" id="cbPublishSeeds" type="button">Agregar las 23 recetas</button></div><p id="cbSeedStatus" class="muted" aria-live="polite"></p>';
+  seedBox.innerHTML='<h2>Catálogo inicial de cócteles</h2><p class="muted">Añade las 23 recetas dictadas, con ingredientes públicos y método, cristalería y decoración privados. Las recetas existentes nunca se sobrescriben; si ya hay una receta con el mismo nombre, se omite para evitar duplicados.</p><div class="actions"><button class="btn" id="cbPublishSeeds" type="button">Agregar las 23 recetas</button></div><p id="cbSeedStatus" class="muted" aria-live="polite"></p><h3>Vista previa de las imágenes</h3><p class="muted">Estas fotos de referencia también se mostrarán en la carta pública cuando agregues las recetas.</p><div id="cbSeedGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:12px"></div>';
   const firstPanel=recipesTab.querySelector(".panel");
   if(firstPanel)firstPanel.insertAdjacentElement("beforebegin",seedBox);else recipesTab.prepend(seedBox);
+  const gallery=$("cbSeedGallery");
+  if(gallery)gallery.innerHTML=CALYPSO_SEED_RECIPES.map(recipe=>'<div style="min-width:0;border:1px solid rgba(212,175,98,.3);border-radius:10px;overflow:hidden;background:#111"><img src="'+esc(recipe.photo)+'" alt="'+esc(recipe.name)+'" loading="lazy" style="display:block;width:100%;height:115px;object-fit:cover;background:#080808" onerror="this.style.display=\'none\';this.nextElementSibling.textContent=\'Imagen no disponible\'"><div style="padding:8px;font-size:15px;color:#f5f0e6">'+esc(recipe.name)+'</div></div>').join("");
  }
  const form=$("recipeForm");
  if(form && !$("cbStory")){
