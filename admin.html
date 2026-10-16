@@ -686,7 +686,6 @@
       $(prefix + "Enabled").checked = Boolean(variant.enabled || variant.type);
       $(prefix + "Published").checked = variant.published === true;
       $(prefix + "Ingredients").value = formatIngredientLines(variant.ingredients);
-      $(prefix + "Method").value = "";
 
       const flavor = Array.isArray(variant.flavors) ? variant.flavors[0] : "";
       if ($(prefix + "Flavor")) {
