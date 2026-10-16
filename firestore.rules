@@ -29,6 +29,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Historial privado y permanente de movimientos de inventario.
+    match /inventoryMovements/{movementId} {
+      allow read, write: if isAdmin();
+    }
+
     // Bloquear el acceso a cualquier otra colección.
     match /{document=**} {
       allow read, write: if false;
