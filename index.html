@@ -753,6 +753,7 @@
               name: base.name,
               category: base.category,
               photo: base.photo,
+              story: text(base.story),
               type: normalized.type,
               ingredients: normalized.ingredients,
               flavors: normalized.flavors,
@@ -771,6 +772,7 @@
         name: base.name,
         category: base.category,
         photo: base.photo,
+        story: text(base.story),
         type: recipeType(recipe),
         ingredients: Array.isArray(recipe.ingredients)
           ? recipe.ingredients.map(normalizeIngredient).filter(item => item.name)
@@ -892,6 +894,7 @@
           <div class="recipe-body">
             <h3 class="recipe-title">${escapeHtml(recipe.name)}</h3>
             <div class="recipe-meta">${alcoholTag}${categoryTag}</div>
+            ${recipe.story ? `<p class="recipe-story">${escapeHtml(recipe.story)}</p>` : ""}
             <div class="recipe-section-title">
               Ingredientes · ${servings} ${servings === 1 ? "porción" : "porciones"}
             </div>
