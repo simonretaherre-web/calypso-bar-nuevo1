@@ -1,132 +1,1236 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
-  <title>CALYPSO BAR | Administración</title>
+  <title>CALYPSO BAR | Panel privado</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    :root{--black:#080808;--panel:#141414;--gold:#d4af62;--gold2:#f1d28a;--text:#f5f1e8;--muted:#b5b0a5;--border:#493b23}
-    *{box-sizing:border-box}body{margin:0;background:var(--black);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
-    button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
-    .brand-header{padding:20px 14px;text-align:center;border-bottom:1px solid var(--border);background:#050505}.brand-logo{display:block;width:min(230px,75vw);max-height:155px;object-fit:contain;margin:0 auto 10px}.brand-subtitle{color:var(--gold);font-size:12px;letter-spacing:3px}
-    .page{width:min(100% - 24px,1000px);margin:22px auto}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
-    h1,h2,h3{color:var(--gold2);margin-top:0}h1{font-size:23px}h2{font-size:19px}p,.muted{color:var(--muted)}label{display:block;color:var(--gold2);margin:13px 0 6px;font-size:14px}
-    input,textarea,select{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #51452f;background:#090909;color:white;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--gold)}textarea{min-height:90px;resize:vertical}
-    .hint{font-size:12px;color:var(--muted);margin-top:5px}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
-    .btn{padding:12px 15px;border:1px solid var(--gold);border-radius:8px;background:var(--gold);color:#100d07;font-weight:bold}.btn.secondary{background:transparent;color:var(--gold2)}.btn.danger{background:#351313;color:#ffd8d8;border-color:#743434}.btn:disabled{opacity:.55;cursor:not-allowed}
-    .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:18px}.tab{background:#171717;color:var(--gold2);border:1px solid var(--border);border-radius:9px;padding:12px 5px;font-weight:bold}.tab.active{background:var(--gold);color:#100d07;border-color:var(--gold)}
-    .item{padding:14px;margin:10px 0;border:1px solid #383027;border-radius:10px;background:#101010;overflow-wrap:anywhere}.item-title{color:var(--gold2);font-weight:bold}.item small{color:var(--muted)}
-    .status{padding:11px;border-radius:8px;margin:12px 0;overflow-wrap:anywhere;background:#202020;color:var(--text)}.status.error{border:1px solid #8d3939;color:#ffbcbc}.status.success{border:1px solid #346b49;color:#a8f0c0}
-    .stock-low{color:#ffad8f}.stock-ok{color:#a8f0c0}video{width:100%;max-height:340px;object-fit:cover;background:#000;border-radius:10px;margin-top:12px}.private-note{border:1px solid #67512b;border-radius:8px;padding:12px;color:var(--gold2);background:#1b170e}
-    .variant-card{border:1px solid #51452f;border-radius:10px;padding:14px;margin-top:12px}.variant-heading{display:flex;align-items:center;gap:10px;color:var(--gold2);font-weight:bold}.variant-heading input{width:auto;display:inline-block;accent-color:var(--gold)}.variant-fields{margin-top:8px}.section-separator{border:0;border-top:1px solid var(--border);margin:20px 0}footer{padding:20px;text-align:center;color:#8f8676;font-size:12px}
-    @media(max-width:560px){.row{grid-template-columns:1fr;gap:0}.card{padding:14px}.tab{font-size:12px}.btn{flex:1 1 auto}}
+    :root {
+      --bg: #080808;
+      --panel: #111;
+      --panel2: #191919;
+      --gold: #d4af62;
+      --gold-light: #f1d99a;
+      --text: #f5f0e5;
+      --muted: #aaa49a;
+      --border: rgba(212,175,98,.3);
+      --green: #9bc9a1;
+      --red: #e2a29a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 18px "Cormorant Garamond", Georgia, serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--gold); }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 5%;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar a {
+      color: var(--gold);
+      text-decoration: none;
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+    }
+
+    .hero {
+      padding: 20px 16px 25px;
+      text-align: center;
+    }
+
+    .logo {
+      display: block;
+      width: min(155px, 45vw);
+      max-height: 155px;
+      object-fit: contain;
+      margin: 0 auto 10px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: "Cinzel", serif;
+      font-weight: 500;
+    }
+
+    h1 {
+      color: var(--gold);
+      font-size: clamp(25px, 5vw, 36px);
+      letter-spacing: 3px;
+      margin: 5px 0;
+    }
+
+    .subtitle { color: var(--muted); margin: 5px 0; }
+
+    main {
+      width: min(1100px, 94%);
+      margin: 0 auto;
+      padding-bottom: 45px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+
+    .panel h2 {
+      margin: 0 0 15px;
+      color: var(--gold-light);
+      font-size: 22px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      color: var(--gold-light);
+      margin: 0 0 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 45px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+    }
+
+    textarea {
+      min-height: 105px;
+      resize: vertical;
+    }
+
+    input[type="checkbox"] {
+      width: 19px;
+      min-height: 19px;
+      accent-color: var(--gold);
+      vertical-align: middle;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 10px 0;
+      color: var(--text);
+    }
+
+    .checkline label { margin: 0; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      min-height: 45px;
+      padding: 10px 15px;
+      border: 1px solid var(--gold);
+      border-radius: 5px;
+      background: var(--gold);
+      color: #15110a;
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .btn.secondary {
+      color: var(--gold-light);
+      background: transparent;
+    }
+
+    .btn.danger {
+      color: #ffe0dc;
+      background: #401b18;
+      border-color: #8b3930;
+    }
+
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .notice {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--muted);
+      margin: 12px 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .notice.success { color: var(--green); }
+    .notice.error { color: var(--red); }
+
+    .hidden { display: none !important; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .tab-button {
+      padding: 12px 5px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--gold-light);
+      background: transparent;
+      font-size: 15px;
+    }
+
+    .tab-button.active {
+      background: var(--gold);
+      color: #15110a;
+    }
+
+    .recipe-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .recipe-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+    }
+
+    .recipe-row h3 { margin: 0 0 5px; color: var(--gold-light); font-size: 17px; }
+    .recipe-row p { margin: 0; color: var(--muted); font-size: 16px; }
+
+    .variant-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      margin: 14px 0;
+      background: #0d0d0d;
+    }
+
+    .variant-box h3 { color: var(--gold); margin: 0 0 12px; font-size: 19px; }
+
+    .portion-preview {
+      padding: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      margin-top: 12px;
+      background: #0c0c0c;
+    }
+
+    .portion-preview h3 { color: var(--gold-light); margin: 0 0 8px; font-size: 17px; }
+    .portion-preview ul { margin: 0; padding-left: 20px; }
+
+    .inventory-item {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      border-radius: 5px;
+      padding: 12px;
+      margin: 9px 0;
+    }
+
+    .inventory-item strong { color: var(--gold-light); }
+    .muted { color: var(--muted); }
+
+    .footer {
+      padding: 25px 12px;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    @media (max-width: 620px) {
+      .field-grid { grid-template-columns: 1fr; }
+      .field-full { grid-column: auto; }
+      .tabs { grid-template-columns: 1fr; }
+      .panel { padding: 14px; }
+      .recipe-row { align-items: flex-start; flex-direction: column; }
+      .recipe-row .actions { margin-top: 5px; }
+    }
   </style>
 </head>
+
 <body>
-  <header class="brand-header">
-    <img class="brand-logo" src="./logo-calypso.png" alt="Logo oficial de CALYPSO BAR" onerror="this.style.display='none';document.getElementById('logoError').classList.remove('hidden')">
-    <div id="logoError" class="hidden brand-subtitle">CALYPSO BAR</div><div class="brand-subtitle">ADMINISTRACIÓN PRIVADA</div>
+  <header>
+    <div class="topbar">
+      <a href="./index.html">← Carta pública</a>
+      <a href="./index.html">Salir al menú</a>
+    </div>
+
+    <div class="hero">
+      <img class="logo" src="./logo-calypso.png" alt="Logo CALYPSO BAR"
+           onerror="this.style.display='none'">
+      <h1>CALYPSO BAR</h1>
+      <p class="subtitle">Panel privado de administración</p>
+    </div>
   </header>
-  <main class="page">
-    <div id="status" class="status hidden" role="status"></div>
-    <section id="loginPanel" class="card"><h1>Acceso de administración</h1><p>Ingresa con una cuenta autorizada para administrar CALYPSO BAR.</p>
-      <form id="loginForm"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required>
-        <div class="actions"><button class="btn" id="loginButton" type="submit">Iniciar sesión</button><button class="btn secondary" id="backButton" type="button">Volver al menú</button></div>
+
+  <main>
+    <div id="status" class="notice" role="status">Conectando con Firebase...</div>
+
+    <section id="loginPanel" class="panel hidden">
+      <h2>Iniciar sesión</h2>
+      <p class="muted">Solo las cuentas autorizadas pueden entrar al panel privado.</p>
+
+      <form id="loginForm">
+        <div class="field-grid">
+          <div class="field-full">
+            <label for="loginEmail">Correo electrónico</label>
+            <input id="loginEmail" type="email" autocomplete="username" required>
+          </div>
+          <div class="field-full">
+            <label for="loginPassword">Contraseña de Firebase Authentication</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" required>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit">Iniciar sesión</button>
+        </div>
       </form>
     </section>
+
     <section id="adminPanel" class="hidden">
-      <div class="card"><h1>Panel de administración</h1><p id="signedInAs"></p><div class="actions"><button class="btn secondary" id="publicButton" type="button">Ver menú público</button><button class="btn danger" id="logoutButton" type="button">Cerrar sesión</button></div></div>
-      <nav class="tabs" aria-label="Secciones"><button class="tab active" data-tab="recipes" type="button">Recetas</button><button class="tab" data-tab="recipeScanner" type="button">Escáner de recetas</button><button class="tab" data-tab="inventory" type="button">Inventario</button><button class="tab" data-tab="scanner" type="button">Escáner de botellas</button></nav>
-      <section id="recipesSection" class="tab-section">
-        <div class="card"><h2 id="recipeFormTitle">Crear receta</h2><p class="private-note">Las cantidades, métodos y pasos de preparación se guardan en recipesPrivate. El menú público solo debe recibir los ingredientes sin cantidades y las variantes publicadas.</p>
-          <form id="recipeForm"><input id="recipeId" type="hidden"><label for="recipeName">Nombre de la receta</label><input id="recipeName" required maxlength="100" placeholder="Ej.: Mojito">
-            <div class="row"><div><label for="recipeCategory">Categoría</label><select id="recipeCategory"><option>Clásicos</option><option>Tropicales</option><option>Dulces</option><option>Cítricos</option><option>Sin alcohol</option><option>Otros</option></select></div><div><label for="recipePhoto">URL de foto (opcional)</label><input id="recipePhoto" type="url" placeholder="https://..."></div></div>
-            <h3 style="margin-top:22px">Variantes de esta receta</h3><p class="hint">Marca las versiones que existen. Puedes guardar una sola variante o ambas.</p>
-            <div class="variant-card"><div class="variant-heading"><input id="variantAlcoholEnabled" type="checkbox"><label for="variantAlcoholEnabled" style="margin:0">Versión con alcohol</label></div><div id="variantAlcoholFields" class="variant-fields hidden"><label for="variantAlcoholIngredients">Ingredientes y cantidades (una por línea)</label><textarea id="variantAlcoholIngredients" placeholder="Las cantidades se guardan de forma privada"></textarea><div class="row"><div><label for="variantAlcoholMethod">Método de preparación (privado)</label><select id="variantAlcoholMethod"><option value="">Sin especificar</option><option>Directo en vaso</option><option>Agitado (shaker)</option><option>Refrescado (vaso mezclador)</option><option>Licuado</option><option>Machacado y mezclado</option><option>Capas</option><option>Otro</option></select></div><div><label for="variantAlcoholGlassware">Cristalería (privado)</label><input id="variantAlcoholGlassware" placeholder="Tipo de vaso o copa"></div></div><label for="variantAlcoholSteps">Pasos de preparación (privado)</label><textarea id="variantAlcoholSteps" placeholder="Pasos ordenados"></textarea><label for="variantAlcoholDecoration">Decoración y presentación (privado)</label><textarea id="variantAlcoholDecoration" placeholder="Decoración"></textarea><label for="variantAlcoholFlavors">Sabores (público)</label><input id="variantAlcoholFlavors" placeholder="Dulce, frutal, refrescante..."><div class="row"><div><label for="variantAlcoholSpirit">Licor o destilado (público)</label><input id="variantAlcoholSpirit" placeholder="Gin, ron, licor... "></div><div><label for="variantAlcoholStrength">Intensidad</label><select id="variantAlcoholStrength"><option value="">Sin clasificar</option><option>Suave</option><option>Media</option><option>Fuerte</option></select></div></div><label class="variant-heading" for="variantAlcoholPublished"><input id="variantAlcoholPublished" type="checkbox" checked> Publicar esta variante en el menú</label></div></div>
-            <div class="variant-card"><div class="variant-heading"><input id="variantNoAlcoholEnabled" type="checkbox"><label for="variantNoAlcoholEnabled" style="margin:0">Versión sin alcohol</label></div><div id="variantNoAlcoholFields" class="variant-fields hidden"><label for="variantNoAlcoholIngredients">Ingredientes y cantidades (una por línea)</label><textarea id="variantNoAlcoholIngredients" placeholder="Las cantidades se guardan de forma privada"></textarea><div class="row"><div><label for="variantNoAlcoholMethod">Método de preparación (privado)</label><select id="variantNoAlcoholMethod"><option value="">Sin especificar</option><option>Directo en vaso</option><option>Agitado (shaker)</option><option>Refrescado (vaso mezclador)</option><option>Licuado</option><option>Machacado y mezclado</option><option>Capas</option><option>Otro</option></select></div><div><label for="variantNoAlcoholGlassware">Cristalería (privado)</label><input id="variantNoAlcoholGlassware" placeholder="Tipo de vaso o copa"></div></div><label for="variantNoAlcoholSteps">Pasos de preparación (privado)</label><textarea id="variantNoAlcoholSteps" placeholder="Pasos ordenados"></textarea><label for="variantNoAlcoholDecoration">Decoración y presentación (privado)</label><textarea id="variantNoAlcoholDecoration" placeholder="Decoración"></textarea><label for="variantNoAlcoholFlavors">Sabores (público)</label><input id="variantNoAlcoholFlavors" placeholder="Dulce, frutal, refrescante..."><label class="variant-heading" for="variantNoAlcoholPublished"><input id="variantNoAlcoholPublished" type="checkbox" checked> Publicar esta variante en el menú</label></div></div>
-            <div class="actions"><button class="btn" id="saveRecipeButton" type="submit">Guardar receta</button><button class="btn secondary" id="clearRecipeButton" type="button">Limpiar</button></div>
+      <div class="panel">
+        <h2>Sesión privada</h2>
+        <p id="signedInAs" class="muted"></p>
+        <div class="actions">
+          <button id="logoutButton" class="btn secondary" type="button">Cerrar sesión</button>
+          <a class="btn secondary" href="./index.html" style="display:inline-flex;align-items:center;text-decoration:none">Volver a la carta</a>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Secciones privadas">
+        <button class="tab-button active" data-tab="recipesTab" type="button">Recetas</button>
+        <button class="tab-button" data-tab="prepareTab" type="button">Preparar receta</button>
+        <button class="tab-button" data-tab="inventoryTab" type="button">Inventario</button>
+      </nav>
+
+      <section id="recipesTab" class="tab-content">
+        <div class="panel">
+          <h2 id="editorTitle">Crear receta</h2>
+          <p class="muted">
+            Los ingredientes y cantidades por porción se guardan en la receta pública.
+            Las instrucciones se guardan únicamente en la colección privada.
+          </p>
+
+          <form id="recipeForm">
+            <input id="recipeId" type="hidden">
+
+            <div class="field-grid">
+              <div>
+                <label for="recipeName">Nombre de la receta</label>
+                <input id="recipeName" required maxlength="100">
+              </div>
+              <div>
+                <label for="recipeCategory">Categoría</label>
+                <input id="recipeCategory" placeholder="Clásicos, tropicales..." maxlength="80">
+              </div>
+              <div class="field-full">
+                <label for="recipePhoto">URL de la foto (opcional)</label>
+                <input id="recipePhoto" type="url" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="variant-box">
+              <h3>Variante con alcohol</h3>
+
+              <div class="checkline">
+                <input id="withEnabled" type="checkbox">
+                <label for="withEnabled">Esta receta tiene variante con alcohol</label>
+              </div>
+
+              <div class="checkline">
+                <input id="withPublished" type="checkbox">
+                <label for="withPublished">Publicar esta variante en la carta</label>
+              </div>
+
+              <label for="withIngredients">Ingredientes de una porción</label>
+              <textarea id="withIngredients" placeholder="Ejemplo:&#10;Ron | 45 | ml&#10;Jugo de limón | 20 | ml&#10;Hielo | 1 | taza"></textarea>
+              <p class="muted">Una línea por ingrediente: nombre | cantidad | unidad.</p>
+
+              <div class="field-grid">
+                <div>
+                  <label for="withFlavor">Sabor para recomendaciones</label>
+                  <select id="withFlavor">
+                    <option value="">Sin especificar</option>
+                    <option value="dulce">Dulce</option>
+                    <option value="muy dulce">Muy dulce</option>
+                    <option value="cítrico">Cítrico</option>
+                    <option value="frutal">Frutal</option>
+                    <option value="refrescante">Refrescante</option>
+                    <option value="amargo">Amargo</option>
+                    <option value="especiado">Especiado</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="withSpirit">Destilado principal</label>
+                  <select id="withSpirit">
+                    <option value="">Sin especificar</option>
+                    <option value="ron">Ron</option>
+                    <option value="vodka">Vodka</option>
+                    <option value="gin">Gin</option>
+                    <option value="tequila">Tequila</option>
+                    <option value="whisky">Whisky</option>
+                    <option value="pisco">Pisco</option>
+                    <option value="licores">Licores</option>
+                    <option value="ninguno">Ninguno específico</option>
+                  </select>
+                </div>
+                <div class="field-full">
+                  <label for="withStrength">Intensidad</label>
+                  <select id="withStrength">
+                    <option value="">Sin especificar</option>
+                    <option value="suave">Suave</option>
+                    <option value="media">Media</option>
+                    <option value="fuerte">Fuerte</option>
+                  </select>
+                </div>
+                <div class="field-full">
+                  <label for="withMethod">Instrucciones privadas</label>
+                  <textarea id="withMethod" placeholder="Describe aquí la preparación. Solo será visible desde el panel privado."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="variant-box">
+              <h3>Variante sin alcohol</h3>
+
+              <div class="checkline">
+                <input id="withoutEnabled" type="checkbox">
+                <label for="withoutEnabled">Esta receta tiene variante sin alcohol</label>
+              </div>
+
+              <div class="checkline">
+                <input id="withoutPublished" type="checkbox">
+                <label for="withoutPublished">Publicar esta variante en la carta</label>
+              </div>
+
+              <label for="withoutIngredients">Ingredientes de una porción</label>
+              <textarea id="withoutIngredients" placeholder="Ejemplo:&#10;Jugo de piña | 100 | ml&#10;Jugo de limón | 15 | ml&#10;Hielo | 1 | taza"></textarea>
+
+              <div class="field-grid">
+                <div>
+                  <label for="withoutFlavor">Sabor para recomendaciones</label>
+                  <select id="withoutFlavor">
+                    <option value="">Sin especificar</option>
+                    <option value="dulce">Dulce</option>
+                    <option value="muy dulce">Muy dulce</option>
+                    <option value="cítrico">Cítrico</option>
+                    <option value="frutal">Frutal</option>
+                    <option value="refrescante">Refrescante</option>
+                    <option value="amargo">Amargo</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="withoutMethod">Instrucciones privadas</label>
+                  <textarea id="withoutMethod" placeholder="Preparación privada de la variante sin alcohol"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" type="submit">Guardar receta</button>
+              <button class="btn secondary" id="clearRecipeForm" type="button">Limpiar formulario</button>
+            </div>
           </form>
         </div>
-        <div class="card"><h2>Mis recetas</h2><input id="recipeSearch" placeholder="Buscar receta..."><div id="recipeList"><p class="muted">Cargando recetas...</p></div></div>
+
+        <div class="panel">
+          <h2>Recetas guardadas</h2>
+          <p class="muted">Editar abre los datos privados y públicos de la receta.</p>
+          <div id="recipeList" class="recipe-list"></div>
+        </div>
       </section>
-      <section id="recipeScannerSection" class="tab-section hidden"><div class="card"><h2>Escáner de recetas</h2><p>Toma una foto o selecciona una imagen o PDF. El reconocimiento propone texto para que lo revises antes de guardarlo.</p><label for="recipeFile">Foto o archivo de receta</label><input id="recipeFile" type="file" accept="image/*,.pdf" capture="environment"><div class="actions"><button class="btn" id="recognizeRecipeButton" type="button">Reconocer texto</button><button class="btn secondary" id="clearOcrButton" type="button">Limpiar</button></div><div id="ocrStatus" class="status" role="status">Selecciona una imagen o PDF.</div><label for="ocrText">Texto reconocido (editable)</label><textarea id="ocrText" placeholder="Aquí aparecerá el texto extraído..."></textarea><div class="actions"><button class="btn" id="applyOcrButton" type="button">Pasar datos al formulario</button><button class="btn secondary" id="goRecipeFormButton" type="button">Ir a recetas</button></div><p class="hint">El reconocimiento puede equivocarse. Verifica todos los datos. Los archivos no se guardan automáticamente.</p></div></section>
-      <section id="inventorySection" class="tab-section hidden"><div class="card"><h2 id="inventoryFormTitle">Agregar producto</h2><form id="inventoryForm"><input id="inventoryId" type="hidden"><label for="productName">Nombre del producto</label><input id="productName" required placeholder="Ej.: Botella de gin"><div class="row"><div><label for="productBrand">Marca</label><input id="productBrand" placeholder="Marca"></div><div><label for="productCategory">Categoría</label><select id="productCategory"><option>Destilados</option><option>Licores</option><option>Jugos</option><option>Bebidas</option><option>Jarabes</option><option>Frutas</option><option>Otros</option></select></div></div><div class="row"><div><label for="productCapacity">Capacidad total por botella (ml)</label><input id="productCapacity" type="number" min="1" step="1" required placeholder="Ej.: 750"></div><div><label for="productBottles">Botellas equivalentes disponibles</label><select id="productBottles"><option value="0">Vacío (0)</option><option value="0.25">¼ botella</option><option value="0.5">½ botella</option><option value="0.75">¾ botella</option><option value="1" selected>1 botella</option><option value="1.25">1¼ botellas</option><option value="1.5">1½ botellas</option><option value="2">2 botellas</option><option value="3">3 botellas</option><option value="4">4 botellas</option><option value="5">5 botellas</option></select></div></div><div class="row"><div><label for="productMinimum">Alerta de stock (equivalente en botellas)</label><select id="productMinimum"><option value="0">Sin alerta</option><option value="0.25">¼ botella</option><option value="0.5" selected>½ botella</option><option value="1">1 botella</option><option value="2">2 botellas</option></select></div><div><label for="productBarcode">Código de barras</label><input id="productBarcode" inputmode="numeric" placeholder="EAN-13 / UPC"></div></div><p class="hint">La capacidad total se registra en ml una sola vez. El inventario se muestra como fracciones de botella; los cálculos internos convierten esas fracciones a cantidades.</p><div class="actions"><button class="btn" type="submit">Guardar producto</button><button class="btn secondary" id="clearInventoryButton" type="button">Limpiar</button></div></form></div><div class="card"><h2>Inventario privado</h2><input id="inventorySearch" placeholder="Buscar producto..."><div id="inventoryList"><p class="muted">Cargando inventario...</p></div></div></section>
-      <section id="scannerSection" class="tab-section hidden"><div class="card"><h2>Escáner de botellas</h2><p>Escanea un código de barras para buscar el producto en el inventario. Si no existe, podrás completar los datos manualmente.</p><label for="scanResult">Código leído</label><input id="scanResult" inputmode="numeric" placeholder="EAN / UPC"><div class="actions"><button class="btn" id="startScannerButton" type="button">Abrir cámara</button><button class="btn secondary" id="stopScannerButton" type="button">Detener cámara</button><button class="btn secondary" id="useCodeButton" type="button">Buscar código</button></div><video id="scannerVideo" playsinline muted class="hidden"></video><p id="scannerMessage" class="muted">La cámara requiere HTTPS y permiso del navegador. El código no identifica el nombre por sí solo si no existe en tu inventario.</p></div></section>
+
+      <section id="prepareTab" class="tab-content hidden">
+        <div class="panel">
+          <h2>Preparar receta</h2>
+          <p class="muted">
+            Selecciona una receta, elige la variante y el número de porciones.
+            Las cantidades se calculan aquí sin alterar la receta guardada.
+          </p>
+
+          <label for="prepareRecipeSelect">Receta</label>
+          <select id="prepareRecipeSelect">
+            <option value="">Selecciona una receta</option>
+          </select>
+
+          <label for="prepareVariantSelect" style="margin-top:12px">Variante</label>
+          <select id="prepareVariantSelect">
+            <option value="con">Con alcohol</option>
+            <option value="sin">Sin alcohol</option>
+          </select>
+
+          <label for="portionCount" style="margin-top:12px">Número de porciones</label>
+          <input id="portionCount" type="number" min="1" max="100" step="1" value="1">
+
+          <div class="actions">
+            <button class="btn" id="calculatePortions" type="button">Calcular cantidades</button>
+          </div>
+
+          <div id="portionResult" class="portion-preview">
+            Selecciona una receta para ver sus cantidades.
+          </div>
+
+          <div id="privateMethodResult" class="portion-preview hidden"></div>
+        </div>
+      </section>
+
+      <section id="inventoryTab" class="tab-content hidden">
+        <div class="panel">
+          <h2>Inventario privado</h2>
+          <p class="muted">
+            Registra existencias manualmente. Este formulario no descuenta productos
+            automáticamente al preparar recetas.
+          </p>
+
+          <form id="inventoryForm">
+            <input id="inventoryId" type="hidden">
+
+            <div class="field-grid">
+              <div>
+                <label for="inventoryName">Nombre del producto</label>
+                <input id="inventoryName" required maxlength="100">
+              </div>
+              <div>
+                <label for="inventoryBrand">Marca</label>
+                <input id="inventoryBrand" maxlength="100">
+              </div>
+              <div>
+                <label for="inventoryCategory">Categoría</label>
+                <input id="inventoryCategory" placeholder="Destilado, jugo, jarabe...">
+              </div>
+              <div>
+                <label for="inventoryUnit">Unidad de control</label>
+                <select id="inventoryUnit">
+                  <option value="ml">ml</option>
+                  <option value="g">g</option>
+                  <option value="unidades">unidades</option>
+                </select>
+              </div>
+              <div>
+                <label for="inventoryCapacity">Capacidad total por envase</label>
+                <input id="inventoryCapacity" type="number" min="0" step="any" value="750" required>
+              </div>
+              <div>
+                <label for="inventoryQuantity">Cantidad actual en la unidad elegida</label>
+                <input id="inventoryQuantity" type="number" min="0" step="any" value="750" required>
+              </div>
+              <div>
+                <label for="inventoryMinStock">Stock mínimo</label>
+                <input id="inventoryMinStock" type="number" min="0" step="any" value="150" required>
+              </div>
+              <div>
+                <label for="inventoryBarcode">Código de barras (opcional)</label>
+                <input id="inventoryBarcode" inputmode="numeric">
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" type="submit">Guardar producto</button>
+              <button class="btn secondary" id="clearInventoryForm" type="button">Limpiar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Productos registrados</h2>
+          <div id="inventoryList"></div>
+        </div>
+      </section>
     </section>
   </main>
-  <footer>CALYPSO BAR · Coctelería · Sabor · Elegancia</footer>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <footer class="footer">CALYPSO BAR · Administración privada</footer>
+
   <script type="module">
-    import {auth,db,ADMIN_EMAIL,SECOND_ADMIN_EMAIL} from "./firebase-config.js";
-    import {signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {collection,doc,setDoc,deleteDoc,onSnapshot,getDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    const $=id=>document.getElementById(id);let recipes=[],inventory=[],stopRecipesListener=null,stopInventoryListener=null,cameraStream=null,scanning=false,barcodeDetector=null;
-    const allowedEmails=[ADMIN_EMAIL,SECOND_ADMIN_EMAIL].filter(Boolean).map(x=>x.trim().toLowerCase());
-    function authorized(user){return !!user&&!!user.email&&allowedEmails.includes(user.email.trim().toLowerCase())}
-    function showStatus(message,type=""){const el=$("status");el.textContent=message;el.className="status"+(type?" "+type:"");el.classList.remove("hidden")}
-    function setOcrStatus(message,type=""){const el=$("ocrStatus");el.textContent=message;el.className="status"+(type?" "+type:"")}
-    function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c])}
-    function stopListeners(){if(stopRecipesListener)stopRecipesListener();if(stopInventoryListener)stopInventoryListener();stopRecipesListener=stopInventoryListener=null}
-    function openTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".tab-section").forEach(s=>s.classList.add("hidden"));$(name+"Section").classList.remove("hidden")}
-    document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>openTab(b.dataset.tab)));
-    function toggleVariant(prefix){$(prefix+"Fields").classList.toggle("hidden",!$(prefix+"Enabled").checked)}
-    ["variantAlcohol","variantNoAlcohol"].forEach(p=>$(p+"Enabled").addEventListener("change",()=>toggleVariant(p)));
-    $("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginButton").disabled=true;try{const c=await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);if(!authorized(c.user)){await signOut(auth);showStatus("Esta cuenta no está autorizada.","error")}else{$("password").value="";showStatus("Sesión iniciada correctamente.","success")}}catch(e){showStatus("No se pudo iniciar sesión. Revisa el correo y la contraseña.","error")}finally{$("loginButton").disabled=false}});
-    $("backButton").addEventListener("click",()=>location.href="./index.html");$("publicButton").addEventListener("click",()=>location.href="./index.html");$("logoutButton").addEventListener("click",async()=>{stopListeners();await stopScanner();await signOut(auth)});
-    onAuthStateChanged(auth,async user=>{if(!user){stopListeners();await stopScanner();$("loginPanel").classList.remove("hidden");$("adminPanel").classList.add("hidden");return}if(!authorized(user)){await signOut(auth);showStatus("Esta cuenta no está autorizada.","error");return}$("loginPanel").classList.add("hidden");$("adminPanel").classList.remove("hidden");$("signedInAs").textContent="Sesión: "+user.email;startListeners()});
-    function startListeners(){stopListeners();stopRecipesListener=onSnapshot(collection(db,"recipesPublic"),s=>{recipes=s.docs.map(d=>({id:d.id,...d.data()}));renderRecipes()},e=>showStatus("Error leyendo recetas: "+e.message,"error"));stopInventoryListener=onSnapshot(collection(db,"inventory"),s=>{inventory=s.docs.map(d=>({id:d.id,...d.data()}));renderInventory()},e=>showStatus("Error leyendo inventario: "+e.message,"error"))}
-    function parseIngredients(text){return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(line=>{const m=line.match(/^(\d+(?:[.,]\d+)?)\s*(ml|cl|l|oz|g|kg|unidades?|cucharaditas?|cucharadas?)?\s+(.+)$/i);return m?{name:m[3].trim(),amount:Number(m[1].replace(",",".")),unit:m[2]||""}:{name:line,amount:"",unit:""}})}
-    function ingredientText(arr){if(!Array.isArray(arr))return "";return arr.map(x=>typeof x==="string"?x:[x.amount??"",x.unit??"",x.name||x.ingredient||""].filter(Boolean).join(" ")).join("\n")}
-    function publicIngredients(arr){return (Array.isArray(arr)?arr:[]).map(x=>typeof x==="string"?x.trim():String(x.name||x.ingredient||"").trim()).filter(Boolean).map(name=>({name}))}
-    function variantFields(prefix){return {enabled:$(prefix+"Enabled").checked,ingredients:$(prefix+"Ingredients").value,method:$(prefix+"Method").value,glassware:$(prefix+"Glassware").value.trim(),steps:$(prefix+"Steps").value.trim(),decoration:$(prefix+"Decoration").value.trim(),flavors:$(prefix+"Flavors").value.trim(),spirit:prefix==="variantAlcohol"?$(prefix+"Spirit").value.trim():"",strength:prefix==="variantAlcohol"?$(prefix+"Strength").value:"",published:$(prefix+"Published").checked}}
-    function fillVariant(prefix,data={}){$(prefix+"Enabled").checked=!!data.enabled;$(prefix+"Fields").classList.toggle("hidden",!data.enabled);$(prefix+"Ingredients").value=ingredientText(data.privateIngredients||data.ingredients||[]);$(prefix+"Method").value=data.method||"";$(prefix+"Glassware").value=data.glassware||"";$(prefix+"Steps").value=data.steps||"";$(prefix+"Decoration").value=data.decoration||"";$(prefix+"Flavors").value=Array.isArray(data.flavors)?data.flavors.join(", "):data.flavors||"";if(prefix==="variantAlcohol"){$(prefix+"Spirit").value=data.spirit||"";$(prefix+"Strength").value=data.strength||""}$(prefix+"Published").checked=data.published!==false}
-    function clearRecipeForm(){ $("recipeForm").reset();$("recipeId").value="";$("recipeCategory").value="Clásicos";fillVariant("variantAlcohol",{});fillVariant("variantNoAlcohol",{});$("recipeFormTitle").textContent="Crear receta";$("saveRecipeButton").textContent="Guardar receta" }
-    $("clearRecipeButton").addEventListener("click",clearRecipeForm);
-    $("recipeForm").addEventListener("submit",async e=>{e.preventDefault();if(!authorized(auth.currentUser)){showStatus("Inicia sesión con una cuenta autorizada.","error");return}
-      const alcohol=variantFields("variantAlcohol"),noAlcohol=variantFields("variantNoAlcohol");if(!alcohol.enabled&&!noAlcohol.enabled){showStatus("Activa al menos una variante.","error");return}
-      const id=$("recipeId").value||doc(collection(db,"recipesPublic")).id;const name=$("recipeName").value.trim();
-      const publicVariants=[];const privateVariants={};
-      for(const [key,prefix,data,type] of [["conAlcohol","variantAlcohol",alcohol,"con alcohol"],["sinAlcohol","variantNoAlcohol",noAlcohol,"sin alcohol"]]){if(!data.enabled)continue;const fullIngredients=parseIngredients(data.ingredients);publicVariants.push({id:key,type,ingredients:publicIngredients(fullIngredients),flavors:data.flavors.split(",").map(s=>s.trim()).filter(Boolean),...(type==="con alcohol"?{spirit:data.spirit,strength:data.strength}:{}),published:data.published});privateVariants[key]={type,ingredients:fullIngredients,method:data.method,steps:data.steps,glassware:data.glassware,decoration:data.decoration,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid}}
-      const first=publicVariants[0];const publicRecipe={name,category:$("recipeCategory").value,photo:$ ("recipePhoto").value.trim(),variants:publicVariants,type:first.type,ingredients:first.ingredients,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid};
-      const privateRecipe={variants:privateVariants,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid};
-      try{await setDoc(doc(db,"recipesPublic",id),publicRecipe,{merge:true});await setDoc(doc(db,"recipesPrivate",id),privateRecipe,{merge:true});clearRecipeForm();showStatus("Receta y variantes guardadas. Cantidades e instrucciones están en recipesPrivate.","success")}catch(err){showStatus("Error al guardar: "+err.message,"error")}
+    import { auth, db, ADMIN_EMAIL, SECOND_ADMIN_EMAIL } from "./firebase-config.js";
+    import {
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      onSnapshot,
+      setDoc,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const $ = id => document.getElementById(id);
+
+    const loginPanel = $("loginPanel");
+    const adminPanel = $("adminPanel");
+    const status = $("status");
+    const recipeList = $("recipeList");
+    const inventoryList = $("inventoryList");
+
+    let currentUser = null;
+    let publicRecipes = [];
+    let inventoryItems = [];
+    let unsubRecipes = null;
+    let unsubInventory = null;
+    let privateRecipeCache = new Map();
+
+    function showStatus(message, kind = "") {
+      status.textContent = message;
+      status.className = "notice" + (kind ? " " + kind : "");
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function allowedEmail(email) {
+      const value = String(email || "").toLowerCase();
+      return [
+        ADMIN_EMAIL,
+        SECOND_ADMIN_EMAIL
+      ].filter(Boolean).some(allowed => value === String(allowed).toLowerCase());
+    }
+
+    function parseIngredients(raw) {
+      return String(raw || "")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split("|").map(part => part.trim());
+          const name = parts[0] || "";
+          const amount = parts[1] || "";
+          const unit = parts.slice(2).join(" ") || "";
+
+          return { name, amount, unit };
+        })
+        .filter(item => item.name);
+    }
+
+    function formatIngredientLines(ingredients) {
+      if (!Array.isArray(ingredients)) return "";
+      return ingredients.map(item => {
+        if (typeof item === "string") return `${item} | |`;
+        return `${item.name || ""} | ${item.amount ?? ""} | ${item.unit || ""}`;
+      }).join("\n");
+    }
+
+    function readVariant(type) {
+      const isWith = type === "con";
+      const prefix = isWith ? "with" : "without";
+
+      return {
+        id: type,
+        type,
+        published: $(prefix + "Published").checked,
+        ingredients: parseIngredients($(prefix + "Ingredients").value),
+        flavors: $(prefix + "Flavor")?.value ? [$(prefix + "Flavor").value] : [],
+        spirit: isWith ? $("withSpirit").value : "",
+        strength: isWith ? $("withStrength").value : "",
+        method: $(prefix + "Method").value.trim()
+      };
+    }
+
+    function fillVariant(type, variant = {}) {
+      const isWith = type === "con";
+      const prefix = isWith ? "with" : "without";
+
+      $(prefix + "Enabled").checked = Boolean(variant.enabled || variant.type);
+      $(prefix + "Published").checked = variant.published === true;
+      $(prefix + "Ingredients").value = formatIngredientLines(variant.ingredients);
+      $(prefix + "Method").value = variant.method || "";
+
+      const flavor = Array.isArray(variant.flavors) ? variant.flavors[0] : "";
+      if ($(prefix + "Flavor")) {
+        $(prefix + "Flavor").value = flavor || "";
+      }
+
+      if (isWith) {
+        $("withSpirit").value = variant.spirit || "";
+        $("withStrength").value = variant.strength || "";
+      }
+    }
+
+    function clearRecipeForm() {
+      $("recipeForm").reset();
+      $("recipeId").value = "";
+      $("editorTitle").textContent = "Crear receta";
+      fillVariant("con", {});
+      fillVariant("sin", {});
+      $("withEnabled").checked = false;
+      $("withoutEnabled").checked = false;
+      $("withPublished").checked = false;
+      $("withoutPublished").checked = false;
+    }
+
+    $("clearRecipeForm").addEventListener("click", clearRecipeForm);
+
+    async function getPrivateRecipe(id) {
+      if (privateRecipeCache.has(id)) return privateRecipeCache.get(id);
+
+      const snapshot = await getDoc(doc(db, "recipesPrivate", id));
+      const data = snapshot.exists() ? snapshot.data() : {};
+      privateRecipeCache.set(id, data);
+      return data;
+    }
+
+    async function editRecipe(id) {
+      try {
+        showStatus("Cargando receta...");
+        const publicSnap = await getDoc(doc(db, "recipesPublic", id));
+        const privateData = await getPrivateRecipe(id);
+
+        if (!publicSnap.exists() && !privateData.name) {
+          showStatus("No encontramos esa receta.", "error");
+          return;
+        }
+
+        const publicData = publicSnap.exists() ? publicSnap.data() : {};
+        const privateVariants = Array.isArray(privateData.variants)
+          ? privateData.variants
+          : [];
+        const publicVariants = Array.isArray(publicData.variants)
+          ? publicData.variants
+          : [];
+
+        $("recipeId").value = id;
+        $("recipeName").value = publicData.name || privateData.name || "";
+        $("recipeCategory").value = publicData.category || privateData.category || "";
+        $("recipePhoto").value = publicData.photo || privateData.photo || "";
+
+        for (const type of ["con", "sin"]) {
+          const priv = privateVariants.find(item => item.type === type) || {};
+          const pub = publicVariants.find(item => item.type === type) || {};
+
+          fillVariant(type, {
+            ...pub,
+            ...priv,
+            type,
+            enabled: Boolean(priv.type || pub.type),
+            published: pub.published === true,
+            ingredients: priv.ingredients || pub.ingredients || []
+          });
+        }
+
+        $("editorTitle").textContent = "Editar receta";
+        document.querySelector('[data-tab="recipesTab"]').click();
+        $("recipeForm").scrollIntoView({ behavior: "smooth", block: "start" });
+        showStatus("Receta cargada para editar.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo cargar la receta. Revisa las reglas de Firestore.", "error");
+      }
+    }
+
+    $("recipeForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (!currentUser || !allowedEmail(currentUser.email)) {
+        showStatus("Debes iniciar sesión con una cuenta autorizada.", "error");
+        return;
+      }
+
+      const name = $("recipeName").value.trim();
+      if (!name) {
+        showStatus("Escribe el nombre de la receta.", "error");
+        return;
+      }
+
+      const id = $("recipeId").value || crypto.randomUUID();
+      const category = $("recipeCategory").value.trim();
+      const photo = $("recipePhoto").value.trim();
+
+      const variants = [];
+      for (const type of ["con", "sin"]) {
+        const isWith = type === "con";
+        const enabled = $(isWith ? "withEnabled" : "withoutEnabled").checked;
+        const variant = readVariant(type);
+
+        if (!enabled) continue;
+
+        if (variant.published && variant.ingredients.length === 0) {
+          showStatus(
+            `La variante ${type === "con" ? "con alcohol" : "sin alcohol"} está marcada para publicar, pero no tiene ingredientes.`,
+            "error"
+          );
+          return;
+        }
+
+        variants.push(variant);
+      }
+
+      if (!variants.length) {
+        showStatus("Activa al menos una variante de la receta.", "error");
+        return;
+      }
+
+      const publicVariants = variants
+        .filter(variant => variant.published)
+        .map(variant => ({
+          id: variant.id,
+          type: variant.type,
+          published: true,
+          ingredients: variant.ingredients.map(item => ({
+            name: item.name,
+            amount: item.amount,
+            unit: item.unit
+          })),
+          flavors: variant.flavors,
+          spirit: variant.spirit,
+          strength: variant.strength
+        }));
+
+      const privateVariants = variants.map(variant => ({
+        id: variant.id,
+        type: variant.type,
+        published: variant.published,
+        ingredients: variant.ingredients,
+        flavors: variant.flavors,
+        spirit: variant.spirit,
+        strength: variant.strength,
+        method: variant.method
+      }));
+
+      const publicData = {
+        name,
+        category,
+        photo,
+        variants: publicVariants,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid
+      };
+
+      // Compatibilidad con lectores antiguos: no usar una variante no publicada.
+      const firstPublic = publicVariants[0];
+      if (firstPublic) {
+        publicData.type = firstPublic.type;
+        publicData.ingredients = firstPublic.ingredients;
+      }
+
+      const privateData = {
+        name,
+        category,
+        photo,
+        variants: privateVariants,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid
+      };
+
+      try {
+        showStatus("Guardando receta...");
+
+        // Se guarda la parte privada primero; no se coloca el método en el documento público.
+        await setDoc(doc(db, "recipesPrivate", id), privateData, { merge: true });
+
+        if (publicVariants.length) {
+          await setDoc(doc(db, "recipesPublic", id), publicData, { merge: true });
+        } else {
+          await deleteDoc(doc(db, "recipesPublic", id));
+        }
+
+        privateRecipeCache.set(id, privateData);
+        $("recipeId").value = id;
+        showStatus("Receta guardada correctamente.", "success");
+        $("editorTitle").textContent = "Editar receta";
+      } catch (error) {
+        console.error(error);
+        showStatus(
+          "No se pudo guardar. Comprueba tu sesión y las reglas de Firestore. Si solo se guardó una parte, vuelve a editar y guardar la receta.",
+          "error"
+        );
+      }
     });
-    async function editRecipe(id){const r=recipes.find(x=>x.id===id);if(!r)return;try{const snap=await getDoc(doc(db,"recipesPrivate",id));const priv=snap.exists()?snap.data():{};$("recipeId").value=id;$("recipeName").value=r.name||"";$("recipeCategory").value=r.category||"Otros";$("recipePhoto").value=r.photo||"";
-      const variants=r.variants;let a=null,n=null;
-      if(Array.isArray(variants)){a=variants.find(v=>v.type==="con alcohol"||v.id==="conAlcohol");n=variants.find(v=>v.type==="sin alcohol"||v.id==="sinAlcohol")}
-      const pvars=priv.variants||{};
-      if(!a&&!n){const legacy={type:r.type||"con alcohol",ingredients:r.ingredients||[]};if(legacy.type==="sin alcohol")n=legacy;else a=legacy}
-      const aPriv=pvars.conAlcohol||{},nPriv=pvars.sinAlcohol||{};
-      fillVariant("variantAlcohol",a?{...a,...aPriv,enabled:true,ingredients:aPriv.ingredients||a.ingredients||[],privateIngredients:aPriv.ingredients||a.ingredients||[]}:{});
-      fillVariant("variantNoAlcohol",n?{...n,...nPriv,enabled:true,ingredients:nPriv.ingredients||n.ingredients||[],privateIngredients:nPriv.ingredients||n.ingredients||[]}:{});
-      // Legacy private fields from the previous schema remain editable.
-      if(!aPriv.glassware&&!nPriv.glassware&&priv.glassware){if(a){$("variantAlcoholGlassware").value=priv.glassware;$("variantAlcoholDecoration").value=priv.decoration||""}else if(n){$("variantNoAlcoholGlassware").value=priv.glassware;$("variantNoAlcoholDecoration").value=priv.decoration||""}}
-      $("recipeFormTitle").textContent="Editar receta";$("saveRecipeButton").textContent="Guardar cambios";openTab("recipes");$("recipeFormTitle").scrollIntoView({behavior:"smooth"})
-    }catch(err){showStatus("No se pudieron leer los datos privados: "+err.message,"error")}}
-    async function deleteRecipe(id){const r=recipes.find(x=>x.id===id);if(!r||!confirm("¿Eliminar la receta «"+r.name+"» y sus variantes?"))return;try{await deleteDoc(doc(db,"recipesPublic",id));await deleteDoc(doc(db,"recipesPrivate",id));showStatus("Receta eliminada.","success")}catch(e){showStatus("Error al eliminar: "+e.message,"error")}}
-    function renderRecipes(){const q=$("recipeSearch").value.trim().toLowerCase(),list=$("recipeList"),filtered=recipes.filter(r=>String(r.name||"").toLowerCase().includes(q));if(!filtered.length){list.innerHTML="<p class='muted'>No hay recetas que coincidan.</p>";return}list.innerHTML=filtered.map(r=>{const vs=Array.isArray(r.variants)?r.variants.map(v=>v.type).join(" + "):r.type||"Sin tipo";return `<article class="item"><div class="item-title">${escapeHtml(r.name||"Sin nombre")}</div><small>${escapeHtml(r.category||"Sin categoría")} · ${escapeHtml(vs)}</small><div class="actions"><button class="btn secondary" data-edit="${escapeHtml(r.id)}" type="button">Editar</button><button class="btn danger" data-delete="${escapeHtml(r.id)}" type="button">Eliminar</button></div></article>`}).join("");list.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>editRecipe(b.dataset.edit)));list.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteRecipe(b.dataset.delete)))}
-    $("recipeSearch").addEventListener("input",renderRecipes);
-    // INVENTARIO: cantidad disponible expresada como fracción equivalente de botella.
-    function clearInventoryForm(){$("inventoryForm").reset();$("inventoryId").value="";$("inventoryFormTitle").textContent="Agregar producto";$("productBottles").value="1";$("productMinimum").value="0.5"}
-    $("clearInventoryButton").addEventListener("click",clearInventoryForm);
-    $("inventoryForm").addEventListener("submit",async e=>{e.preventDefault();if(!authorized(auth.currentUser)){showStatus("No tienes autorización.","error");return}const capacity=Number($("productCapacity").value),bottles=Number($("productBottles").value),minStock=Number($("productMinimum").value);if(!Number.isFinite(capacity)||capacity<=0){showStatus("Indica la capacidad total de una botella en ml.","error");return}const id=$("inventoryId").value||doc(collection(db,"inventory")).id;const product={name:$("productName").value.trim(),brand:$("productBrand").value.trim(),category:$("productCategory").value,unit:"ml",capacity,quantity:bottles*capacity,minStock:minStock*capacity,bottleFraction:bottles,minBottleFraction:minStock,barcode:$("productBarcode").value.trim(),updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid};try{await setDoc(doc(db,"inventory",id),product,{merge:true});clearInventoryForm();showStatus("Producto guardado.","success")}catch(err){showStatus("Error al guardar producto: "+err.message,"error")}});
-    function fractionLabel(n){const vals=[[0,"Vacía"],[.25,"¼ botella"],[.5,"½ botella"],[.75,"¾ botella"],[1,"1 botella"],[1.25,"1¼ botellas"],[1.5,"1½ botellas"],[2,"2 botellas"],[3,"3 botellas"],[4,"4 botellas"],[5,"5 botellas"]];const exact=vals.find(([v])=>Math.abs(Number(n)-v)<.001);return exact?exact[1]:Number(n).toLocaleString("es-CL",{maximumFractionDigits:2})+" botellas"}
-    function editInventory(id){const p=inventory.find(x=>x.id===id);if(!p)return;$("inventoryId").value=id;$("productName").value=p.name||"";$("productBrand").value=p.brand||"";$("productCategory").value=p.category||"Otros";$("productCapacity").value=p.capacity??750;const f=p.bottleFraction!=null?p.bottleFraction:(Number(p.quantity||0)/Math.max(Number(p.capacity||1),1));const options=[0,.25,.5,.75,1,1.25,1.5,2,3,4,5];$("productBottles").value=options.includes(f)?String(f):"1";$("productMinimum").value=String(p.minBottleFraction??(Number(p.minStock||0)/Math.max(Number(p.capacity||1),1)));$("productBarcode").value=p.barcode||"";$("inventoryFormTitle").textContent="Editar producto";openTab("inventory");$("inventoryFormTitle").scrollIntoView({behavior:"smooth"})}
-    async function deleteInventory(id){const p=inventory.find(x=>x.id===id);if(!p||!confirm("¿Eliminar «"+p.name+"»?"))return;try{await deleteDoc(doc(db,"inventory",id));showStatus("Producto eliminado.","success")}catch(e){showStatus("Error al eliminar: "+e.message,"error")}}
-    function renderInventory(){const q=$("inventorySearch").value.trim().toLowerCase(),list=$("inventoryList"),filtered=inventory.filter(p=>[p.name,p.brand,p.barcode].some(v=>String(v||"").toLowerCase().includes(q)));if(!filtered.length){list.innerHTML="<p class='muted'>No hay productos que coincidan.</p>";return}list.innerHTML=filtered.map(p=>{const f=p.bottleFraction!=null?Number(p.bottleFraction):Number(p.quantity||0)/Math.max(Number(p.capacity||1),1);const min=p.minBottleFraction!=null?Number(p.minBottleFraction):Number(p.minStock||0)/Math.max(Number(p.capacity||1),1);const low=f<=min;return `<article class="item"><div class="item-title">${escapeHtml(p.name||"Sin nombre")}</div><small>${escapeHtml(p.brand||"Sin marca")} · ${escapeHtml(p.category||"")}</small><p class="${low?'stock-low':'stock-ok'}">Existencia: ${escapeHtml(fractionLabel(f))}${low?' · STOCK BAJO':''}</p><small>Capacidad total por botella: ${escapeHtml(p.capacity||"No indicada")} ml · Código: ${escapeHtml(p.barcode||"Sin código")}</small><div class="actions"><button class="btn secondary" data-edit-product="${escapeHtml(p.id)}" type="button">Editar</button><button class="btn danger" data-delete-product="${escapeHtml(p.id)}" type="button">Eliminar</button></div></article>`}).join("");list.querySelectorAll("[data-edit-product]").forEach(b=>b.addEventListener("click",()=>editInventory(b.dataset.editProduct)));list.querySelectorAll("[data-delete-product]").forEach(b=>b.addEventListener("click",()=>deleteInventory(b.dataset.deleteProduct)))}
-    $("inventorySearch").addEventListener("input",renderInventory);
-    // OCR DE RECETAS
-    $("recognizeRecipeButton").addEventListener("click",async()=>{const file=$("recipeFile").files[0];if(!file){setOcrStatus("Primero selecciona una foto o un PDF.","error");return}$("recognizeRecipeButton").disabled=true;setOcrStatus("Procesando archivo…");try{let text="";if(file.type==="application/pdf"||/\.pdf$/i.test(file.name)){if(!window.pdfjsLib)throw new Error("No se pudo cargar el lector PDF.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;for(let i=1;i<=Math.min(pdf.numPages,5);i++){const page=await pdf.getPage(i),content=await page.getTextContent();text+=content.items.map(x=>x.str).join(" ")+"\n";if(text.length>15000)break}if(!text.trim()){const page=await pdf.getPage(1),viewport=page.getViewport({scale:1.7}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;text=(await Tesseract.recognize(canvas,"spa+eng")).data.text||""}}else{text=(await Tesseract.recognize(file,"spa+eng",{logger:m=>{if(m.status)setOcrStatus("Reconociendo texto: "+m.status+(m.progress==null?"":" "+Math.round(m.progress*100)+"%"))}})).data.text||""}$("ocrText").value=text;setOcrStatus(text.trim()?"Texto reconocido. Revísalo antes de usarlo.":"No se encontró texto legible.",text.trim()?"success":"error")}catch(e){setOcrStatus("No se pudo leer el archivo: "+e.message,"error")}finally{$("recognizeRecipeButton").disabled=false}});
-    function normalize(t){return t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
-    $("applyOcrButton").addEventListener("click",()=>{const text=$("ocrText").value;if(!text.trim()){setOcrStatus("Primero reconoce el texto de un archivo.","error");return}const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!$("recipeName").value.trim()&&lines[0])$("recipeName").value=lines[0].slice(0,100);const n=normalize(text);const isNo=n.includes("sin alcohol")||n.includes("mocktail")||n.includes("virgin");$(isNo?"variantNoAlcoholEnabled":"variantAlcoholEnabled").checked=true;toggleVariant(isNo?"variantNoAlcohol":"variantAlcohol");const matches=lines.filter(l=>/\d/.test(l)&&/\b(ml|cl|oz|litros?|cucharadas?|cucharaditas?|unidades?|gotas|g|kg)\b/i.test(l));if(matches.length)$(isNo?"variantNoAlcoholIngredients":"variantAlcoholIngredients").value=matches.join("\n");openTab("recipes");setOcrStatus("Datos sugeridos. Revisa la variante y los ingredientes antes de guardar.","success")});
-    $("clearOcrButton").addEventListener("click",()=>{$("recipeFile").value="";$("ocrText").value="";setOcrStatus("Selecciona una foto o PDF.")});$("goRecipeFormButton").addEventListener("click",()=>openTab("recipes"));
-    // ESCÁNER DE CÓDIGOS DE BARRAS
-    async function stopScanner(){scanning=false;if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}$("scannerVideo").srcObject=null;$("scannerVideo").classList.add("hidden")}
-    $("stopScannerButton").addEventListener("click",stopScanner);
-    $("startScannerButton").addEventListener("click",async()=>{if(!( "BarcodeDetector" in window)){$("scannerMessage").textContent="Este navegador no admite lectura automática. Escribe el código manualmente.";return}try{barcodeDetector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128"]});cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});const video=$("scannerVideo");video.srcObject=cameraStream;video.classList.remove("hidden");await video.play();scanning=true;$("scannerMessage").textContent="Apunta al código de barras.";async function scanFrame(){if(!scanning)return;try{const codes=await barcodeDetector.detect(video);if(codes.length&&codes[0].rawValue){$("scanResult").value=codes[0].rawValue;$("productBarcode").value=codes[0].rawValue;$("scannerMessage").textContent="Código leído. Pulsa Buscar código.";await stopScanner();return}}catch(e){}if(scanning)requestAnimationFrame(scanFrame)}requestAnimationFrame(scanFrame)}catch(e){await stopScanner();$("scannerMessage").textContent="No se pudo abrir la cámara. Revisa permisos y HTTPS."}});
-    $("useCodeButton").addEventListener("click",()=>{const code=$("scanResult").value.trim();if(!code){showStatus("Primero escanea o escribe un código.","error");return}const p=inventory.find(x=>String(x.barcode||"").trim()===code);$("productBarcode").value=code;if(p){editInventory(p.id);showStatus("Producto encontrado. Revisa los datos y guarda si hiciste cambios.","success")}else{$("inventoryId").value="";$("productName").value="";$("productBrand").value="";$("productCapacity").value="750";$("productBottles").value="1";$("productMinimum").value="0.5";$("inventoryFormTitle").textContent="Nuevo producto detectado";openTab("inventory");showStatus("No existe en el inventario. Completa el nombre, la capacidad total y las existencias.","success")}});
-    window.addEventListener("pagehide",()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop())});clearRecipeForm();clearInventoryForm();
+
+    async function deleteRecipe(id) {
+      const confirmed = confirm(
+        "¿Quieres eliminar esta receta? Se eliminarán su documento público y el privado correspondiente. Esta acción no se puede deshacer."
+      );
+      if (!confirmed) return;
+
+      try {
+        await deleteDoc(doc(db, "recipesPublic", id));
+        await deleteDoc(doc(db, "recipesPrivate", id));
+        privateRecipeCache.delete(id);
+        showStatus("Receta eliminada.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo eliminar la receta. Revisa los permisos.", "error");
+      }
+    }
+
+    function renderRecipeList() {
+      if (!publicRecipes.length) {
+        recipeList.innerHTML = '<p class="muted">No hay recetas publicadas. Puedes crear una receta usando el formulario de arriba.</p>';
+      } else {
+        recipeList.innerHTML = publicRecipes.map(recipe => `
+          <div class="recipe-row">
+            <div>
+              <h3>${escapeHTML(recipe.name || "Receta sin nombre")}</h3>
+              <p>${escapeHTML(recipe.category || "Sin categoría")}</p>
+            </div>
+            <div class="actions">
+              <button class="btn secondary" type="button" data-edit="${escapeHTML(recipe.id)}">Editar</button>
+              <button class="btn danger" type="button" data-delete="${escapeHTML(recipe.id)}">Eliminar</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      recipeList.querySelectorAll("[data-edit]").forEach(button => {
+        button.addEventListener("click", () => editRecipe(button.dataset.edit));
+      });
+
+      recipeList.querySelectorAll("[data-delete]").forEach(button => {
+        button.addEventListener("click", () => deleteRecipe(button.dataset.delete));
+      });
+
+      const select = $("prepareRecipeSelect");
+      const previous = select.value;
+      select.innerHTML = '<option value="">Selecciona una receta</option>' +
+        publicRecipes.map(recipe =>
+          `<option value="${escapeHTML(recipe.id)}">${escapeHTML(recipe.name || "Receta")}</option>`
+        ).join("");
+
+      if (publicRecipes.some(recipe => recipe.id === previous)) select.value = previous;
+    }
+
+    function renderInventory() {
+      if (!inventoryItems.length) {
+        inventoryList.innerHTML = '<p class="muted">Todavía no hay productos en el inventario.</p>';
+        return;
+      }
+
+      inventoryList.innerHTML = inventoryItems.map(item => {
+        const quantity = Number(item.quantity || 0);
+        const minimum = Number(item.minStock || 0);
+        const low = quantity <= minimum;
+
+        return `<div class="inventory-item">
+          <strong>${escapeHTML(item.name || "Producto")}</strong>
+          <p class="muted">
+            ${escapeHTML(item.brand || "Sin marca")} ·
+            ${escapeHTML(item.category || "Sin categoría")}
+          </p>
+          <p>Existencia: ${escapeHTML(quantity)} ${escapeHTML(item.unit || "")}</p>
+          <p>Stock mínimo: ${escapeHTML(minimum)} ${escapeHTML(item.unit || "")}</p>
+          <p>${low ? '<span style="color:var(--red)">Stock bajo</span>' : '<span style="color:var(--green)">Stock disponible</span>'}</p>
+          <div class="actions">
+            <button class="btn secondary" type="button" data-inventory-edit="${escapeHTML(item.id)}">Editar</button>
+            <button class="btn danger" type="button" data-inventory-delete="${escapeHTML(item.id)}">Eliminar</button>
+          </div>
+        </div>`;
+      }).join("");
+
+      inventoryList.querySelectorAll("[data-inventory-edit]").forEach(button => {
+        button.addEventListener("click", () => {
+          const item = inventoryItems.find(x => x.id === button.dataset.inventoryEdit);
+          if (!item) return;
+
+          $("inventoryId").value = item.id;
+          $("inventoryName").value = item.name || "";
+          $("inventoryBrand").value = item.brand || "";
+          $("inventoryCategory").value = item.category || "";
+          $("inventoryUnit").value = item.unit || "ml";
+          $("inventoryCapacity").value = item.capacity ?? "";
+          $("inventoryQuantity").value = item.quantity ?? "";
+          $("inventoryMinStock").value = item.minStock ?? "";
+          $("inventoryBarcode").value = item.barcode || "";
+
+          $("inventoryForm").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      inventoryList.querySelectorAll("[data-inventory-delete]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.inventoryDelete;
+          if (!confirm("¿Eliminar este producto del inventario?")) return;
+
+          try {
+            await deleteDoc(doc(db, "inventory", id));
+            showStatus("Producto eliminado.", "success");
+          } catch (error) {
+            console.error(error);
+            showStatus("No se pudo eliminar el producto.", "error");
+          }
+        });
+      });
+    }
+
+    $("inventoryForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (!currentUser) return;
+
+      const id = $("inventoryId").value || crypto.randomUUID();
+
+      const item = {
+        name: $("inventoryName").value.trim(),
+        brand: $("inventoryBrand").value.trim(),
+        category: $("inventoryCategory").value.trim(),
+        unit: $("inventoryUnit").value,
+        capacity: Number($("inventoryCapacity").value),
+        quantity: Number($("inventoryQuantity").value),
+        minStock: Number($("inventoryMinStock").value),
+        barcode: $("inventoryBarcode").value.trim(),
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid
+      };
+
+      if (!item.name || item.capacity < 0 || item.quantity < 0 || item.minStock < 0) {
+        showStatus("Revisa el nombre y las cantidades del producto.", "error");
+        return;
+      }
+
+      try {
+        await setDoc(doc(db, "inventory", id), item, { merge: true });
+        $("inventoryId").value = id;
+        showStatus("Producto guardado en el inventario.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo guardar el producto. Revisa las reglas de Firestore.", "error");
+      }
+    });
+
+    $("clearInventoryForm").addEventListener("click", () => {
+      $("inventoryForm").reset();
+      $("inventoryId").value = "";
+      $("inventoryCapacity").value = "750";
+      $("inventoryQuantity").value = "750";
+      $("inventoryMinStock").value = "150";
+    });
+
+    async function calculatePreparation() {
+      const recipeId = $("prepareRecipeSelect").value;
+      const type = $("prepareVariantSelect").value;
+      const portions = Number($("portionCount").value);
+
+      if (!recipeId) {
+        $("portionResult").textContent = "Selecciona una receta.";
+        $("privateMethodResult").classList.add("hidden");
+        return;
+      }
+
+      if (!Number.isInteger(portions) || portions < 1 || portions > 100) {
+        $("portionResult").textContent = "Elige entre 1 y 100 porciones.";
+        $("privateMethodResult").classList.add("hidden");
+        return;
+      }
+
+      try {
+        const publicSnap = await getDoc(doc(db, "recipesPublic", recipeId));
+        const privateData = await getPrivateRecipe(recipeId);
+        const publicData = publicSnap.exists() ? publicSnap.data() : {};
+        const privateVariants = Array.isArray(privateData.variants) ? privateData.variants : [];
+        const publicVariants = Array.isArray(publicData.variants) ? publicData.variants : [];
+
+        const priv = privateVariants.find(v => v.type === type);
+        const pub = publicVariants.find(v => v.type === type);
+        const variant = priv || pub;
+
+        if (!variant) {
+          $("portionResult").textContent = "Esta receta no tiene esa variante guardada.";
+          $("privateMethodResult").classList.add("hidden");
+          return;
+        }
+
+        const ingredients = Array.isArray(variant.ingredients) ? variant.ingredients : [];
+
+        if (!ingredients.length) {
+          $("portionResult").textContent = "Esta variante todavía no tiene ingredientes.";
+        } else {
+          const list = ingredients.map(item => {
+            const rawAmount = String(item.amount ?? "").trim();
+            const number = Number(rawAmount.replace(",", "."));
+            let amount = rawAmount;
+
+            if (rawAmount && Number.isFinite(number)) {
+              amount = String(Number((number * portions).toFixed(3)));
+            }
+
+            const unit = item.unit || "";
+            const name = item.name || "Ingrediente";
+
+            return `<li>${escapeHTML(name)}: <strong>${escapeHTML([amount, unit].filter(Boolean).join(" "))}</strong></li>`;
+          }).join("");
+
+          $("portionResult").innerHTML =
+            `<h3>${escapeHTML(publicData.name || privateData.name || "Receta")} · ${portions} ${portions === 1 ? "porción" : "porciones"}</h3><ul>${list}</ul>`;
+        }
+
+        if (priv && priv.method) {
+          $("privateMethodResult").classList.remove("hidden");
+          $("privateMethodResult").innerHTML =
+            `<h3>Instrucciones privadas</h3><p>${escapeHTML(priv.method).replace(/\n/g, "<br>")}</p>`;
+        } else {
+          $("privateMethodResult").classList.add("hidden");
+          $("privateMethodResult").textContent = "";
+        }
+      } catch (error) {
+        console.error(error);
+        $("portionResult").textContent = "No se pudo cargar la receta. Revisa los permisos privados de Firebase.";
+        $("privateMethodResult").classList.add("hidden");
+      }
+    }
+
+    $("calculatePortions").addEventListener("click", calculatePreparation);
+    $("prepareRecipeSelect").addEventListener("change", calculatePreparation);
+    $("prepareVariantSelect").addEventListener("change", calculatePreparation);
+    $("portionCount").addEventListener("change", calculatePreparation);
+
+    document.querySelectorAll(".tab-button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab-button").forEach(item => {
+          item.classList.toggle("active", item === button);
+        });
+
+        document.querySelectorAll(".tab-content").forEach(section => {
+          section.classList.toggle("hidden", section.id !== button.dataset.tab);
+        });
+      });
+    });
+
+    $("loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const email = $("loginEmail").value.trim();
+      const password = $("loginPassword").value;
+
+      if (!allowedEmail(email)) {
+        showStatus("Este correo no está autorizado para el panel privado.", "error");
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showStatus("Inicio de sesión correcto.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo iniciar sesión. Comprueba el correo, la contraseña y Firebase Authentication.", "error");
+      }
+    });
+
+    $("logoutButton").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo cerrar la sesión.", "error");
+      }
+    });
+
+    function stopListeners() {
+      if (unsubRecipes) unsubRecipes();
+      if (unsubInventory) unsubInventory();
+      unsubRecipes = null;
+      unsubInventory = null;
+    }
+
+    function startListeners() {
+      stopListeners();
+
+      unsubRecipes = onSnapshot(
+        collection(db, "recipesPublic"),
+        snapshot => {
+          publicRecipes = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+
+          renderRecipeList();
+        },
+        error => {
+          console.error(error);
+          showStatus("No se pudieron cargar las recetas públicas. Comprueba las reglas.", "error");
+        }
+      );
+
+      unsubInventory = onSnapshot(
+        collection(db, "inventory"),
+        snapshot => {
+          inventoryItems = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+
+          renderInventory();
+        },
+        error => {
+          console.error(error);
+          showStatus("No se pudo cargar el inventario privado. Comprueba las reglas.", "error");
+        }
+      );
+    }
+
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+
+      if (!user) {
+        stopListeners();
+        loginPanel.classList.remove("hidden");
+        adminPanel.classList.add("hidden");
+        showStatus("Inicia sesión con una de las cuentas autorizadas.");
+        return;
+      }
+
+      if (!allowedEmail(user.email)) {
+        stopListeners();
+        signOut(auth);
+        loginPanel.classList.remove("hidden");
+        adminPanel.classList.add("hidden");
+        showStatus("La cuenta iniciada no está autorizada.", "error");
+        return;
+      }
+
+      loginPanel.classList.add("hidden");
+      adminPanel.classList.remove("hidden");
+      $("signedInAs").textContent = "Sesión iniciada: " + user.email;
+      showStatus("Sesión privada activa.", "success");
+      startListeners();
+    });
   </script>
 </body>
 </html>
