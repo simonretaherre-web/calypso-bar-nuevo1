@@ -552,13 +552,7 @@
         aria-label="Buscar cócteles"
       >
 
-      <select class="field" id="servingsSelect" aria-label="Número de porciones">
-        <option value="1">1 porción</option>
-        <option value="2">2 porciones</option>
-        <option value="3">3 porciones</option>
-        <option value="4">4 porciones</option>
-        <option value="5">5 porciones</option>
-      </select>
+
     </div>
 
     <div class="results-heading">
@@ -643,7 +637,6 @@
     const grid = document.getElementById("recipeGrid");
     const statusBox = document.getElementById("connectionStatus");
     const searchInput = document.getElementById("searchInput");
-    const servingsSelect = document.getElementById("servingsSelect");
     const resultsCount = document.getElementById("resultsCount");
     const resultsTitle = document.getElementById("resultsTitle");
 
@@ -867,7 +860,8 @@
     }
 
     function createCard(recipe) {
-      const servings = Number(servingsSelect.value) || 1;
+      // La carta pública siempre muestra cantidades para una sola porción.
+      const servings = 1;
       const alcoholTag = recipe.type === "con"
         ? '<span class="tag alcohol">Con alcohol</span>'
         : '<span class="tag no-alcohol">Sin alcohol</span>';
@@ -950,15 +944,18 @@
       grid.innerHTML = visible.map(createCard).join("");
     }
 
-    function setFilter(filter) {
+    function setFilter(filter, preserveRecommendation = false) {
       currentFilter = filter;
 
       document.querySelectorAll(".filter-button").forEach(button => {
         button.classList.toggle("active", button.dataset.filter === filter);
       });
 
-      activeRecommendation = false;
-      recommendation = null;
+      if (!preserveRecommendation) {
+        activeRecommendation = false;
+        recommendation = null;
+      }
+
       renderRecipes();
     }
 
@@ -967,7 +964,6 @@
     });
 
     searchInput.addEventListener("input", renderRecipes);
-    servingsSelect.addEventListener("change", renderRecipes);
 
     function openModal() {
       modal.classList.add("open");
@@ -998,7 +994,7 @@
         };
 
         activeRecommendation = true;
-        setFilter("sin");
+        setFilter("sin", true);
         closeModal();
         document.getElementById("recipeGrid").scrollIntoView({
           behavior: "smooth",
@@ -1029,7 +1025,7 @@
       };
 
       activeRecommendation = true;
-      setFilter("con");
+      setFilter("con", true);
       closeModal();
 
       document.getElementById("recipeGrid").scrollIntoView({
