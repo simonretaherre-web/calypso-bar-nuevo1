@@ -894,6 +894,52 @@
       return "Media (estimada)";
     }
 
+    // Ilustraciones locales para los 19 mocktails: no dependen de enlaces externos.
+    // Se usan solo en bebidas marcadas como sin alcohol; no modifica recetas ni fotos guardadas.
+    function mocktailIllustration(recipe) {
+      if (recipe.type !== "sin") return "";
+      const key = String(recipe.name || "").trim().toLocaleLowerCase("es");
+      const palette = {
+        "shirley temple": ["#c9234a", "#ffb0b8", "cherry"],
+        "mojito sin alcohol": ["#8cbf62", "#d7efaa", "lime"],
+        "arnold palmer": ["#b87935", "#f5d29b", "lemon"],
+        "piña colada sin alcohol": ["#e9d8a6", "#fff1ce", "pineapple"],
+        "virgin mary": ["#c74c3d", "#f3a08e", "celery"],
+        "roy rogers": ["#8c2434", "#e7a0a0", "cherry"],
+        "cinderella": ["#e98c39", "#ffd39a", "orange"],
+        "margarita sin alcohol": ["#9acb65", "#e0f3b0", "lime"],
+        "mule de jengibre sin alcohol": ["#d59a43", "#f5d5a0", "lime"],
+        "paloma sin alcohol": ["#ee9a9b", "#ffd0c4", "grapefruit"],
+        "sunrise sin alcohol": ["#e66e35", "#ffca59", "orange"],
+        "lime rickey sin alcohol": ["#8acb75", "#d6f0b5", "lime"],
+        "limonana": ["#a9d47b", "#e7f5bb", "mint"],
+        "chicha morada sin fermentar": ["#713d91", "#c4a0e5", "lime"],
+        "mote con huesillo sin alcohol añadido": ["#c77a36", "#f2c184", "peach"],
+        "pepino y menta cooler": ["#65b58c", "#c7f0d5", "cucumber"],
+        "cherry lime rickey sin alcohol": ["#c83e59", "#f6a2b5", "cherry"],
+        "daiquiri de frutilla sin alcohol": ["#d74768", "#ffb5c3", "strawberry"],
+        "coconut kiss": ["#d5c6a6", "#fff3d8", "pineapple"]
+      };
+      const match = palette[key];
+      if (!match) return "";
+      const [drink, light, garnish] = match;
+      const fruit = garnish === "lime"
+        ? '<circle cx="229" cy="103" r="18" fill="#7ba94a" stroke="#d9ed9c" stroke-width="4"/><path d="M229 87V119M213 103H245M218 92L240 114M240 92L218 114" stroke="#eaf6c8" stroke-width="2"/>'
+        : garnish === "cherry"
+        ? '<circle cx="225" cy="101" r="12" fill="#c92e48"/><path d="M225 90Q223 73 238 72" fill="none" stroke="#9ec56a" stroke-width="4"/>'
+        : garnish === "orange" || garnish === "grapefruit" || garnish === "lemon"
+        ? '<circle cx="225" cy="102" r="19" fill="#f0b64d" stroke="#fff0bf" stroke-width="4"/><path d="M225 85V119M208 102H242M213 90L237 114M237 90L213 114" stroke="#fff0bf" stroke-width="2"/>'
+        : garnish === "cucumber"
+        ? '<ellipse cx="225" cy="101" rx="13" ry="23" fill="#77b987" stroke="#d4f0bf" stroke-width="4"/><ellipse cx="225" cy="101" rx="5" ry="14" fill="#dff1b9"/>'
+        : garnish === "strawberry"
+        ? '<path d="M210 89Q225 77 240 89L236 108Q225 127 214 108Z" fill="#e64e6b"/><path d="M214 87L209 80L222 84L230 78L235 86" fill="#83ad53"/>'
+        : garnish === "pineapple"
+        ? '<path d="M210 89L225 78L240 89L236 111L214 111Z" fill="#eabf56" stroke="#fff0bf" stroke-width="3"/><path d="M225 78L220 68L228 75L236 66L233 81" fill="#7ea95d"/>'
+        : '<path d="M208 92Q222 76 236 91Q223 104 208 92Z" fill="#80b96b"/><path d="M218 88L230 96" stroke="#e7f3c9" stroke-width="2"/>';
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><defs><linearGradient id="drink" x1="0" y1="0" x2="0" y2="1"><stop stop-color="' + light + '"/><stop offset="1" stop-color="' + drink + '"/></linearGradient><linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff" stop-opacity=".35"/><stop offset="1" stop-color="#ffffff" stop-opacity=".05"/></linearGradient></defs><rect width="320" height="240" rx="18" fill="#0b0b0b"/><circle cx="160" cy="120" r="91" fill="none" stroke="#d4af62" stroke-opacity=".28"/><ellipse cx="157" cy="204" rx="72" ry="9" fill="#000" opacity=".45"/><path d="M105 63L119 183Q157 197 195 183L209 63Z" fill="url(#glass)" stroke="#e4d8b8" stroke-width="3"/><path d="M112 91L122 177Q157 189 192 177L202 91Z" fill="url(#drink)" opacity=".95"/><path d="M105 63Q157 75 209 63" fill="none" stroke="#fff6df" stroke-width="4"/><path d="M123 79L135 169" stroke="#fff" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/><circle cx="144" cy="111" r="5" fill="#fff" opacity=".35"/><circle cx="176" cy="142" r="4" fill="#fff" opacity=".3"/>' + fruit + '<path d="M80 38L87 52L101 59L87 66L80 80L73 66L59 59L73 52Z" fill="#d4af62" opacity=".85"/><path d="M244 161L249 171L259 176L249 181L244 191L239 181L229 176L239 171Z" fill="#d4af62" opacity=".65"/><path d="M133 214H187" stroke="#d4af62" stroke-width="2" stroke-linecap="round"/></svg>';
+      return "data:image/svg+xml," + encodeURIComponent(svg);
+    }
+
     function createCard(recipe) {
       // La carta pública siempre muestra cantidades para una sola porción.
       const servings = 1;
@@ -907,8 +953,10 @@
         ? `<span class="tag">${escapeHtml(recipe.category)}</span>`
         : "";
 
-      const photoMarkup = recipe.photo
-        ? `<img class="recipe-photo" src="${escapeHtml(recipe.photo)}" alt="${escapeHtml(recipe.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')">
+      const mocktailPhoto = mocktailIllustration(recipe);
+      const displayPhoto = mocktailPhoto || recipe.photo;
+      const photoMarkup = displayPhoto
+        ? `<img class="recipe-photo" src="${escapeHtml(displayPhoto)}" alt="${escapeHtml(recipe.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')">
            <div class="photo-placeholder hidden" aria-hidden="true">✦</div>`
         : '<div class="photo-placeholder" aria-hidden="true">✦</div>';
 
