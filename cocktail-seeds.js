@@ -1,4 +1,5 @@
 // Catálogo inicial de 23 recetas dictadas para CALYPSO BAR.
+// Catálogo: 42 recetas existentes + 158 ideas nuevas sin alcohol = 200 fichas únicas.
 // La importación crea únicamente documentos que todavía no existen; nunca reemplaza recetas guardadas.
 export const CALYPSO_SEED_RECIPES = [
   {id:"daiquiri",name:"Daiquiri",category:"Clásicos",type:"con",spirit:"ron",flavor:"cítrico",strength:"media",photo:"https://loremflickr.com/900/700/cocktail,daiquiri",ingredients:[["Ron blanco",60,"ml"],["Jugo de limón",30,"ml"],["Syrup",30,"ml"]],glassware:"Copa cóctel",method:"Enfría la copa. Agrega el ron blanco, el jugo de limón, el syrup y hielo a una coctelera. Agita con energía hasta enfriar. Cuela fino en la copa fría.",decoration:"Piel de limón.",story:"El Daiquiri es un clásico cubano de la familia de los sours: combina destilado, cítrico y dulzor en un perfil directo y equilibrado. Su nombre se asocia con la localidad de Daiquirí, en Cuba."},
@@ -214,13 +215,14 @@ function buildGeneratedDrink(row, index) {
 const generatedRows = [];
 const usedSeedNames = new Set(CALYPSO_SEED_RECIPES.map(r => r.name.toLocaleLowerCase("es")));
 let generatedCounter = 0;
-for (let f = 0; f < GENERATED_FLAVORS.length && generatedRows.length < GENERATED_TARGET; f++) {
- for (let p = 0; p < GENERATED_PAIRS.length && generatedRows.length < GENERATED_TARGET; p++) {
-  for (let s = 0; s < GENERATED_STYLES.length && generatedRows.length < GENERATED_TARGET; s++) {
+const GENERATED_ADDITIONS = Math.max(0, GENERATED_TARGET - CALYPSO_SEED_RECIPES.length);
+for (let f = 0; f < GENERATED_FLAVORS.length && generatedRows.length < GENERATED_ADDITIONS; f++) {
+ for (let p = 0; p < GENERATED_PAIRS.length && generatedRows.length < GENERATED_ADDITIONS; p++) {
+  for (let s = 0; s < GENERATED_STYLES.length && generatedRows.length < GENERATED_ADDITIONS; s++) {
    const style = GENERATED_STYLES[s];
    const fruit = GENERATED_FLAVORS[f];
    const pair = GENERATED_PAIRS[p];
-   // Reparto de estilos: las primeras 9 categorías son sin alcohol; el resto con alcohol.
+   // Todas las fichas generadas en esta ampliación son sin alcohol; las 42 recetas existentes se conservan.
    const name = style[0] + " de " + fruit + " y " + pair + " " + String(Math.floor(generatedCounter / (GENERATED_FLAVORS.length * GENERATED_PAIRS.length)) + 1);
    const key = name.toLocaleLowerCase("es");
    if (usedSeedNames.has(key)) continue;
@@ -230,8 +232,10 @@ for (let f = 0; f < GENERATED_FLAVORS.length && generatedRows.length < GENERATED
   }
  }
 }
-const remaining = Math.max(0, GENERATED_TARGET - CALYPSO_SEED_RECIPES.length);
-CALYPSO_SEED_RECIPES.push(...generatedRows.slice(0, remaining).map(buildGeneratedDrink));
+CALYPSO_SEED_RECIPES.push(...generatedRows.map(buildGeneratedDrink));
+if (CALYPSO_SEED_RECIPES.length !== GENERATED_TARGET) {
+ console.warn(`CALYPSO BAR: se esperaban ${GENERATED_TARGET} fichas, pero hay ${CALYPSO_SEED_RECIPES.length}.`);
+}
 
 export function makeSeedDocuments(recipe) {
   const ingredients = recipe.ingredients.map(([name, amount, unit]) => ({name, amount:String(amount), unit}));
