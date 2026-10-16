@@ -145,7 +145,7 @@ export function makeSeedDocuments(recipe) {
   };
   const publicData = {
     name:recipe.name, category:recipe.category, photo:recipe.photo, story:recipe.story,
-    type:"con", ingredients, variants:[variant],
+    type:recipe.type, ingredients, variants:[variant],
     updatedAt:null, seedSource:"calypso-bar-expanded"
   };
   const privateData = {
