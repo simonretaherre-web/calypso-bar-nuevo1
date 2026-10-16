@@ -1,0 +1,1089 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="Descubre la carta de cócteles de CALYPSO BAR.">
+  <title>CALYPSO BAR | Carta de cócteles</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --black: #080808;
+      --panel: #111111;
+      --panel-light: #191919;
+      --gold: #d4af62;
+      --gold-light: #f0d99a;
+      --text: #f5f0e6;
+      --muted: #b7ad9b;
+      --border: rgba(212,175,98,.32);
+      --green: #9bc9a1;
+      --red: #e2a29a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at top, #20190d 0, transparent 42%),
+        var(--black);
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 19px;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--gold-light);
+      outline-offset: 3px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 15px 5%;
+    }
+
+    .mode-link {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 17px;
+      letter-spacing: 1px;
+    }
+
+    .mode-link:hover {
+      color: var(--gold-light);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 8px 20px 24px;
+    }
+
+    .logo {
+      display: block;
+      width: min(230px, 68vw);
+      max-height: 230px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+    }
+
+    .brand {
+      color: var(--gold);
+      font-family: "Cinzel", serif;
+      font-size: clamp(27px, 6vw, 42px);
+      font-weight: 500;
+      letter-spacing: 5px;
+      margin: 0;
+    }
+
+    .tagline {
+      color: var(--muted);
+      margin: 7px 0 0;
+      letter-spacing: 2px;
+      font-size: 17px;
+    }
+
+    .gold-line {
+      width: min(230px, 60%);
+      height: 1px;
+      margin: 22px auto;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    main {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+      padding-bottom: 45px;
+    }
+
+    .intro {
+      text-align: center;
+      margin: 0 auto 22px;
+    }
+
+    h2, h3 {
+      font-family: "Cinzel", serif;
+      font-weight: 500;
+    }
+
+    .intro h2 {
+      color: var(--gold-light);
+      font-size: clamp(23px, 5vw, 30px);
+      margin: 0 0 8px;
+    }
+
+    .intro p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .recommend-button {
+      display: block;
+      width: 100%;
+      max-width: 410px;
+      margin: 22px auto;
+      padding: 15px 18px;
+      color: var(--black);
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      font-family: "Cinzel", serif;
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: .5px;
+      box-shadow: 0 5px 22px rgba(212,175,98,.10);
+    }
+
+    .recommend-button:hover {
+      filter: brightness(1.08);
+    }
+
+    .filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .filter-button {
+      padding: 11px 18px;
+      color: var(--gold-light);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      transition: .2s;
+    }
+
+    .filter-button:hover,
+    .filter-button.active {
+      color: var(--black);
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(130px, .35fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .field {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    .field::placeholder {
+      color: #938a7a;
+    }
+
+    .field option {
+      color: var(--text);
+      background: var(--panel);
+    }
+
+    .results-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 28px 0 15px;
+    }
+
+    .results-heading h2 {
+      margin: 0;
+      color: var(--gold-light);
+      font-size: 23px;
+    }
+
+    .results-count {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat( auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 18px;
+    }
+
+    .recipe-card {
+      min-width: 0;
+      overflow: hidden;
+      background: linear-gradient(145deg, #171717, #0d0d0d);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      box-shadow: 0 8px 26px rgba(0,0,0,.22);
+    }
+
+    .recipe-photo {
+      width: 100%;
+      height: 210px;
+      display: block;
+      object-fit: cover;
+      background: #15120c;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .photo-placeholder {
+      height: 150px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 43px;
+      background:
+        radial-gradient(circle, rgba(212,175,98,.12), transparent 68%),
+        #111;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .recipe-body {
+      padding: 16px;
+    }
+
+    .recipe-title {
+      margin: 0 0 8px;
+      color: var(--gold-light);
+      font-size: 23px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .recipe-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .tag.alcohol {
+      color: #f0c4a8;
+      border-color: rgba(226,162,154,.45);
+    }
+
+    .tag.no-alcohol {
+      color: var(--green);
+      border-color: rgba(155,201,161,.45);
+    }
+
+    .recipe-section-title {
+      color: var(--gold);
+      margin: 15px 0 7px;
+      font-family: "Cinzel", serif;
+      font-size: 15px;
+      letter-spacing: .4px;
+    }
+
+    .ingredient-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .ingredient-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 17px;
+    }
+
+    .ingredient-name {
+      overflow-wrap: anywhere;
+    }
+
+    .ingredient-amount {
+      flex-shrink: 0;
+      color: var(--gold-light);
+      text-align: right;
+    }
+
+    .no-ingredients {
+      color: var(--muted);
+      font-size: 16px;
+      margin: 5px 0;
+    }
+
+    .empty-state,
+    .status-box {
+      padding: 24px 18px;
+      text-align: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      color: var(--gold-light);
+      margin-top: 0;
+    }
+
+    .status-box {
+      margin: 15px 0;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .status-box.error {
+      color: var(--red);
+      border-color: rgba(226,162,154,.4);
+    }
+
+    .status-box.success {
+      color: var(--green);
+      border-color: rgba(155,201,161,.4);
+    }
+
+    .footer {
+      padding: 24px 15px;
+      text-align: center;
+      color: #8f8574;
+      border-top: 1px solid var(--border);
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0,0,0,.82);
+      overflow-y: auto;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: min(500px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 22px;
+      background: #111;
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      box-shadow: 0 15px 60px rgba(0,0,0,.6);
+    }
+
+    .modal-panel h2 {
+      margin: 0 0 8px;
+      color: var(--gold-light);
+      font-size: 25px;
+    }
+
+    .modal-description {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    .form-label {
+      display: block;
+      margin: 15px 0 6px;
+      color: var(--gold-light);
+      font-size: 17px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      min-width: 130px;
+      min-height: 47px;
+      padding: 10px;
+      border-radius: 7px;
+      border: 1px solid var(--gold);
+    }
+
+    .primary-button {
+      color: var(--black);
+      background: var(--gold);
+    }
+
+    .secondary-button {
+      color: var(--gold-light);
+      background: transparent;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 13px 5%;
+      }
+
+      .hero {
+        padding-top: 0;
+      }
+
+      .logo {
+        width: min(190px, 60vw);
+      }
+
+      .brand {
+        letter-spacing: 3px;
+      }
+
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .filter-button {
+        padding: 10px 5px;
+        font-size: 16px;
+      }
+
+      .recipe-photo {
+        height: 190px;
+      }
+
+      .modal-panel {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topbar">
+      <a class="mode-link" href="./admin.html">Cambiar modo</a>
+    </div>
+
+    <div class="hero">
+      <img
+        class="logo"
+        src="./logo-calypso.png"
+        alt="Logo CALYPSO BAR"
+        onerror="this.style.display='none'"
+      >
+      <h1 class="brand">CALYPSO BAR</h1>
+      <p class="tagline">Coctelería · Sabor · Elegancia</p>
+      <div class="gold-line"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Descubre tu próximo cóctel</h2>
+      <p>Encuentra una opción para tu gusto.</p>
+    </section>
+
+    <button class="recommend-button" id="openRecommend" type="button">
+      ¿Qué puedo tomar?
+    </button>
+
+    <div id="connectionStatus" class="status-box" role="status">
+      Conectando con la carta...
+    </div>
+
+    <nav class="filters" aria-label="Filtrar cócteles">
+      <button class="filter-button active" data-filter="todos" type="button">Todos</button>
+      <button class="filter-button" data-filter="con" type="button">Con alcohol</button>
+      <button class="filter-button" data-filter="sin" type="button">Sin alcohol</button>
+    </nav>
+
+    <div class="search-row">
+      <input
+        class="field"
+        id="searchInput"
+        type="search"
+        placeholder="Buscar por cóctel, ingrediente o categoría..."
+        aria-label="Buscar cócteles"
+      >
+
+      <select class="field" id="servingsSelect" aria-label="Número de porciones">
+        <option value="1">1 porción</option>
+        <option value="2">2 porciones</option>
+        <option value="3">3 porciones</option>
+        <option value="4">4 porciones</option>
+        <option value="5">5 porciones</option>
+      </select>
+    </div>
+
+    <div class="results-heading">
+      <h2 id="resultsTitle">Nuestra carta</h2>
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+
+    <section id="recipeGrid" class="recipe-grid" aria-live="polite"></section>
+  </main>
+
+  <footer class="footer">
+    CALYPSO BAR · Coctelería · Sabor · Elegancia
+  </footer>
+
+  <!-- Ventana de recomendaciones -->
+  <div class="modal" id="recommendModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-panel">
+      <h2 id="modalTitle">¿Qué puedo tomar?</h2>
+      <p class="modal-description" id="modalDescription">
+        Primero, elige qué tipo de bebida prefieres.
+      </p>
+
+      <div id="typeStep">
+        <label class="form-label" for="drinkType">Tipo de bebida</label>
+        <select class="field" id="drinkType">
+          <option value="sin">Sin alcohol</option>
+          <option value="con">Con alcohol</option>
+        </select>
+
+        <div class="modal-actions">
+          <button class="secondary-button" id="closeModal" type="button">Cancelar</button>
+          <button class="primary-button" id="continueRecommend" type="button">Continuar</button>
+        </div>
+      </div>
+
+      <div id="preferencesStep" class="hidden">
+        <label class="form-label" for="flavorSelect">¿Qué sabor te gusta?</label>
+        <select class="field" id="flavorSelect">
+          <option value="cualquiera">Cualquiera</option>
+          <option value="dulce">Dulce</option>
+          <option value="muy dulce">Muy dulce</option>
+          <option value="cítrico">Cítrico</option>
+          <option value="amargo">Amargo</option>
+          <option value="frutal">Frutal</option>
+          <option value="refrescante">Refrescante</option>
+        </select>
+
+        <label class="form-label" for="spiritSelect">¿Qué destilado prefieres?</label>
+        <select class="field" id="spiritSelect">
+          <option value="cualquiera">Cualquiera</option>
+          <option value="ron">Ron</option>
+          <option value="vodka">Vodka</option>
+          <option value="gin">Gin</option>
+          <option value="tequila">Tequila</option>
+          <option value="whisky">Whisky</option>
+          <option value="sin destilado">Sin destilado específico</option>
+        </select>
+
+        <label class="form-label" for="strengthSelect">Intensidad</label>
+        <select class="field" id="strengthSelect">
+          <option value="cualquiera">Cualquiera</option>
+          <option value="suave">Suave</option>
+          <option value="media">Media</option>
+          <option value="fuerte">Fuerte</option>
+        </select>
+
+        <div class="modal-actions">
+          <button class="secondary-button" id="backToType" type="button">Atrás</button>
+          <button class="primary-button" id="showRecommendations" type="button">Ver opciones</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import {
+      collection,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const grid = document.getElementById("recipeGrid");
+    const statusBox = document.getElementById("connectionStatus");
+    const searchInput = document.getElementById("searchInput");
+    const servingsSelect = document.getElementById("servingsSelect");
+    const resultsCount = document.getElementById("resultsCount");
+    const resultsTitle = document.getElementById("resultsTitle");
+
+    const modal = document.getElementById("recommendModal");
+    const typeStep = document.getElementById("typeStep");
+    const preferencesStep = document.getElementById("preferencesStep");
+    const drinkType = document.getElementById("drinkType");
+
+    let recipes = [];
+    let currentFilter = "todos";
+    let recommendation = null;
+    let activeRecommendation = false;
+
+    function text(value) {
+      return value == null ? "" : String(value).trim();
+    }
+
+    function normalizeType(value) {
+      const v = text(value).toLowerCase();
+
+      if (
+        v === "con" ||
+        v === "alcohol" ||
+        v === "con alcohol" ||
+        v === "true" ||
+        v === "yes"
+      ) return "con";
+
+      if (
+        v === "sin" ||
+        v === "sin alcohol" ||
+        v === "no alcohol" ||
+        v === "false" ||
+        v === "no"
+      ) return "sin";
+
+      return "";
+    }
+
+    function recipeType(recipe) {
+      const directType = normalizeType(recipe.type);
+
+      if (directType) return directType;
+
+      if (typeof recipe.alcohol === "boolean") {
+        return recipe.alcohol ? "con" : "sin";
+      }
+
+      if (typeof recipe.alcohol === "string") {
+        const parsed = normalizeType(recipe.alcohol);
+        if (parsed) return parsed;
+      }
+
+      return "sin";
+    }
+
+    function normalizeIngredient(ingredient) {
+      if (typeof ingredient === "string") {
+        return { name: ingredient, amount: "", unit: "" };
+      }
+
+      if (!ingredient || typeof ingredient !== "object") {
+        return { name: "", amount: "", unit: "" };
+      }
+
+      return {
+        name: text(ingredient.name || ingredient.ingredient),
+        amount: text(ingredient.amount || ingredient.quantity),
+        unit: text(ingredient.unit)
+      };
+    }
+
+    function normalizeVariant(variant, fallbackRecipe) {
+      const source = variant || {};
+      const type = normalizeType(source.type) || recipeType(fallbackRecipe);
+
+      const ingredients = Array.isArray(source.ingredients)
+        ? source.ingredients.map(normalizeIngredient).filter(item => item.name)
+        : Array.isArray(fallbackRecipe.ingredients)
+          ? fallbackRecipe.ingredients.map(normalizeIngredient).filter(item => item.name)
+          : [];
+
+      return {
+        id: text(source.id) || type,
+        type,
+        ingredients,
+        published: source.published !== false,
+        flavors: Array.isArray(source.flavors)
+          ? source.flavors.map(v => text(v).toLowerCase()).filter(Boolean)
+          : [],
+        spirit: text(source.spirit).toLowerCase(),
+        strength: text(source.strength).toLowerCase()
+      };
+    }
+
+    function expandRecipe(recipe, documentId) {
+      const base = {
+        ...recipe,
+        id: documentId,
+        name: text(recipe.name) || "Cóctel sin nombre",
+        category: text(recipe.category) || "Otros",
+        photo: text(recipe.photo || recipe.image || recipe.imageUrl)
+      };
+
+      if (Array.isArray(recipe.variants) && recipe.variants.length) {
+        return recipe.variants
+          .filter(variant => variant && variant.published !== false)
+          .map(variant => {
+            const normalized = normalizeVariant(variant, recipe);
+
+            return {
+              id: `${documentId}-${normalized.id}`,
+              parentId: documentId,
+              name: base.name,
+              category: base.category,
+              photo: base.photo,
+              type: normalized.type,
+              ingredients: normalized.ingredients,
+              flavors: normalized.flavors,
+              spirit: normalized.spirit,
+              strength: normalized.strength
+            };
+          });
+      }
+
+      // Compatibilidad con recetas guardadas en el formato antiguo.
+      if (recipe.published === false) return [];
+
+      return [{
+        id: documentId,
+        parentId: documentId,
+        name: base.name,
+        category: base.category,
+        photo: base.photo,
+        type: recipeType(recipe),
+        ingredients: Array.isArray(recipe.ingredients)
+          ? recipe.ingredients.map(normalizeIngredient).filter(item => item.name)
+          : [],
+        flavors: Array.isArray(recipe.flavors)
+          ? recipe.flavors.map(v => text(v).toLowerCase()).filter(Boolean)
+          : [],
+        spirit: text(recipe.spirit).toLowerCase(),
+        strength: text(recipe.strength).toLowerCase()
+      }];
+    }
+
+    function formatAmount(ingredient, servings) {
+      const amount = text(ingredient.amount);
+      const unit = text(ingredient.unit);
+
+      if (!amount) return unit || "";
+
+      const numericAmount = Number(amount.replace(",", "."));
+
+      if (!Number.isFinite(numericAmount)) {
+        return [amount, unit].filter(Boolean).join(" ");
+      }
+
+      const scaled = numericAmount * servings;
+      const cleanNumber = Number(scaled.toFixed(3)).toString();
+
+      return [cleanNumber, unit].filter(Boolean).join(" ");
+    }
+
+    function escapeHtml(value) {
+      return text(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function matchesSearch(recipe, query) {
+      if (!query) return true;
+
+      const searchable = [
+        recipe.name,
+        recipe.category,
+        recipe.type === "con" ? "con alcohol" : "sin alcohol",
+        ...(recipe.ingredients || []).map(item => item.name)
+      ].join(" ").toLowerCase();
+
+      return searchable.includes(query);
+    }
+
+    function matchesRecommendation(recipe) {
+      if (!activeRecommendation || !recommendation) return true;
+      if (recipe.type !== recommendation.type) return false;
+
+      if (recipe.type === "sin") return true;
+
+      const flavor = recommendation.flavor;
+      const spirit = recommendation.spirit;
+      const strength = recommendation.strength;
+
+      if (
+        flavor !== "cualquiera" &&
+        !recipe.flavors.some(item => item.includes(flavor))
+      ) return false;
+
+      if (
+        spirit !== "cualquiera" &&
+        spirit !== "sin destilado" &&
+        !recipe.spirit.includes(spirit)
+      ) return false;
+
+      if (
+        spirit === "sin destilado" &&
+        recipe.spirit &&
+        recipe.spirit !== "ninguno" &&
+        recipe.spirit !== "sin destilado"
+      ) return false;
+
+      if (
+        strength !== "cualquiera" &&
+        recipe.strength !== strength
+      ) return false;
+
+      return true;
+    }
+
+    function createCard(recipe) {
+      const servings = Number(servingsSelect.value) || 1;
+      const alcoholTag = recipe.type === "con"
+        ? '<span class="tag alcohol">Con alcohol</span>'
+        : '<span class="tag no-alcohol">Sin alcohol</span>';
+
+      const categoryTag = recipe.category
+        ? `<span class="tag">${escapeHtml(recipe.category)}</span>`
+        : "";
+
+      const photoMarkup = recipe.photo
+        ? `<img class="recipe-photo" src="${escapeHtml(recipe.photo)}" alt="${escapeHtml(recipe.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')">
+           <div class="photo-placeholder hidden" aria-hidden="true">✦</div>`
+        : '<div class="photo-placeholder" aria-hidden="true">✦</div>';
+
+      const ingredientsMarkup = recipe.ingredients.length
+        ? `<ul class="ingredient-list">
+            ${recipe.ingredients.map(ingredient => `
+              <li>
+                <span class="ingredient-name">${escapeHtml(ingredient.name)}</span>
+                <span class="ingredient-amount">${escapeHtml(formatAmount(ingredient, servings))}</span>
+              </li>
+            `).join("")}
+          </ul>`
+        : '<p class="no-ingredients">Los ingredientes aún no están disponibles.</p>';
+
+      return `
+        <article class="recipe-card">
+          ${photoMarkup}
+          <div class="recipe-body">
+            <h3 class="recipe-title">${escapeHtml(recipe.name)}</h3>
+            <div class="recipe-meta">${alcoholTag}${categoryTag}</div>
+            <div class="recipe-section-title">
+              Ingredientes · ${servings} ${servings === 1 ? "porción" : "porciones"}
+            </div>
+            ${ingredientsMarkup}
+          </div>
+        </article>
+      `;
+    }
+
+    function getVisibleRecipes() {
+      const query = text(searchInput.value).toLowerCase();
+
+      return recipes.filter(recipe => {
+        if (currentFilter !== "todos" && recipe.type !== currentFilter) {
+          return false;
+        }
+
+        if (!matchesSearch(recipe, query)) return false;
+        if (!matchesRecommendation(recipe)) return false;
+
+        return true;
+      });
+    }
+
+    function renderRecipes() {
+      const visible = getVisibleRecipes();
+
+      resultsCount.textContent =
+        `${visible.length} ${visible.length === 1 ? "opción" : "opciones"}`;
+
+      if (activeRecommendation) {
+        resultsTitle.textContent = "Opciones para ti";
+      } else {
+        resultsTitle.textContent = "Nuestra carta";
+      }
+
+      if (!visible.length) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <h3>No encontramos cócteles</h3>
+            <p>
+              Puede que no haya recetas publicadas para estos filtros,
+              o que debas probar otra búsqueda.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = visible.map(createCard).join("");
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+
+      document.querySelectorAll(".filter-button").forEach(button => {
+        button.classList.toggle("active", button.dataset.filter === filter);
+      });
+
+      activeRecommendation = false;
+      recommendation = null;
+      renderRecipes();
+    }
+
+    document.querySelectorAll(".filter-button").forEach(button => {
+      button.addEventListener("click", () => setFilter(button.dataset.filter));
+    });
+
+    searchInput.addEventListener("input", renderRecipes);
+    servingsSelect.addEventListener("change", renderRecipes);
+
+    function openModal() {
+      modal.classList.add("open");
+      typeStep.classList.remove("hidden");
+      preferencesStep.classList.add("hidden");
+      document.getElementById("modalDescription").textContent =
+        "Primero, elige qué tipo de bebida prefieres.";
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+    }
+
+    document.getElementById("openRecommend").addEventListener("click", openModal);
+    document.getElementById("closeModal").addEventListener("click", closeModal);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.getElementById("continueRecommend").addEventListener("click", () => {
+      if (drinkType.value === "sin") {
+        recommendation = {
+          type: "sin",
+          flavor: "cualquiera",
+          spirit: "cualquiera",
+          strength: "cualquiera"
+        };
+
+        activeRecommendation = true;
+        setFilter("sin");
+        closeModal();
+        document.getElementById("recipeGrid").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+        return;
+      }
+
+      typeStep.classList.add("hidden");
+      preferencesStep.classList.remove("hidden");
+      document.getElementById("modalDescription").textContent =
+        "Cuéntanos tus preferencias para encontrar opciones con alcohol.";
+    });
+
+    document.getElementById("backToType").addEventListener("click", () => {
+      preferencesStep.classList.add("hidden");
+      typeStep.classList.remove("hidden");
+      document.getElementById("modalDescription").textContent =
+        "Primero, elige qué tipo de bebida prefieres.";
+    });
+
+    document.getElementById("showRecommendations").addEventListener("click", () => {
+      recommendation = {
+        type: "con",
+        flavor: document.getElementById("flavorSelect").value,
+        spirit: document.getElementById("spiritSelect").value,
+        strength: document.getElementById("strengthSelect").value
+      };
+
+      activeRecommendation = true;
+      setFilter("con");
+      closeModal();
+
+      document.getElementById("recipeGrid").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+
+    // Cargar solamente las recetas públicas de Firestore.
+    // Nunca se consulta recipesPrivate desde esta página.
+    try {
+      onSnapshot(
+        collection(db, "recipesPublic"),
+        snapshot => {
+          const loaded = [];
+
+          snapshot.forEach(docSnapshot => {
+            const data = docSnapshot.data();
+            loaded.push(...expandRecipe(data, docSnapshot.id));
+          });
+
+          recipes = loaded;
+
+          statusBox.textContent = recipes.length
+            ? "Carta conectada correctamente."
+            : "Todavía no hay recetas publicadas. Puedes publicarlas desde el panel de administración.";
+
+          statusBox.className = recipes.length
+            ? "status-box success"
+            : "status-box";
+
+          renderRecipes();
+        },
+        error => {
+          console.error("Error al leer la carta pública:", error);
+
+          statusBox.textContent =
+            "No pudimos cargar las recetas. Revisa la conexión con Firebase y las reglas de Firestore.";
+
+          statusBox.className = "status-box error";
+          recipes = [];
+          renderRecipes();
+        }
+      );
+    } catch (error) {
+      console.error("No se pudo iniciar Firebase:", error);
+
+      statusBox.textContent =
+        "No se pudo conectar con Firebase. Comprueba firebase-config.js y la publicación del sitio.";
+
+      statusBox.className = "status-box error";
+      recipes = [];
+      renderRecipes();
+    }
+  </script>
+</body>
+</html>
