@@ -603,6 +603,7 @@
           <option value="amargo">Amargo</option>
           <option value="frutal">Frutal</option>
           <option value="refrescante">Refrescante</option>
+          <option value="especiados">Especiados</option>
         </select>
 
         <label class="form-label" for="spiritSelect">¿Qué destilado prefieres?</label>
@@ -840,10 +841,19 @@
       const spirit = recommendation.spirit;
       const strength = recommendation.strength;
 
-      if (
-        flavor !== "cualquiera" &&
-        !recipe.flavors.some(item => item.includes(flavor))
-      ) return false;
+      if (flavor !== "cualquiera") {
+        const recipeFlavors = (recipe.flavors || []).map(item => String(item).toLowerCase());
+        const searchableRecipe = [
+          recipe.name || "",
+          recipe.story || "",
+          ...(recipe.ingredients || []).map(item => item.name || "")
+        ].join(" ").toLowerCase();
+        const matchesFlavor = flavor === "especiados"
+          ? recipeFlavors.some(item => item.includes("especiad") || item.includes("especia")) ||
+            /canela|jengibre|clavo|cardamomo|nuez moscada|an[ií]s|pimienta|especiad/.test(searchableRecipe)
+          : recipeFlavors.some(item => item.includes(flavor));
+        if (!matchesFlavor) return false;
+      }
 
       if (
         spirit !== "cualquiera" &&
