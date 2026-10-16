@@ -121,13 +121,13 @@ CALYPSO_SEED_RECIPES.push(...EXTRA_COCKTAILS.map(extraRecipe));
 export function makeSeedDocuments(recipe) {
   const ingredients = recipe.ingredients.map(([name, amount, unit]) => ({name, amount:String(amount), unit}));
   const variant = {
-    id:"con", type:"con", published:true, ingredients,
+    id:recipe.type, type:recipe.type, published:true, ingredients,
     flavors:[recipe.flavor], spirit:recipe.spirit, strength:recipe.strength
   };
   const publicData = {
     name:recipe.name, category:recipe.category, photo:recipe.photo, story:recipe.story,
     type:"con", ingredients, variants:[variant],
-    updatedAt:null, seedSource:"calypso-bar-23"
+    updatedAt:null, seedSource:"calypso-bar-expanded"
   };
   const privateData = {
     name:recipe.name, category:recipe.category, photo:recipe.photo, story:recipe.story,
