@@ -365,6 +365,11 @@
                 <label for="recipePhoto">URL de la foto (opcional)</label>
                 <input id="recipePhoto" type="url" placeholder="https://...">
               </div>
+              <div class="field-full">
+                <label for="cbStory">Historia o reseña para la carta (editable)</label>
+                <textarea id="cbStory" maxlength="700" placeholder="Historia breve visible en la carta (opcional)"></textarea>
+                <p class="muted">Puedes crear una propuesta con el botón de abajo y editarla antes de guardar.</p>
+              </div>
             </div>
 
             <div class="variant-box">
@@ -705,6 +710,7 @@
       $("withoutEnabled").checked = false;
       $("withPublished").checked = false;
       $("withoutPublished").checked = false;
+      $("cbStory").value = "";
     }
 
     $("clearRecipeForm").addEventListener("click", clearRecipeForm);
@@ -741,6 +747,7 @@
         $("recipeName").value = publicData.name || privateData.name || "";
         $("recipeCategory").value = publicData.category || privateData.category || "";
         $("recipePhoto").value = publicData.photo || privateData.photo || "";
+        $("cbStory").value = publicData.story || privateData.story || "";
 
         for (const type of ["con", "sin"]) {
           const priv = privateVariants.find(item => item.type === type) || {};
@@ -783,6 +790,7 @@
       const id = $("recipeId").value || crypto.randomUUID();
       const category = $("recipeCategory").value.trim();
       const photo = $("recipePhoto").value.trim();
+      const story = $("cbStory").value.trim();
 
       const variants = [];
       for (const type of ["con", "sin"]) {
@@ -839,6 +847,7 @@
         name,
         category,
         photo,
+        story,
         variants: publicVariants,
         updatedAt: serverTimestamp(),
         updatedBy: currentUser.uid
@@ -855,6 +864,7 @@
         name,
         category,
         photo,
+        story,
         variants: privateVariants,
         updatedAt: serverTimestamp(),
         updatedBy: currentUser.uid
