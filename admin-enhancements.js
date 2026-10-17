@@ -17,7 +17,7 @@ function ensureUI(){
   <h2>Herramientas de inventario</h2>
   <div class="actions"><button class="btn secondary" id="cbExport">Exportar copia de seguridad</button><button class="btn secondary" id="cbImportButton">Importar copia de seguridad</button><input id="cbImportFile" type="file" accept="application/json,.json" hidden></div>
   <h3>Escáner de productos</h3><p class="muted">Escanea una botella para buscar su nombre, marca y contenido en Open Food Facts. La base de datos puede no incluir todos los productos.</p>
-  <div class="actions"><button class="btn" id="cbStartScan">Escanear botella</button><button class="btn secondary" id="cbStopScan">Detener cámara</button><button class="btn secondary" id="cbLookupBarcode">Buscar código escrito</button></div><video id="cbVideo" playsinline muted style="display:none;width:100%;max-width:420px;border-radius:8px;margin-top:10px"></video><p id="cbScanStatus" class="muted" aria-live="polite"></p>
+  <style>#cbScanFrame{display:none;position:relative;width:100%;max-width:460px;margin-top:12px;background:#000;border:1px solid #d4af62;border-radius:12px;overflow:hidden;aspect-ratio:4/3}#cbVideo{display:block;width:100%;height:100%;object-fit:cover}#cbScanGuide{position:absolute;left:8%;right:8%;top:35%;height:30%;border:2px solid #d4af62;border-radius:10px;box-shadow:0 0 0 999px #0003;pointer-events:none}#cbScanGuide:after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:#d4af62;box-shadow:0 0 8px #d4af62}#cbScanHint{font-size:12px;color:#fff;background:#0009;text-align:center;padding:5px;position:absolute;bottom:0;left:0;right:0}</style><div class="actions"><button class="btn" id="cbStartScan">Escanear botella</button><button class="btn secondary" id="cbStopScan">Detener cámara</button><button class="btn secondary" id="cbLookupBarcode">Buscar código escrito</button></div><div id="cbScanFrame"><video id="cbVideo" playsinline autoplay muted></video><div id="cbScanGuide"></div><div id="cbScanHint">Centra el código dentro del marco</div></div><p id="cbScanStatus" class="muted" aria-live="polite">Consejo: usa buena luz, evita reflejos y mantén el código quieto.</p>
   <h3>Registrar movimiento</h3><div class="field-grid"><div><label for="cbProduct">Producto</label><select id="cbProduct"></select></div><div><label for="cbType">Tipo</label><select id="cbType"><option value="compra">Entrada / compra</option><option value="consumo">Consumo</option><option value="merma">Pérdida / merma</option><option value="ajuste">Ajuste manual (nueva existencia)</option></select></div><div><label for="cbAmount">Cantidad en unidad del producto</label><input id="cbAmount" type="number" min="0.001" step="any"></div><div class="field-full"><label for="cbNote">Nota</label><input id="cbNote" maxlength="250"></div></div><div class="actions"><button class="btn" id="cbSaveMove">Guardar movimiento</button></div>
   <h3>Historial de movimientos (últimos 100)</h3><div id="cbMovementList"><p class="muted">Cargando…</p></div>`;
   inv.appendChild(box);
@@ -74,7 +74,51 @@ function drawProducts(){const s=$("cbProduct");if(!s)return;const old=s.value;s.
 function drawMoves(){const el=$("cbMovementList");if(!el)return;el.innerHTML=movements.length?movements.map(m=>'<div class="inventory-item"><strong>'+esc(m.productName||"Producto")+'</strong><p>'+esc(m.type||"movimiento")+' · '+esc(m.amount??"")+' '+esc(m.unit||"")+'</p><p class="muted">'+esc(m.note||"")+' · '+esc(m.createdAt?.seconds?new Date(m.createdAt.seconds*1000).toLocaleString("es-CL"):"Fecha pendiente")+'</p></div>').join(""):'<p class="muted">Todavía no hay movimientos registrados.</p>';}
 async function exportBackup(){const keys=["recipesPublic","recipesPrivate","inventory","inventoryMovements"];const vals=await Promise.all(keys.map(k=>getDocs(collection(db,k))));const out={format:"calypso-bar-backup-v1",exportedAt:new Date().toISOString()};keys.forEach((k,i)=>out[k]=vals[i].docs.map(d=>({id:d.id,...d.data()})));const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="calypso-bar-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);status("Copia de seguridad exportada.","success");}
 function wireUI(){
- $("cbStartScan")?.addEventListener("click",async()=>{const out=$("cbScanStatus"),v=$("cbVideo");if(!("BarcodeDetector"in window)){out.textContent="Este navegador no admite escáner integrado. Escribe el código EAN/UPC manualmente.";return;}try{const detector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128"]});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});v.srcObject=stream;v.style.display="block";await v.play();out.textContent="Buscando código de barras…";const scan=async()=>{if(!stream)return;try{const codes=await detector.detect(v);if(codes.length&&codes[0].rawValue){const input=$("inventoryBarcode");if(input)input.value=codes[0].rawValue;stopScan();await lookupProductByBarcode(codes[0].rawValue);return;}}catch(e){}scanTimer=setTimeout(scan,350);};scan();}catch(e){console.error(e);out.textContent="No se pudo abrir la cámara. Permite el acceso y usa HTTPS.";stopScan();}});
+ $("cbStartScan")?.addEventListener("click",async()=>{
+  const out=$("cbScanStatus"),v=$("cbVideo"),frame=$("cbScanFrame");
+  if(stream){if(out)out.textContent="La cámara ya está activa. Centra el código dentro del marco.";return;}
+  if(!navigator.mediaDevices?.getUserMedia){if(out)out.textContent="Este navegador no permite acceder a la cámara aquí. Usa HTTPS y Chrome actualizado, o escribe el código manualmente.";return;}
+  if(!("BarcodeDetector" in window)){if(out)out.textContent="Este Chrome no incluye lector de códigos integrado. Puedes escribir el EAN/UPC en el campo de código y pulsar «Buscar código escrito».";return;}
+  try{
+   const supported=typeof BarcodeDetector.getSupportedFormats==="function"?await BarcodeDetector.getSupportedFormats():["ean_13","ean_8","upc_a","upc_e","code_128"];
+   const wanted=["ean_13","ean_8","upc_a","upc_e","code_128","itf","upc_ean_extension"];
+   const formats=wanted.filter(f=>supported.includes(f));
+   if(!formats.length)throw new Error("El navegador no admite formatos de código compatibles.");
+   const detector=new BarcodeDetector({formats});
+   stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false});
+   v.srcObject=stream;v.muted=true;v.setAttribute("playsinline","");v.setAttribute("autoplay","");
+   if(frame)frame.style.display="block";
+   await v.play();
+   const track=stream.getVideoTracks()[0];
+   try{await track.applyConstraints({advanced:[{focusMode:"continuous"}]});}catch(_){}
+   if(out)out.textContent="Cámara activa. Acerca o aleja lentamente hasta que el código se vea nítido.";
+   let detecting=false, misses=0;
+   const scan=async()=>{
+    if(!stream)return;
+    if(!v.videoWidth||!v.videoHeight){scanTimer=setTimeout(scan,200);return;}
+    if(detecting){scanTimer=setTimeout(scan,180);return;}
+    detecting=true;
+    try{
+     const codes=await detector.detect(v);
+     const found=codes.find(x=>x.rawValue&&/^[0-9]{8,14}$/.test(x.rawValue.replace(/\s/g,"")));
+     if(found){
+      const code=found.rawValue.replace(/\s/g,"");
+      const input=$("inventoryBarcode");if(input)input.value=code;
+      if(out)out.textContent="Código leído: "+code+". Consultando producto…";
+      stopScan();await lookupProductByBarcode(code);return;
+     }
+     misses++;
+     if(out&&misses%12===0)out.textContent="Aún no se detecta el código. Colócalo dentro del marco, con buena luz y sin reflejos.";
+    }catch(e){console.warn("Lectura de código:",e);}
+    finally{detecting=false;}
+    if(stream)scanTimer=setTimeout(scan,180);
+   };
+   scan();
+  }catch(e){
+   console.error(e);stopScan();
+   if(out)out.textContent=e.name==="NotAllowedError"?"Permite el acceso a la cámara en Chrome y vuelve a intentarlo.":e.name==="NotFoundError"?"No se encontró una cámara disponible.":("No se pudo iniciar el escáner: "+(e.message||"comprueba los permisos y usa HTTPS.")+" También puedes escribir el código manualmente.");
+  }
+ });
  $("cbStopScan")?.addEventListener("click",stopScan);
  $("cbLookupBarcode")?.addEventListener("click",()=>lookupProductByBarcode());
  $("cbSaveMove")?.addEventListener("click",async()=>{const item=items.find(i=>i.id===$("cbProduct").value),n=Number($("cbAmount").value),type=$("cbType").value;if(!user||!item||!Number.isFinite(n)||n<=0){status("Selecciona un producto y una cantidad válida.","error");return;}const after=type==="ajuste"?n:Number(item.quantity||0)+(type==="compra"?n:-n);if(after<0&&!confirm("El stock quedará bajo cero. ¿Continuar?"))return;try{await setDoc(doc(db,"inventory",item.id),{quantity:Number(after.toFixed(3)),updatedAt:serverTimestamp(),updatedBy:user.uid},{merge:true});await addDoc(collection(db,"inventoryMovements"),{productId:item.id,productName:item.name,type,amount:n,unit:item.unit,quantityBefore:item.quantity,quantityAfter:Number(after.toFixed(3)),note:$("cbNote").value.trim(),createdAt:serverTimestamp(),createdBy:user.uid});$("cbAmount").value="";$("cbNote").value="";status("Movimiento guardado.","success");}catch(e){console.error(e);status("No se pudo guardar el movimiento. Publica las reglas actualizadas.","error");}});
