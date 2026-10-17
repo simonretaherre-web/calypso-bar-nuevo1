@@ -37,7 +37,7 @@ function ensureUI(){
   $("clearRecipeForm")?.addEventListener("click",()=>{$("cbStory").value="";});
  }
 }
-function stopScan(){if(scanTimer)clearTimeout(scanTimer);scanTimer=null;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;const v=$("cbVideo");if(v){v.pause();v.srcObject=null;v.style.display="none";}}
+function stopScan(){if(scanTimer)clearTimeout(scanTimer);scanTimer=null;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;const v=$("cbVideo"),frame=$("cbScanFrame");if(v){v.pause();v.srcObject=null;}if(frame)frame.style.display="none";}
 async function lookupProductByBarcode(rawCode){
  const out=$("cbScanStatus"), code=String(rawCode||$("inventoryBarcode")?.value||"").trim();
  if(!code){if(out)out.textContent="Primero escanea o escribe el código de barras.";return;}
