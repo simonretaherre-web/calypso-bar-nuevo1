@@ -560,6 +560,24 @@
                 <input id="inventoryQuantity" type="number" min="0" step="any" value="750" required>
               </div>
               <div>
+                <label for="inventoryFraction">Contenido visual aproximado de la botella</label>
+                <select id="inventoryFraction">
+                  <option value="">No usar fracción</option>
+                  <option value="1">Llena (1/1)</option>
+                  <option value="0.875">7/8</option>
+                  <option value="0.75">3/4</option>
+                  <option value="0.6666666667">2/3</option>
+                  <option value="0.5">1/2</option>
+                  <option value="0.3333333333">1/3</option>
+                  <option value="0.25">1/4</option>
+                  <option value="0.125">1/8</option>
+                  <option value="0.0625">1/16</option>
+                  <option value="0">Vacía</option>
+                </select>
+                <p class="muted">Elige la fracción que ves y calcula una cantidad estimada según la capacidad total.</p>
+                <button class="btn secondary" id="applyInventoryFraction" type="button">Calcular cantidad aproximada</button>
+              </div>
+              <div>
                 <label for="inventoryMinStock">Stock mínimo</label>
                 <input id="inventoryMinStock" type="number" min="0" step="any" value="150" required>
               </div>
@@ -979,7 +997,13 @@
 
       inventoryList.innerHTML = inventoryItems.map(item => {
         const quantity = Number(item.quantity || 0);
-        const minimum = Number(item.minStock || 0);
+        const capacity = Number(item.capacity || 0);
+        const fraction = capacity > 0 ? Math.max(0, Math.min(1, quantity / capacity)) : null;
+        const fractionLabel = fraction === null ? "" : (fraction >= 0.999 ? "1/1 (llena)" :
+          fraction >= 0.86 ? "≈ 7/8" : fraction >= 0.71 ? "≈ 3/4" :
+          fraction >= 0.58 ? "≈ 2/3" : fraction >= 0.42 ? "≈ 1/2" :
+          fraction >= 0.29 ? "≈ 1/3" : fraction >= 0.19 ? "≈ 1/4" :
+          fraction >= 0.09 ? "≈ 1/8" : fraction > 0 ? "menos de 1/8" : "vacía");
         const low = quantity <= minimum;
 
         return `<div class="inventory-item">
@@ -988,7 +1012,9 @@
             ${escapeHTML(item.brand || "Sin marca")} ·
             ${escapeHTML(item.category || "Sin categoría")}
           </p>
-          <p>Existencia: ${escapeHTML(quantity)} ${escapeHTML(item.unit || "")}</p>
+          <p>Existencia estimada: ${escapeHTML(Number(quantity.toFixed(1)))} ${escapeHTML(item.unit || "")}</p>
+          ${capacity > 0 ? `<p>Contenido visual aproximado: ${escapeHTML(fractionLabel)} (${escapeHTML(Math.round(fraction * 100))} %)</p><div style="height:8px;background:#292929;border-radius:99px;overflow:hidden;margin:8px 0 12px"><div style="height:100%;width:${Math.round(fraction * 100)}%;background:var(--gold,#d4af62)"></div></div>` : ""}
+          ${item.unit === "ml" ? `<p>Mililitros restantes (estimados): <strong>${escapeHTML(Number(quantity.toFixed(1)))} ml</strong></p>` : ""}
           <p>Stock mínimo: ${escapeHTML(minimum)} ${escapeHTML(item.unit || "")}</p>
           <p>${low ? '<span style="color:var(--red)">Stock bajo</span>' : '<span style="color:var(--green)">Stock disponible</span>'}</p>
           <div class="actions">
@@ -1068,12 +1094,26 @@
       }
     });
 
+    $("applyInventoryFraction").addEventListener("click", () => {
+      const capacity = Number($("inventoryCapacity").value);
+      const fractionValue = $("inventoryFraction").value;
+      if (!Number.isFinite(capacity) || capacity < 0 || fractionValue === "") {
+        showStatus("Indica la capacidad total y elige una fracción visual.", "error");
+        return;
+      }
+      const fraction = Number(fractionValue);
+      const estimated = Number((capacity * fraction).toFixed(2));
+      $("inventoryQuantity").value = String(estimated);
+      showStatus("Cantidad estimada: " + estimated + " " + $("inventoryUnit").value + " (aproximada según la fracción visual).", "success");
+    });
+
     $("clearInventoryForm").addEventListener("click", () => {
       $("inventoryForm").reset();
       $("inventoryId").value = "";
       $("inventoryCapacity").value = "750";
       $("inventoryQuantity").value = "750";
       $("inventoryMinStock").value = "150";
+      $("inventoryFraction").value = "";
     });
 
     async function calculatePreparation() {
