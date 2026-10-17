@@ -1037,6 +1037,11 @@
           $("inventoryCapacity").value = item.capacity ?? "";
           $("inventoryQuantity").value = item.quantity ?? "";
           $("inventoryMinStock").value = item.minStock ?? "";
+          const cap = Number(item.capacity || 0);
+          const ratio = cap > 0 ? Math.max(0, Math.min(1, Number(item.quantity || 0) / cap)) : -1;
+          const fractions = [...$("inventoryFraction").options].filter(o => o.value !== "");
+          const closest = fractions.reduce((best, option) => Math.abs(Number(option.value) - ratio) < Math.abs(Number(best.value) - ratio) ? option : best, fractions[0]);
+          $("inventoryFraction").value = ratio >= 0 && closest ? closest.value : "";
           $("inventoryBarcode").value = item.barcode || "";
 
           $("inventoryForm").scrollIntoView({ behavior: "smooth", block: "start" });
