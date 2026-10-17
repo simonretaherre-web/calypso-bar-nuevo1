@@ -1,5 +1,4 @@
 import { auth, db, ADMIN_EMAIL, SECOND_ADMIN_EMAIL } from "./firebase-config.js";
-import { CALYPSO_SEED_RECIPES, makeSeedDocuments } from "./cocktail-seeds.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { collection, doc, getDoc, getDocs, onSnapshot, setDoc, addDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -28,17 +27,6 @@ function ensureUI(){
   const b=document.createElement("button");b.id="cbConfirmPreparation";b.type="button";b.className="btn";b.textContent="Confirmar preparación y descontar stock";b.style.marginTop="10px";
   const calc=$("calculatePortions");if(calc?.parentElement)calc.parentElement.appendChild(b);else prep.querySelector(".panel")?.appendChild(b);
  }
- const recipesTab=$("recipesTab");
- if(recipesTab && !$("cbSeedRecipes")){
-  const seedBox=document.createElement("div");
-  seedBox.className="panel";
-  seedBox.id="cbSeedRecipes";
-  seedBox.innerHTML='<h2>Catálogo ampliado de bebidas</h2><p class="muted">Añade un catálogo de 200 bebidas y cócteles, con ingredientes públicos y método, cristalería y decoración privados. Las recetas existentes nunca se sobrescriben; si ya hay una receta con el mismo nombre, se omite para evitar duplicados.</p><div class="actions"><button class="btn" id="cbPublishSeeds" type="button">Agregar las 200 bebidas</button></div><p id="cbSeedStatus" class="muted" aria-live="polite"></p><h3>Vista previa de las imágenes</h3><p class="muted">Vista previa de las primeras 36 imágenes de referencia para que el panel no cargue miles de fotos de golpe.</p><div id="cbSeedGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:12px"></div>';
-  const firstPanel=recipesTab.querySelector(".panel");
-  if(firstPanel)firstPanel.insertAdjacentElement("beforebegin",seedBox);else recipesTab.prepend(seedBox);
-  const gallery=$("cbSeedGallery");
-  if(gallery)gallery.innerHTML=CALYPSO_SEED_RECIPES.slice(0,36).map(recipe=>'<div style="min-width:0;border:1px solid rgba(212,175,98,.3);border-radius:10px;overflow:hidden;background:#111"><img src="'+esc(recipe.photo)+'" alt="'+esc(recipe.name)+'" loading="lazy" style="display:block;width:100%;height:115px;object-fit:cover;background:#080808" onerror="this.style.display=\'none\';this.nextElementSibling.textContent=\'Imagen no disponible\'"><div style="padding:8px;font-size:15px;color:#f5f0e6">'+esc(recipe.name)+'</div></div>').join("");
- }
  const form=$("recipeForm");
  if(form && !$("cbStory")){
   const div=document.createElement("div");div.className="field-full";div.innerHTML='<label for="cbStory">Historia o reseña para la carta (editable)</label><textarea id="cbStory" maxlength="700" placeholder="Añade una historia breve para mostrar en la carta."></textarea><div class="actions"><button class="btn secondary" id="cbGenerateStory" type="button">Crear propuesta de reseña</button></div><p class="muted">Propuesta automática mediante plantilla local; no usa un servicio de IA externo.</p>';
@@ -54,46 +42,6 @@ function drawProducts(){const s=$("cbProduct");if(!s)return;const old=s.value;s.
 function drawMoves(){const el=$("cbMovementList");if(!el)return;el.innerHTML=movements.length?movements.map(m=>'<div class="inventory-item"><strong>'+esc(m.productName||"Producto")+'</strong><p>'+esc(m.type||"movimiento")+' · '+esc(m.amount??"")+' '+esc(m.unit||"")+'</p><p class="muted">'+esc(m.note||"")+' · '+esc(m.createdAt?.seconds?new Date(m.createdAt.seconds*1000).toLocaleString("es-CL"):"Fecha pendiente")+'</p></div>').join(""):'<p class="muted">Todavía no hay movimientos registrados.</p>';}
 async function exportBackup(){const keys=["recipesPublic","recipesPrivate","inventory","inventoryMovements"];const vals=await Promise.all(keys.map(k=>getDocs(collection(db,k))));const out={format:"calypso-bar-backup-v1",exportedAt:new Date().toISOString()};keys.forEach((k,i)=>out[k]=vals[i].docs.map(d=>({id:d.id,...d.data()})));const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="calypso-bar-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);status("Copia de seguridad exportada.","success");}
 function wireUI(){
- const seedButton=$("cbPublishSeeds");
- if(seedButton && seedButton.dataset.wired!=="yes"){
-  seedButton.dataset.wired="yes";
-  seedButton.addEventListener("click",async()=>{
-   if(!user||!allowed(user.email)){status("Inicia sesión con una cuenta autorizada para publicar recetas.","error");return;}
-   if(!confirm("Se revisarán las 200 bebidas. Las recetas que ya existan con el mismo nombre no se reemplazarán ni duplicarán. ¿Continuar?"))return;
-   seedButton.disabled=true;
-   const output=$("cbSeedStatus");
-   if(output)output.textContent="Revisando recetas existentes y publicando las nuevas…";
-   let created=0, skipped=[];
-   try{
-    const snap=await getDocs(collection(db,"recipesPublic"));
-    const existingNames=new Set(snap.docs.map(d=>norm(d.data().name)));
-    for(const recipe of CALYPSO_SEED_RECIPES){
-     if(existingNames.has(norm(recipe.name))){skipped.push(recipe.name);continue;}
-     const {publicData,privateData}=makeSeedDocuments(recipe);
-     const id="calypso-seed-"+recipe.id;
-     const oldPublic=await getDoc(doc(db,"recipesPublic",id));
-     const oldPrivate=await getDoc(doc(db,"recipesPrivate",id));
-     if(oldPublic.exists()||oldPrivate.exists()){skipped.push(recipe.name);continue;}
-     publicData.updatedAt=serverTimestamp();
-     publicData.updatedBy=user.uid;
-     privateData.updatedAt=serverTimestamp();
-     privateData.updatedBy=user.uid;
-     await setDoc(doc(db,"recipesPrivate",id),privateData);
-     await setDoc(doc(db,"recipesPublic",id),publicData);
-     existingNames.add(norm(recipe.name));
-     created++;
-    }
-    const summary="Importación terminada: "+created+" recetas nuevas publicadas."+(skipped.length?" Se omitieron por existir ya: "+skipped.join(", ")+".":"");
-    if(output)output.textContent=summary;
-    status(summary,created?"success":"");
-   }catch(e){
-    console.error(e);
-    if(output)output.textContent="Se crearon "+created+" recetas antes del error. Pulsa de nuevo para continuar; las ya creadas no se sobrescribirán.";
-    status("La importación se interrumpió. Revisa la conexión y las reglas de Firestore; puedes volver a intentarlo sin duplicar las recetas ya creadas.","error");
-   }finally{seedButton.disabled=false;}
-  });
- }
-
  $("cbStartScan")?.addEventListener("click",async()=>{const out=$("cbScanStatus"),v=$("cbVideo");if(!("BarcodeDetector"in window)){out.textContent="Este navegador no admite escáner integrado. Escribe el código EAN/UPC manualmente.";return;}try{const detector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128"]});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});v.srcObject=stream;v.style.display="block";await v.play();out.textContent="Buscando código de barras…";const scan=async()=>{if(!stream)return;try{const codes=await detector.detect(v);if(codes.length&&codes[0].rawValue){const input=$("inventoryBarcode");if(input)input.value=codes[0].rawValue;out.textContent="Código leído: "+codes[0].rawValue+". Guarda el producto.";stopScan();return;}}catch(e){}scanTimer=setTimeout(scan,350);};scan();}catch(e){console.error(e);out.textContent="No se pudo abrir la cámara. Permite el acceso y usa HTTPS.";stopScan();}});
  $("cbStopScan")?.addEventListener("click",stopScan);
  $("cbSaveMove")?.addEventListener("click",async()=>{const item=items.find(i=>i.id===$("cbProduct").value),n=Number($("cbAmount").value),type=$("cbType").value;if(!user||!item||!Number.isFinite(n)||n<=0){status("Selecciona un producto y una cantidad válida.","error");return;}const after=type==="ajuste"?n:Number(item.quantity||0)+(type==="compra"?n:-n);if(after<0&&!confirm("El stock quedará bajo cero. ¿Continuar?"))return;try{await setDoc(doc(db,"inventory",item.id),{quantity:Number(after.toFixed(3)),updatedAt:serverTimestamp(),updatedBy:user.uid},{merge:true});await addDoc(collection(db,"inventoryMovements"),{productId:item.id,productName:item.name,type,amount:n,unit:item.unit,quantityBefore:item.quantity,quantityAfter:Number(after.toFixed(3)),note:$("cbNote").value.trim(),createdAt:serverTimestamp(),createdBy:user.uid});$("cbAmount").value="";$("cbNote").value="";status("Movimiento guardado.","success");}catch(e){console.error(e);status("No se pudo guardar el movimiento. Publica las reglas actualizadas.","error");}});
