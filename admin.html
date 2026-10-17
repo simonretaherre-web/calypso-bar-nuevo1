@@ -490,8 +490,11 @@
             Las cantidades se calculan aquí sin alterar la receta guardada.
           </p>
 
-          <label for="prepareRecipeSelect">Receta</label>
-          <select id="prepareRecipeSelect">
+          <label for="prepareRecipeSearch">Buscar receta</label>
+          <input id="prepareRecipeSearch" type="search" list="prepareRecipeSuggestions"
+            placeholder="Escribe el nombre de un trago..." autocomplete="off">
+          <datalist id="prepareRecipeSuggestions"></datalist>
+          <select id="prepareRecipeSelect" aria-hidden="true" tabindex="-1" style="display:none">
             <option value="">Selecciona una receta</option>
           </select>
 
@@ -953,7 +956,19 @@
           `<option value="${escapeHTML(recipe.id)}">${escapeHTML(recipe.name || "Receta")}</option>`
         ).join("");
 
-      if (publicRecipes.some(recipe => recipe.id === previous)) select.value = previous;
+      const searchInput = $("prepareRecipeSearch");
+      const suggestions = $("prepareRecipeSuggestions");
+      suggestions.innerHTML = publicRecipes.map(recipe =>
+        `<option value="${escapeHTML(recipe.name || "Receta")}"></option>`
+      ).join("");
+
+      if (publicRecipes.some(recipe => recipe.id === previous)) {
+        select.value = previous;
+        const selectedRecipe = publicRecipes.find(recipe => recipe.id === previous);
+        if (selectedRecipe) searchInput.value = selectedRecipe.name || "";
+      } else if (!select.value) {
+        searchInput.value = "";
+      }
     }
 
     function renderInventory() {
@@ -1144,7 +1159,28 @@
     }
 
     $("calculatePortions").addEventListener("click", calculatePreparation);
-    $("prepareRecipeSelect").addEventListener("change", calculatePreparation);
+    $("prepareRecipeSearch").addEventListener("input", () => {
+      const typedName = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
+      const match = publicRecipes.find(recipe =>
+        String(recipe.name || "").trim().toLocaleLowerCase("es") === typedName
+      );
+
+      $("prepareRecipeSelect").value = match ? match.id : "";
+      if (match) {
+        calculatePreparation();
+      } else {
+        $("portionResult").textContent = typedName
+          ? "Elige una receta de las sugerencias."
+          : "Busca y selecciona una receta para ver sus cantidades.";
+        $("privateMethodResult").classList.add("hidden");
+      }
+    });
+
+    $("prepareRecipeSelect").addEventListener("change", () => {
+      const selected = publicRecipes.find(recipe => recipe.id === $("prepareRecipeSelect").value);
+      $("prepareRecipeSearch").value = selected ? selected.name || "" : "";
+      calculatePreparation();
+    });
     $("prepareVariantSelect").addEventListener("change", calculatePreparation);
     $("portionCount").addEventListener("change", calculatePreparation);
 
