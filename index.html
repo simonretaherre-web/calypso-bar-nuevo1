@@ -1148,18 +1148,49 @@
 
           const allowedNames = new Set(["daiquiri","cosmopolitan","espresso martini","john collins","margarita","aperol spritz","pichuncho","daiquiri mulato","pisco politan","espresso rumtini","phil collins","margarita blue","spritz sabor","mojito","mojito sabor","caipirinha","caipiroska","pisco sour","sour peruano","bloody mary","bloody maria","old fashioned","rum fashioned","manhattan","negroni","americano"]);
           recipes = loaded.filter(recipe => allowedNames.has(text(recipe.name).trim().toLocaleLowerCase("es")));
+          // Completar las fichas públicas que aún no existan en Firestore.
+          // Si ya hay una ficha publicada, se conserva la versión de Firestore.
           const pendingRecipes = [
-            { id: "manhattan", name: "Manhattan" },
-            { id: "negroni", name: "Negroni" },
-            { id: "americano", name: "Americano" }
+            {
+              id: "manhattan", name: "Manhattan", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Un clásico elegante de whisky y vermut rojo, con un perfil intenso y aromático.",
+              ingredients: [
+                { name: "Whisky", amount: 60, unit: "ml" },
+                { name: "Vermut rojo dulce", amount: 30, unit: "ml" },
+                { name: "Amargo aromático", amount: 2, unit: "golpes" },
+                { name: "Cereza", amount: 1, unit: "unidad" }
+              ],
+              flavors: ["intenso", "amargo"], strength: "fuerte", spirit: "whisky", variants: []
+            },
+            {
+              id: "negroni", name: "Negroni", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Un cóctel italiano de partes iguales, conocido por su equilibrio entre notas amargas, herbales y dulces.",
+              ingredients: [
+                { name: "Gin", amount: 30, unit: "ml" },
+                { name: "Campari", amount: 30, unit: "ml" },
+                { name: "Vermut rojo dulce", amount: 30, unit: "ml" },
+                { name: "Naranja", amount: 1, unit: "rodaja" }
+              ],
+              flavors: ["amargo", "herbal"], strength: "fuerte", spirit: "gin", variants: []
+            },
+            {
+              id: "americano", name: "Americano", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Un aperitivo italiano refrescante que combina amargor, dulzor y soda con una nota cítrica.",
+              ingredients: [
+                { name: "Campari", amount: 30, unit: "ml" },
+                { name: "Vermut rojo dulce", amount: 30, unit: "ml" },
+                { name: "Soda", amount: 60, unit: "ml" },
+                { name: "Naranja", amount: 1, unit: "rodaja" }
+              ],
+              flavors: ["amargo", "cítrico"], strength: "medio", spirit: "amaro", variants: []
+            }
           ];
           pendingRecipes.forEach(pending => {
             if (!recipes.some(recipe => text(recipe.name).trim().toLocaleLowerCase("es") === pending.name.toLocaleLowerCase("es"))) {
-              recipes.push({
-                ...pending, category: "Clásicos", type: "con", photo: "",
-                story: "Ficha pendiente de completar y verificar por la administradora.",
-                ingredients: [], flavors: [], strength: "", spirit: "", variants: []
-              });
+              recipes.push(pending);
             }
           });
 
