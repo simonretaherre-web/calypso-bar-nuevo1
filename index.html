@@ -506,7 +506,20 @@
         padding: 18px;
       }
     }
-  </style>
+  
+    /* Tipografía más gruesa y legible en móviles */
+    body { font-weight: 500; }
+    h1, h2, h3, h4, .brand, .recommend-button, .mode-link,
+    .filter-button, .category-button, .recipe-name, .recipe-title,
+    button, label, strong, b {
+      font-weight: 700;
+    }
+    p, li, .tagline, .muted, .recipe-description, .ingredient,
+    .recipe-meta, .filter-label, input, select {
+      font-weight: 600;
+    }
+    .mode-link, .tagline, .muted { text-shadow: 0 0 .01px currentColor; }
+</style>
 </head>
 
 <body>
