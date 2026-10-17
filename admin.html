@@ -1202,10 +1202,23 @@
       unsubRecipes = onSnapshot(
         collection(db, "recipesPublic"),
         snapshot => {
-          publicRecipes = snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
+          const allowedNames = new Set([
+            "daiquiri", "cosmopolitan", "espresso martini", "john collins",
+            "margarita", "aperol spritz", "pichuncho", "daiquiri mulato",
+            "pisco politan", "espresso rumtini", "phil collins", "margarita blue",
+            "spritz sabor", "mojito", "mojito sabor", "caipirinha", "caipiroska",
+            "pisco sour", "sour peruano", "bloody mary", "bloody maria",
+            "old fashioned", "rum fashioned", "manhattan"
+          ]);
+          const normalizeName = value => String(value || "").trim()
+            .toLocaleLowerCase("es")
+            .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+
+          // El panel privado muestra y permite preparar solo los 24 tragos elegidos.
+          // Los demás documentos de Firestore no se borran automáticamente.
+          publicRecipes = snapshot.docs
+            .map(item => ({ id: item.id, ...item.data() }))
+            .filter(recipe => allowedNames.has(normalizeName(recipe.name)));
 
           renderRecipeList();
         },
