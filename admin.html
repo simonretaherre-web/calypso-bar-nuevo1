@@ -997,6 +997,7 @@
 
       inventoryList.innerHTML = inventoryItems.map(item => {
         const quantity = Number(item.quantity || 0);
+        const minimum = Number(item.minStock || 0);
         const capacity = Number(item.capacity || 0);
         const fraction = capacity > 0 ? Math.max(0, Math.min(1, quantity / capacity)) : null;
         const fractionLabel = fraction === null ? "" : (fraction >= 0.999 ? "1/1 (llena)" :
