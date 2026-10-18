@@ -1138,62 +1138,7 @@
       });
     }
 
-    $("inventoryForm").addEventListener("submit", async event => {
-      event.preventDefault();
-
-      if (!currentUser) return;
-
-      const id = $("inventoryId").value || crypto.randomUUID();
-
-      const item = {
-        name: $("inventoryName").value.trim(),
-        brand: $("inventoryBrand").value.trim(),
-        category: $("inventoryCategory").value.trim(),
-        unit: $("inventoryUnit").value,
-        capacity: Number($("inventoryCapacity").value),
-        quantity: Number($("inventoryQuantity").value),
-        minStock: Number($("inventoryMinStock").value),
-        barcode: $("inventoryBarcode").value.trim(),
-        updatedAt: serverTimestamp(),
-        updatedBy: currentUser.uid
-      };
-
-      if (!item.name || item.capacity < 0 || item.quantity < 0 || item.minStock < 0) {
-        showStatus("Revisa el nombre y las cantidades del producto.", "error");
-        return;
-      }
-
-      try {
-        await setDoc(doc(db, "inventory", id), item, { merge: true });
-        $("inventoryId").value = id;
-        showStatus("Producto guardado en el inventario.", "success");
-      } catch (error) {
-        console.error(error);
-        showStatus("No se pudo guardar el producto. Revisa las reglas de Firestore.", "error");
-      }
-    });
-
-    $("applyInventoryFraction").addEventListener("click", () => {
-      const capacity = Number($("inventoryCapacity").value);
-      const fractionValue = $("inventoryFraction").value;
-      if (!Number.isFinite(capacity) || capacity < 0 || fractionValue === "") {
-        showStatus("Indica la capacidad total y elige una fracción visual.", "error");
-        return;
-      }
-      const fraction = Number(fractionValue);
-      const estimated = Number((capacity * fraction).toFixed(2));
-      $("inventoryQuantity").value = String(estimated);
-      showStatus("Cantidad estimada: " + estimated + " " + $("inventoryUnit").value + " (aproximada según la fracción visual).", "success");
-    });
-
-    $("clearInventoryForm").addEventListener("click", () => {
-      $("inventoryForm").reset();
-      $("inventoryId").value = "";
-      $("inventoryCapacity").value = "750";
-      $("inventoryQuantity").value = "750";
-      $("inventoryMinStock").value = "150";
-      $("inventoryFraction").value = "";
-    });
+    // El registro manual de productos se sustituyó por la lista de comprobación de ingredientes.
 
     function formatPreparationAmount(item) {
       const rawAmount = String(item.amount ?? "").trim();
