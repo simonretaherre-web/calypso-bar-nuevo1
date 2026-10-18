@@ -981,7 +981,6 @@
             ${recipe.ingredients.map(ingredient => `
               <li>
                 <span class="ingredient-name">${escapeHtml(ingredient.name)}</span>
-                <span class="ingredient-amount">${escapeHtml(formatAmount(ingredient, servings))}</span>
               </li>
             `).join("")}
           </ul>`
