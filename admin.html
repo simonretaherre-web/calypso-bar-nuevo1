@@ -273,6 +273,66 @@
     .portion-preview h3 { color: var(--gold-light); margin: 0 0 8px; font-size: 17px; }
     .portion-preview ul { margin: 0; padding-left: 20px; }
 
+    /* La vista de preparación usa la misma tarjeta visual que la carta pública. */
+    .admin-prep-card {
+      overflow: hidden;
+      margin-top: 12px;
+      background: linear-gradient(145deg, #171717, #0d0d0d);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      box-shadow: 0 8px 26px rgba(0,0,0,.22);
+      padding: 0;
+    }
+
+    .admin-prep-photo {
+      width: 100%;
+      height: 280px;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      background: #080808;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-prep-body { padding: 16px; }
+    .admin-prep-title {
+      margin: 0 0 8px;
+      color: var(--gold-light);
+      font-size: 27px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-prep-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .admin-prep-tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .admin-prep-tag.alcohol { color: #f0c4a8; border-color: rgba(226,162,154,.45); }
+    .admin-prep-tag.no-alcohol { color: var(--green); border-color: rgba(155,201,161,.45); }
+    .admin-prep-story { margin: 0 0 12px; color: var(--text); line-height: 1.5; }
+    .admin-prep-section-title {
+      color: var(--gold);
+      margin: 15px 0 7px;
+      font-family: "Cinzel", serif;
+      font-size: 17px;
+    }
+    .admin-prep-ingredients { list-style: none; margin: 0; padding: 0 !important; }
+    .admin-prep-ingredients li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(212,175,98,.13);
+    }
+    .admin-prep-ingredients li:last-child { border-bottom: 0; }
+    .admin-prep-ingredients strong { color: var(--gold-light); text-align: right; }
+
     .inventory-item {
       border: 1px solid var(--border);
       background: var(--panel2);
@@ -1190,28 +1250,43 @@
         }
 
         const ingredients = Array.isArray(variant.ingredients) ? variant.ingredients : [];
+        const recipeName = publicData.name || privateData.name || "Receta";
+        const photoValue = String(publicData.photo || publicData.image || publicData.imageUrl || privateData.photo || "").trim();
+        const photo = /^https?:\/\//i.test(photoValue)
+          ? `<img class="admin-prep-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy">`
+          : "";
+        const story = publicData.story || privateData.story || "";
+        const category = publicData.category || privateData.category || "";
+        const typeLabel = type === "sin" ? "Sin alcohol" : "Con alcohol";
+        const typeClass = type === "sin" ? "no-alcohol" : "alcohol";
+        const list = ingredients.map(item => {
+          const rawAmount = String(item.amount ?? "").trim();
+          const number = Number(rawAmount.replace(",", "."));
+          let amount = rawAmount;
 
-        if (!ingredients.length) {
-          $("portionResult").textContent = "Esta variante todavía no tiene ingredientes.";
-        } else {
-          const list = ingredients.map(item => {
-            const rawAmount = String(item.amount ?? "").trim();
-            const number = Number(rawAmount.replace(",", "."));
-            let amount = rawAmount;
+          if (rawAmount && Number.isFinite(number)) {
+            amount = String(Number((number * portions).toFixed(3)));
+          }
 
-            if (rawAmount && Number.isFinite(number)) {
-              amount = String(Number((number * portions).toFixed(3)));
-            }
+          const unit = item.unit || "";
+          const name = item.name || "Ingrediente";
+          return `<li><span>${escapeHTML(name)}</span><strong>${escapeHTML([amount, unit].filter(Boolean).join(" "))}</strong></li>`;
+        }).join("");
 
-            const unit = item.unit || "";
-            const name = item.name || "Ingrediente";
-
-            return `<li>${escapeHTML(name)}: <strong>${escapeHTML([amount, unit].filter(Boolean).join(" "))}</strong></li>`;
-          }).join("");
-
-          $("portionResult").innerHTML =
-            `<h3>${escapeHTML(publicData.name || privateData.name || "Receta")} · ${portions} ${portions === 1 ? "porción" : "porciones"}</h3><ul>${list}</ul>`;
-        }
+        $("portionResult").className = "admin-prep-card";
+        $("portionResult").innerHTML = `
+          ${photo}
+          <div class="admin-prep-body">
+            <h3 class="admin-prep-title">${escapeHTML(recipeName)}</h3>
+            <div class="admin-prep-meta">
+              <span class="admin-prep-tag ${typeClass}">${typeLabel}</span>
+              ${category ? `<span class="admin-prep-tag">${escapeHTML(category)}</span>` : ""}
+            </div>
+            ${story ? `<p class="admin-prep-story">${escapeHTML(story)}</p>` : ""}
+            <div class="admin-prep-section-title">Ingredientes · ${portions} ${portions === 1 ? "porción" : "porciones"}</div>
+            ${ingredients.length ? `<ul class="admin-prep-ingredients">${list}</ul>` : '<p class="muted">Esta variante todavía no tiene ingredientes.</p>'}
+          </div>
+        `;
 
         const legacyDetails = priv || {};
         const glassware = privateData.glassware || legacyDetails.glassware || "";
