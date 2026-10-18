@@ -1132,46 +1132,76 @@
     }
 
     function renderInventory() {
-      if (!inventoryItems.length) {
-        inventoryList.innerHTML = '<p class="muted">Todavía no hay productos en el inventario.</p>';
+      const normalizeBottleName = value => String(value || "")
+        .toLocaleLowerCase("es")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, " ").trim();
+
+      // Mostrar únicamente botellas/bebidas utilizadas por las 26 recetas seleccionadas.
+      const bottlePattern = /\b(gin|ginebra|vodka|ron|rum|whisky|whiskey|bourbon|tequila|pisco|vermut|vermouth|campari|aperol|triple sec|cointreau|amaretto|brandy|cognac|coñac|licor|cura[cç]ao|fernet|jagermeister|champagne|prosecco|espumante|amargo aromatico|angostura|baileys|kahlua|kahlúa)\b/i;
+      const requiredBottles = new Map();
+
+      allPublicRecipes.forEach(recipe => {
+        const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+        const variants = Array.isArray(recipe.variants) ? recipe.variants : [];
+        const allIngredients = ingredients.concat(...variants.map(variant => Array.isArray(variant.ingredients) ? variant.ingredients : []));
+        allIngredients.forEach(ingredient => {
+          const name = typeof ingredient === "string" ? ingredient : (ingredient && ingredient.name) || "";
+          if (!name || !bottlePattern.test(name)) return;
+          const key = normalizeBottleName(name);
+          if (!key) return;
+          if (!requiredBottles.has(key)) requiredBottles.set(key, { name: String(name).trim(), key, recipes: new Set() });
+          requiredBottles.get(key).recipes.add(recipe.name || "Receta");
+        });
+      });
+
+      inventoryItems.forEach(item => {
+        const category = normalizeBottleName(item.category);
+        const key = normalizeBottleName(item.name);
+        if (key && /licor|alcohol|destilado|botella|aperitivo/.test(category) && !requiredBottles.has(key)) {
+          requiredBottles.set(key, { name: item.name, key, recipes: new Set() });
+        }
+      });
+
+      if (!requiredBottles.size) {
+        inventoryList.innerHTML = '<p class="muted">No se encontraron botellas necesarias en las 26 recetas seleccionadas. Comprueba que sus ingredientes estén guardados.</p>';
         return;
       }
 
-      inventoryList.innerHTML = inventoryItems.map(item => {
-        const quantity = Number(item.quantity || 0);
-        const minimum = Number(item.minStock || 0);
-        const capacity = Number(item.capacity || 0);
-        const fraction = capacity > 0 ? Math.max(0, Math.min(1, quantity / capacity)) : null;
-        const fractionLabel = fraction === null ? "" : (fraction >= 0.999 ? "1/1 (llena)" :
-          fraction >= 0.86 ? "≈ 7/8" : fraction >= 0.71 ? "≈ 3/4" :
-          fraction >= 0.58 ? "≈ 2/3" : fraction >= 0.42 ? "≈ 1/2" :
-          fraction >= 0.29 ? "≈ 1/3" : fraction >= 0.19 ? "≈ 1/4" :
-          fraction >= 0.09 ? "≈ 1/8" : fraction > 0 ? "menos de 1/8" : "vacía");
-        const low = quantity <= minimum;
+      const stockByName = new Map();
+      inventoryItems.forEach(item => {
+        const key = normalizeBottleName(item.name);
+        if (!key) return;
+        if (!stockByName.has(key)) stockByName.set(key, []);
+        stockByName.get(key).push(item);
+      });
 
-        return `<div class="inventory-item">
-          <strong>${escapeHTML(item.name || "Producto")}</strong>
-          <p class="muted">
-            ${escapeHTML(item.brand || "Sin marca")} ·
-            ${escapeHTML(item.category || "Sin categoría")}
-          </p>
-          <p>Existencia estimada: ${escapeHTML(Number(quantity.toFixed(1)))} ${escapeHTML(item.unit || "")}</p>
-          ${capacity > 0 ? `<p>Contenido visual aproximado: ${escapeHTML(fractionLabel)} (${escapeHTML(Math.round(fraction * 100))} %)</p><div style="height:8px;background:#292929;border-radius:99px;overflow:hidden;margin:8px 0 12px"><div style="height:100%;width:${Math.round(fraction * 100)}%;background:var(--gold,#d4af62)"></div></div>` : ""}
-          ${item.unit === "ml" ? `<p>Mililitros restantes (estimados): <strong>${escapeHTML(Number(quantity.toFixed(1)))} ml</strong></p>` : ""}
-          <p>Stock mínimo: ${escapeHTML(minimum)} ${escapeHTML(item.unit || "")}</p>
-          <p>${low ? '<span style="color:var(--red)">Stock bajo</span>' : '<span style="color:var(--green)">Stock disponible</span>'}</p>
-          <div class="actions">
-            <button class="btn secondary" type="button" data-inventory-edit="${escapeHTML(item.id)}">Editar</button>
-            <button class="btn danger" type="button" data-inventory-delete="${escapeHTML(item.id)}">Eliminar</button>
-          </div>
-        </div>`;
-      }).join("");
+      const bottles = Array.from(requiredBottles.values()).sort((a, b) => a.name.localeCompare(b.name, "es"));
+      inventoryList.innerHTML = '<p class="muted">Botellas necesarias para las recetas seleccionadas. El ✓ indica que hay existencias registradas; se muestra la cantidad total guardada en el inventario.</p>' +
+        bottles.map(bottle => {
+          const exactMatches = stockByName.get(bottle.key) || [];
+          const matches = exactMatches.length ? exactMatches : inventoryItems.filter(item => {
+            const stockKey = normalizeBottleName(item.name);
+            return stockKey && (stockKey.includes(bottle.key) || bottle.key.includes(stockKey));
+          });
+          const quantity = matches.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+          const units = Array.from(new Set(matches.map(item => String(item.unit || "").trim()).filter(Boolean)));
+          const unitLabel = units.length === 1 ? " " + escapeHTML(units[0]) : "";
+          const haveStock = matches.length > 0 && quantity > 0;
+          const recipes = Array.from(bottle.recipes).join(", ");
+          const editId = matches[0] && matches[0].id;
+          return '<div class="inventory-item">' +
+            '<strong><span style="color:' + (haveStock ? 'var(--green,#62c58a)' : 'var(--red,#e06b6b)') + '">' + (haveStock ? '✓' : '○') + '</span> ' + escapeHTML(bottle.name) + '</strong>' +
+            '<p>' + (haveStock ? 'Cantidad total registrada: <strong>' + escapeHTML(Number(quantity.toFixed(2))) + unitLabel + '</strong>' : 'No registrada en el inventario') + '</p>' +
+            (recipes ? '<p class="muted">Se usa en: ' + escapeHTML(recipes) + '</p>' : '') +
+            (editId ? '<div class="actions"><button class="btn secondary" type="button" data-inventory-edit="' + escapeHTML(editId) + '">Editar existencias</button></div>' : '') +
+            '</div>';
+        }).join("");
 
       inventoryList.querySelectorAll("[data-inventory-edit]").forEach(button => {
         button.addEventListener("click", () => {
           const item = inventoryItems.find(x => x.id === button.dataset.inventoryEdit);
           if (!item) return;
-
           $("inventoryId").value = item.id;
           $("inventoryName").value = item.name || "";
           $("inventoryBrand").value = item.brand || "";
@@ -1186,23 +1216,7 @@
           const closest = fractions.reduce((best, option) => Math.abs(Number(option.value) - ratio) < Math.abs(Number(best.value) - ratio) ? option : best, fractions[0]);
           $("inventoryFraction").value = ratio >= 0 && closest ? closest.value : "";
           $("inventoryBarcode").value = item.barcode || "";
-
           $("inventoryForm").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-      });
-
-      inventoryList.querySelectorAll("[data-inventory-delete]").forEach(button => {
-        button.addEventListener("click", async () => {
-          const id = button.dataset.inventoryDelete;
-          if (!confirm("¿Eliminar este producto del inventario?")) return;
-
-          try {
-            await deleteDoc(doc(db, "inventory", id));
-            showStatus("Producto eliminado.", "success");
-          } catch (error) {
-            console.error(error);
-            showStatus("No se pudo eliminar el producto.", "error");
-          }
         });
       });
     }
