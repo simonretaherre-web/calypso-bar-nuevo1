@@ -232,6 +232,23 @@
       border-radius: 5px;
     }
 
+    .recipe-row-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .recipe-row-photo {
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
+      object-fit: cover;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: #080808;
+    }
+
     .recipe-row h3 { margin: 0 0 5px; color: var(--gold-light); font-size: 17px; }
     .recipe-row p { margin: 0; color: var(--muted); font-size: 16px; }
 
@@ -954,18 +971,25 @@
       if (!publicRecipes.length) {
         recipeList.innerHTML = '<p class="muted">No hay recetas publicadas. Puedes crear una receta usando el formulario de arriba.</p>';
       } else {
-        recipeList.innerHTML = publicRecipes.map(recipe => `
+        recipeList.innerHTML = publicRecipes.map(recipe => {
+          const photo = String(recipe.photo || recipe.image || recipe.imageUrl || "").trim();
+          const safePhoto = /^https?:\/\//i.test(photo) ? photo : "";
+          return `
           <div class="recipe-row">
-            <div>
-              <h3>${escapeHTML(recipe.name || "Receta sin nombre")}</h3>
-              <p>${escapeHTML(recipe.category || "Sin categoría")}</p>
+            <div class="recipe-row-info">
+              ${safePhoto ? `<img class="recipe-row-photo" src="${escapeHTML(safePhoto)}" alt="Foto de ${escapeHTML(recipe.name || "la receta")}" loading="lazy">` : ""}
+              <div>
+                <h3>${escapeHTML(recipe.name || "Receta sin nombre")}</h3>
+                <p>${escapeHTML(recipe.category || "Sin categoría")}</p>
+              </div>
             </div>
             <div class="actions">
               <button class="btn secondary" type="button" data-edit="${escapeHTML(recipe.id)}">Editar</button>
               <button class="btn danger" type="button" data-delete="${escapeHTML(recipe.id)}">Eliminar</button>
             </div>
           </div>
-        `).join("");
+        `;
+        }).join("");
       }
 
       recipeList.querySelectorAll("[data-edit]").forEach(button => {
