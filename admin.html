@@ -1301,7 +1301,7 @@
         }
         const recipeName = recipe.name || privateData.name || "Receta sin nombre";
         const photoValue = String(recipe.photo || recipe.image || recipe.imageUrl || privateData.photo || "").trim();
-        const safePhoto = /^https?:\\/\\//i.test(photoValue);
+        const safePhoto = /^https?:\/\//i.test(photoValue);
         const photo = safePhoto
           ? `<img class="prepare-card-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="prepare-card-placeholder hidden" aria-hidden="true">✦</div>`
           : '<div class="prepare-card-placeholder" aria-hidden="true">✦</div>';
