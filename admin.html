@@ -1155,13 +1155,6 @@
         });
       });
 
-      inventoryItems.forEach(item => {
-        const category = normalizeBottleName(item.category);
-        const key = normalizeBottleName(item.name);
-        if (key && /licor|alcohol|destilado|botella|aperitivo/.test(category) && !requiredBottles.has(key)) {
-          requiredBottles.set(key, { name: item.name, key, recipes: new Set() });
-        }
-      });
 
       if (!requiredBottles.size) {
         inventoryList.innerHTML = '<p class="muted">No se encontraron botellas necesarias en las 26 recetas seleccionadas. Comprueba que sus ingredientes estén guardados.</p>';
