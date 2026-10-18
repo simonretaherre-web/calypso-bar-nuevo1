@@ -1272,11 +1272,14 @@
       return [amount, item.unit || ""].filter(Boolean).join(" ");
     }
 
+    let prepareSearchRenderId = 0;
+
     async function renderPrepareRecipes() {
+      const renderId = ++prepareSearchRenderId;
       const grid = $("prepareRecipeGrid");
       if (!grid) return;
       const query = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
-      const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+      const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const filtered = allPublicRecipes.filter(recipe => {
         const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
         const haystack = normalize([recipe.name, recipe.category, recipe.story, ...ingredients.map(item => item.name)].join(" "));
@@ -1318,6 +1321,7 @@
         }).join("");
         return `<article class="prepare-card">${photo}<div class="prepare-card-body"><h3>${escapeHTML(recipeName)}</h3><div class="prepare-card-meta">${category ? `<span class="prepare-card-tag">${escapeHTML(category)}</span>` : ""}</div>${story ? `<p class="prepare-card-story">${escapeHTML(story)}</p>` : ""}${variantsMarkup || '<p class="muted">No hay ingredientes guardados para esta receta.</p>'}</div></article>`;
       }));
+      if (renderId !== prepareSearchRenderId) return;
       grid.innerHTML = cards.join("");
     }
 
