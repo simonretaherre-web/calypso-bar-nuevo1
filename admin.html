@@ -347,6 +347,58 @@
     .admin-prep-ingredients span { overflow-wrap: anywhere; }
     .admin-prep-ingredients strong { flex-shrink: 0; color: var(--gold-light); text-align: right; }
 
+    .prepare-menu-panel .search-row { margin: 12px 0 20px; }
+    .prepare-search {
+      width: 100%;
+      min-width: 0;
+      padding: 14px 15px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #101010;
+      color: var(--text);
+      font: inherit;
+      font-size: 18px;
+    }
+    .prepare-recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr)); gap: 18px; }
+    .prepare-card {
+      min-width: 0;
+      overflow: hidden;
+      background: linear-gradient(145deg, #171717, #0d0d0d);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      box-shadow: 0 8px 26px rgba(0,0,0,.22);
+    }
+    .prepare-card-photo {
+      width: 100%;
+      height: 330px;
+      display: block;
+      object-fit: contain;
+      background: #080808;
+      border-bottom: 1px solid var(--border);
+    }
+    .prepare-card-placeholder {
+      height: 220px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 43px;
+      background: radial-gradient(circle, rgba(212,175,98,.12), transparent 68%), #111;
+      border-bottom: 1px solid var(--border);
+    }
+    .prepare-card-body { padding: 16px; }
+    .prepare-card h3 { margin: 0 0 8px; color: var(--gold-light); font-size: 27px; line-height: 1.25; overflow-wrap: anywhere; }
+    .prepare-card-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .prepare-card-tag { display: inline-block; padding: 4px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); font-size: 17px; }
+    .prepare-card-tag.alcohol { color: #f0c4a8; border-color: rgba(226,162,154,.45); }
+    .prepare-card-tag.no-alcohol { color: var(--green); border-color: rgba(155,201,161,.45); }
+    .prepare-card-story { margin: 0 0 12px; line-height: 1.5; }
+    .prepare-card-section { color: var(--gold); margin: 15px 0 7px; font-family: "Cinzel", serif; font-size: 17px; letter-spacing: .4px; }
+    .prepare-card-ingredients { list-style: none; margin: 0; padding: 0; }
+    .prepare-card-ingredients li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 19px; }
+    .prepare-card-ingredients li:last-child { border-bottom: 0; }
+    .prepare-card-ingredients span { overflow-wrap: anywhere; }
+    .prepare-card-ingredients strong { flex-shrink: 0; color: var(--gold-light); text-align: right; }
+
     .inventory-item {
       border: 1px solid var(--border);
       background: var(--panel2);
@@ -583,39 +635,21 @@
       </section>
 
       <section id="prepareTab" class="tab-content hidden">
-        <div class="panel">
-          <h2>Preparar receta</h2>
-          <p class="muted">
-            Selecciona una receta, elige la variante y el número de porciones.
-            Las cantidades se calculan aquí sin alterar la receta guardada.
-          </p>
-
-          <label for="prepareRecipeSearch">Buscar receta</label>
-          <input id="prepareRecipeSearch" type="search" list="prepareRecipeSuggestions"
-            placeholder="Escribe el nombre de un trago..." autocomplete="off">
-          <datalist id="prepareRecipeSuggestions"></datalist>
-          <select id="prepareRecipeSelect" aria-hidden="true" tabindex="-1" style="display:none">
-            <option value="">Selecciona una receta</option>
-          </select>
-
-          <label for="prepareVariantSelect" style="margin-top:12px">Variante</label>
-          <select id="prepareVariantSelect">
-            <option value="con">Con alcohol</option>
-            <option value="sin">Sin alcohol</option>
-          </select>
-
-          <label for="portionCount" style="margin-top:12px">Número de porciones</label>
-          <input id="portionCount" type="number" min="1" max="100" step="1" value="1">
-
-          <div class="actions">
-            <button class="btn" id="calculatePortions" type="button">Calcular cantidades</button>
+        <div class="panel prepare-menu-panel">
+          <h2>Nuestra carta · Preparar receta</h2>
+          <p class="muted">Busca una receta y consulta sus ingredientes con cantidades privadas.</p>
+          <div class="search-row">
+            <input id="prepareRecipeSearch" class="prepare-search" type="search"
+              placeholder="Buscar por cóctel, ingrediente o categoría..."
+              aria-label="Buscar recetas para preparar" autocomplete="off">
           </div>
-
-          <div id="portionResult" class="portion-preview">
-            Selecciona una receta para ver sus cantidades.
+          <div class="results-heading">
+            <h3 id="prepareResultsTitle">Nuestra carta</h3>
+            <span id="prepareResultsCount" class="muted"></span>
           </div>
-
-          <div id="privateMethodResult" class="portion-preview hidden"></div>
+          <div id="prepareRecipeGrid" class="prepare-recipe-grid" aria-live="polite">
+            <p class="muted">Cargando recetas...</p>
+          </div>
         </div>
       </section>
 
@@ -1229,128 +1263,64 @@
       $("inventoryFraction").value = "";
     });
 
-    async function calculatePreparation() {
-      const recipeId = $("prepareRecipeSelect").value;
-      const type = $("prepareVariantSelect").value;
-      const portions = Number($("portionCount").value);
-
-      if (!recipeId) {
-        $("portionResult").textContent = "Selecciona una receta.";
-        $("privateMethodResult").classList.add("hidden");
-        return;
-      }
-
-      if (!Number.isInteger(portions) || portions < 1 || portions > 100) {
-        $("portionResult").textContent = "Elige entre 1 y 100 porciones.";
-        $("privateMethodResult").classList.add("hidden");
-        return;
-      }
-
-      try {
-        const publicSnap = await getDoc(doc(db, "recipesPublic", recipeId));
-        const privateData = await getPrivateRecipe(recipeId);
-        const publicData = publicSnap.exists() ? publicSnap.data() : {};
-        const privateVariants = Array.isArray(privateData.variants) ? privateData.variants : [];
-        const publicVariants = Array.isArray(publicData.variants) ? publicData.variants : [];
-
-        const priv = privateVariants.find(v => v.type === type);
-        const pub = publicVariants.find(v => v.type === type);
-        const variant = priv || pub;
-
-        if (!variant) {
-          $("portionResult").textContent = "Esta receta no tiene esa variante guardada.";
-          $("privateMethodResult").classList.add("hidden");
-          return;
-        }
-
-        const ingredients = Array.isArray(variant.ingredients) ? variant.ingredients : [];
-        const recipeName = publicData.name || privateData.name || "Receta";
-        const photoValue = String(publicData.photo || publicData.image || publicData.imageUrl || privateData.photo || "").trim();
-        const photo = /^https?:\/\//i.test(photoValue)
-          ? `<img class="admin-prep-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="admin-prep-photo-placeholder hidden" aria-hidden="true">✦</div>`
-          : '<div class="admin-prep-photo-placeholder" aria-hidden="true">✦</div>';
-        const story = publicData.story || privateData.story || "";
-        const category = publicData.category || privateData.category || "";
-        const typeLabel = type === "sin" ? "Sin alcohol" : "Con alcohol";
-        const typeClass = type === "sin" ? "no-alcohol" : "alcohol";
-        const list = ingredients.map(item => {
-          const rawAmount = String(item.amount ?? "").trim();
-          const number = Number(rawAmount.replace(",", "."));
-          let amount = rawAmount;
-
-          if (rawAmount && Number.isFinite(number)) {
-            amount = String(Number((number * portions).toFixed(3)));
-          }
-
-          const unit = item.unit || "";
-          const name = item.name || "Ingrediente";
-          return `<li><span>${escapeHTML(name)}</span><strong>${escapeHTML([amount, unit].filter(Boolean).join(" "))}</strong></li>`;
-        }).join("");
-
-        $("portionResult").className = "admin-prep-card";
-        $("portionResult").innerHTML = `
-          ${photo}
-          <div class="admin-prep-body">
-            <h3 class="admin-prep-title">${escapeHTML(recipeName)}</h3>
-            <div class="admin-prep-meta">
-              <span class="admin-prep-tag ${typeClass}">${typeLabel}</span>
-              ${category ? `<span class="admin-prep-tag">${escapeHTML(category)}</span>` : ""}
-            </div>
-            ${story ? `<p class="admin-prep-story">${escapeHTML(story)}</p>` : ""}
-            <div class="admin-prep-section-title">Ingredientes · ${portions} ${portions === 1 ? "porción" : "porciones"}</div>
-            ${ingredients.length ? `<ul class="admin-prep-ingredients">${list}</ul>` : '<p class="muted">Esta variante todavía no tiene ingredientes.</p>'}
-          </div>
-        `;
-
-        const legacyDetails = priv || {};
-        const glassware = privateData.glassware || legacyDetails.glassware || "";
-        const method = privateData.method || legacyDetails.method || "";
-        const decoration = privateData.decoration || legacyDetails.decoration || "";
-        if (method || glassware || decoration) {
-          $("privateMethodResult").classList.remove("hidden");
-          const privateDetails = [
-            glassware ? `<p><strong>Cristalería:</strong> ${escapeHTML(glassware)}</p>` : "",
-            method ? `<p><strong>Método de preparación:</strong><br>${escapeHTML(method).replace(/\n/g, "<br>")}</p>` : "",
-            decoration ? `<p><strong>Decoración:</strong><br>${escapeHTML(decoration).replace(/\n/g, "<br>")}</p>` : ""
-          ].filter(Boolean).join("");
-          $("privateMethodResult").innerHTML =
-            `<h3>Detalles privados de preparación</h3>${privateDetails}`;
-        } else {
-          $("privateMethodResult").classList.add("hidden");
-          $("privateMethodResult").textContent = "";
-        }
-      } catch (error) {
-        console.error(error);
-        $("portionResult").textContent = "No se pudo cargar la receta. Revisa los permisos privados de Firebase.";
-        $("privateMethodResult").classList.add("hidden");
-      }
+    function formatPreparationAmount(item) {
+      const rawAmount = String(item.amount ?? "").trim();
+      const number = Number(rawAmount.replace(",", "."));
+      let amount = rawAmount;
+      if (rawAmount && Number.isFinite(number)) amount = String(Number(number.toFixed(3)));
+      return [amount, item.unit || ""].filter(Boolean).join(" ");
     }
 
-    $("calculatePortions").addEventListener("click", calculatePreparation);
-    $("prepareRecipeSearch").addEventListener("input", () => {
-      const typedName = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
-      const match = publicRecipes.find(recipe =>
-        String(recipe.name || "").trim().toLocaleLowerCase("es") === typedName
-      );
+    async function renderPrepareRecipes() {
+      const grid = $("prepareRecipeGrid");
+      if (!grid) return;
+      const query = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
+      const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+      const filtered = publicRecipes.filter(recipe => {
+        const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+        const haystack = normalize([recipe.name, recipe.category, recipe.story, ...ingredients.map(item => item.name)].join(" "));
+        return haystack.includes(normalize(query));
+      });
 
-      $("prepareRecipeSelect").value = match ? match.id : "";
-      if (match) {
-        calculatePreparation();
-      } else {
-        $("portionResult").textContent = typedName
-          ? "Elige una receta de las sugerencias."
-          : "Busca y selecciona una receta para ver sus cantidades.";
-        $("privateMethodResult").classList.add("hidden");
+      $("prepareResultsCount").textContent = `${filtered.length} ${filtered.length === 1 ? "receta" : "recetas"}`;
+      $("prepareResultsTitle").textContent = query ? "Resultados de búsqueda" : "Nuestra carta";
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty-state"><h3>No encontramos recetas</h3><p>Prueba con otro nombre, ingrediente o categoría.</p></div>';
+        return;
       }
-    });
 
-    $("prepareRecipeSelect").addEventListener("change", () => {
-      const selected = publicRecipes.find(recipe => recipe.id === $("prepareRecipeSelect").value);
-      $("prepareRecipeSearch").value = selected ? selected.name || "" : "";
-      calculatePreparation();
-    });
-    $("prepareVariantSelect").addEventListener("change", calculatePreparation);
-    $("portionCount").addEventListener("change", calculatePreparation);
+      grid.innerHTML = '<p class="muted">Cargando ingredientes privados...</p>';
+      const cards = await Promise.all(filtered.map(async recipe => {
+        let privateData = {};
+        try { privateData = await getPrivateRecipe(recipe.id); } catch (error) { console.warn("No se pudo leer la receta privada", recipe.id, error); }
+        const publicVariants = Array.isArray(recipe.variants) ? recipe.variants : [];
+        const privateVariants = Array.isArray(privateData.variants) ? privateData.variants : [];
+        let variants = privateVariants.length ? privateVariants : publicVariants;
+        if (!variants.length && Array.isArray(recipe.ingredients) && recipe.ingredients.length) {
+          variants = [{ type: recipe.type || "con", ingredients: recipe.ingredients }];
+        }
+        const recipeName = recipe.name || privateData.name || "Receta sin nombre";
+        const photoValue = String(recipe.photo || recipe.image || recipe.imageUrl || privateData.photo || "").trim();
+        const safePhoto = /^https?:\\/\\//i.test(photoValue);
+        const photo = safePhoto
+          ? `<img class="prepare-card-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="prepare-card-placeholder hidden" aria-hidden="true">✦</div>`
+          : '<div class="prepare-card-placeholder" aria-hidden="true">✦</div>';
+        const story = recipe.story || privateData.story || "";
+        const category = recipe.category || privateData.category || "";
+        const variantsMarkup = variants.map(variant => {
+          const type = variant.type === "sin" ? "sin" : "con";
+          const label = type === "sin" ? "Sin alcohol" : "Con alcohol";
+          const typeClass = type === "sin" ? "no-alcohol" : "alcohol";
+          const items = Array.isArray(variant.ingredients) ? variant.ingredients : [];
+          const list = items.map(item => `<li><span>${escapeHTML(item.name || "Ingrediente")}</span><strong>${escapeHTML(formatPreparationAmount(item))}</strong></li>`).join("");
+          return `<div class="prepare-card-meta"><span class="prepare-card-tag ${typeClass}">${label}</span></div><div class="prepare-card-section">Ingredientes · 1 porción</div>${items.length ? `<ul class="prepare-card-ingredients">${list}</ul>` : '<p class="muted">Ingredientes aún no disponibles.</p>'}`;
+        }).join("");
+        return `<article class="prepare-card">${photo}<div class="prepare-card-body"><h3>${escapeHTML(recipeName)}</h3><div class="prepare-card-meta">${category ? `<span class="prepare-card-tag">${escapeHTML(category)}</span>` : ""}</div>${story ? `<p class="prepare-card-story">${escapeHTML(story)}</p>` : ""}${variantsMarkup || '<p class="muted">No hay ingredientes guardados para esta receta.</p>'}</div></article>`;
+      }));
+      grid.innerHTML = cards.join("");
+    }
+
+    $("prepareRecipeSearch").addEventListener("input", renderPrepareRecipes);
 
     document.querySelectorAll(".tab-button").forEach(button => {
       button.addEventListener("click", () => {
@@ -1439,6 +1409,7 @@
           });
 
           renderRecipeList();
+          renderPrepareRecipes();
         },
         error => {
           console.error(error);
