@@ -11,8 +11,9 @@ const convert = (n,from,to) => { const a=unitInfo(from),b=unitInfo(to); return a
 let user=null, items=[], movements=[], stopInv=null, stopMoves=null, stream=null, scanTimer=null;
 function status(msg,kind=""){const el=$("status");if(el){el.textContent=msg;el.className="notice"+(kind?" "+kind:"");}}
 function ensureUI(){
+ // La interfaz de registro, escáner y movimientos de inventario se mantiene desactivada: la pestaña solo muestra la lista de ingredientes marcables.
  const inv=$("inventoryTab");
- if(inv && !$("cbEnhancements")){
+ if(false && inv && !$("cbEnhancements")){
   const box=document.createElement("div");box.id="cbEnhancements";box.className="panel";box.innerHTML=`
   <h2>Herramientas de inventario</h2>
   <div class="actions"><button class="btn secondary" id="cbExport">Exportar copia de seguridad</button><button class="btn secondary" id="cbImportButton">Importar copia de seguridad</button><input id="cbImportFile" type="file" accept="application/json,.json" hidden></div>
