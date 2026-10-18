@@ -273,8 +273,9 @@
     .portion-preview h3 { color: var(--gold-light); margin: 0 0 8px; font-size: 17px; }
     .portion-preview ul { margin: 0; padding-left: 20px; }
 
-    /* La vista de preparación usa la misma tarjeta visual que la carta pública. */
+    /* Mismo diseño de la carta pública, conservando las cantidades privadas. */
     .admin-prep-card {
+      min-width: 0;
       overflow: hidden;
       margin-top: 12px;
       background: linear-gradient(145deg, #171717, #0d0d0d);
@@ -286,11 +287,21 @@
 
     .admin-prep-photo {
       width: 100%;
-      height: 280px;
+      height: 330px;
       display: block;
       object-fit: contain;
       object-position: center;
       background: #080808;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-prep-photo-placeholder {
+      height: 330px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 43px;
+      background: radial-gradient(circle, rgba(212,175,98,.12), transparent 68%), #111;
       border-bottom: 1px solid var(--border);
     }
 
@@ -310,7 +321,7 @@
       border-radius: 20px;
       border: 1px solid var(--border);
       color: var(--muted);
-      font-size: 16px;
+      font-size: 17px;
     }
 
     .admin-prep-tag.alcohol { color: #f0c4a8; border-color: rgba(226,162,154,.45); }
@@ -321,17 +332,20 @@
       margin: 15px 0 7px;
       font-family: "Cinzel", serif;
       font-size: 17px;
+      letter-spacing: .4px;
     }
     .admin-prep-ingredients { list-style: none; margin: 0; padding: 0 !important; }
     .admin-prep-ingredients li {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      padding: 9px 0;
-      border-bottom: 1px solid rgba(212,175,98,.13);
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 19px;
     }
     .admin-prep-ingredients li:last-child { border-bottom: 0; }
-    .admin-prep-ingredients strong { color: var(--gold-light); text-align: right; }
+    .admin-prep-ingredients span { overflow-wrap: anywhere; }
+    .admin-prep-ingredients strong { flex-shrink: 0; color: var(--gold-light); text-align: right; }
 
     .inventory-item {
       border: 1px solid var(--border);
@@ -1253,8 +1267,8 @@
         const recipeName = publicData.name || privateData.name || "Receta";
         const photoValue = String(publicData.photo || publicData.image || publicData.imageUrl || privateData.photo || "").trim();
         const photo = /^https?:\/\//i.test(photoValue)
-          ? `<img class="admin-prep-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy">`
-          : "";
+          ? `<img class="admin-prep-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="admin-prep-photo-placeholder hidden" aria-hidden="true">✦</div>`
+          : '<div class="admin-prep-photo-placeholder" aria-hidden="true">✦</div>';
         const story = publicData.story || privateData.story || "";
         const category = publicData.category || privateData.category || "";
         const typeLabel = type === "sin" ? "Sin alcohol" : "Con alcohol";
