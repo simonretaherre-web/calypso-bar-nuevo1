@@ -806,7 +806,10 @@
 
     function formatAmount(ingredient, servings) {
       const amount = text(ingredient.amount);
-      const unit = text(ingredient.unit);
+      const originalUnit = text(ingredient.unit);
+      // En la carta pública se omite la etiqueta "ml", pero se conservan
+      // las cantidades y las demás unidades de medida.
+      const unit = /^ml$/i.test(originalUnit) ? "" : originalUnit;
 
       if (!amount) return unit || "";
 
