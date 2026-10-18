@@ -766,6 +766,7 @@
 
     let currentUser = null;
     let publicRecipes = [];
+    let allPublicRecipes = [];
     let inventoryItems = [];
     let unsubRecipes = null;
     let unsubInventory = null;
@@ -1276,7 +1277,7 @@
       if (!grid) return;
       const query = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
       const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-      const filtered = publicRecipes.filter(recipe => {
+      const filtered = allPublicRecipes.filter(recipe => {
         const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
         const haystack = normalize([recipe.name, recipe.category, recipe.story, ...ingredients.map(item => item.name)].join(" "));
         return haystack.includes(normalize(query));
@@ -1395,17 +1396,19 @@
 
           // En el panel privado se muestran solo las 26 recetas elegidas.
           // Las demás siguen guardadas en Firestore; no se borran ni se modifican.
-          publicRecipes = snapshot.docs
-            .map(item => ({ id: item.id, ...item.data() }))
-            .filter(recipe => allowedNames.has(normalizeAllowedName(recipe.name)));
+          allPublicRecipes = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+          publicRecipes = allPublicRecipes.filter(recipe =>
+            allowedNames.has(normalizeAllowedName(recipe.name))
+          );
 
+          // Las fichas pendientes también quedan disponibles en «Preparar receta».
           [
             { id: "manhattan", name: "Manhattan" },
             { id: "negroni", name: "Negroni" },
             { id: "americano", name: "Americano" }
           ].forEach(pending => {
-            if (!publicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
-              publicRecipes.push({
+            if (!allPublicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
+              allPublicRecipes.push({
                 ...pending, category: "Clásicos", type: "con", photo: "", ingredients: [],
                 story: "Ficha pendiente de completar y guardar por la administradora.",
                 pendingSetup: true
