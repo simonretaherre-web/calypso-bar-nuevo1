@@ -1610,7 +1610,7 @@
             "spritz sabor", "mojito", "mojito sabor", "caipirinha", "caipiroska",
             "pisco sour", "sour peruano", "bloody mary", "bloody maria",
             "old fashioned", "rum fashioned", "manhattan", "negroni", "americano",
-            "moscow mule", "london mule", "penicillin", "penicilina", "penicilina pisco anejo", "dry martini", "gibson"
+            "moscow mule", "london mule", "penicillin", "penicilina", "penicilina pisco anejo", "dry martini"
           ]);
           const normalizeAllowedName = value => normalizeName(value);
 
@@ -1705,14 +1705,7 @@
                 method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebillana" }],
               pendingSetup: true
             },
-            {
-              id: "gibson-pending", name: "Gibson", category: "Clásicos", type: "con", photo: "",
-              ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
-              method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebolla",
-              variants: [{ type: "con", ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
-                method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebolla" }],
-              pendingSetup: true
-            }
+
           ];
           recipePlaceholders.forEach(pending => {
             if (!publicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
@@ -1756,8 +1749,7 @@
             { id: "london-mule", name: "London Mule" },
             { id: "penicillin", name: "Penicillin" },
             { id: "penicilina-pisco", name: "Penicilina (Pisco añejo)" },
-            { id: "dry-martini", name: "Dry Martini" },
-            { id: "gibson", name: "Gibson" }
+            { id: "dry-martini", name: "Dry Martini" }
           ];
           expectedRecipes.forEach(pending => {
             if (!allPublicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
