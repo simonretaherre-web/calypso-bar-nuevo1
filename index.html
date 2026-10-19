@@ -1217,7 +1217,9 @@
             }
           ];
           pendingRecipes.forEach(pending => {
-            if (!recipes.some(recipe => text(recipe.name).trim().toLocaleLowerCase("es") === pending.name.toLocaleLowerCase("es"))) {
+            // No mostrar fichas de respaldo sin disponibilidad confirmada por el inventario.
+            if (pending.availableByBottles === true &&
+                !recipes.some(recipe => text(recipe.name).trim().toLocaleLowerCase("es") === pending.name.toLocaleLowerCase("es"))) {
               recipes.push(pending);
             }
           });
