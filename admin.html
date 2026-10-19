@@ -197,7 +197,7 @@
 
     .tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       margin: 18px 0;
     }
@@ -513,7 +513,8 @@
       <nav class="tabs" aria-label="Secciones privadas">
         <button class="tab-button active" data-tab="recipesTab" type="button">Recetas</button>
         <button class="tab-button" data-tab="prepareTab" type="button">Preparar receta</button>
-        <button class="tab-button" data-tab="inventoryTab" type="button">Inventario</button>
+        <button class="tab-button" data-tab="inventoryTab" type="button">Productos</button>
+        <button class="tab-button" data-tab="glasswareTab" type="button">Cristalería</button>
       </nav>
 
       <section id="recipesTab" class="tab-content">
@@ -678,7 +679,7 @@
 
       <section id="inventoryTab" class="tab-content hidden">
         <div class="panel">
-          <h2>Productos para la carta completa</h2>
+          <h2>Inventario de productos</h2>
           <p class="muted">Marca si tienes cada ingrediente, anota la capacidad total del envase y elige la fracción que queda aproximadamente. Los cambios se guardan en Firebase.</p>
           <div class="field-grid">
             <div>
@@ -696,6 +697,57 @@
           <h2>Tragos que puedo preparar</h2>
           <p class="muted">Se muestran las recetas cuyas botellas necesarias están marcadas como disponibles. Esto comprueba las botellas; también debes tener los jugos, frutas, hielo y demás ingredientes.</p>
           <div id="availableCocktailsList" aria-live="polite"><p class="muted">Calculando recetas...</p></div>
+        </div>
+      </section>
+
+      <section id="glasswareTab" class="tab-content hidden">
+        <div class="panel">
+          <h2>Inventario de cristalería</h2>
+          <p class="muted">Registra copas y vasos con nombre, tipo y foto. Cada entrada crea un ticket y actualiza las existencias.</p>
+          <form id="glasswareForm">
+            <div class="field-grid">
+              <div>
+                <label for="glasswareName">Nombre</label>
+                <input id="glasswareName" maxlength="100" placeholder="Ej.: Copa Coupé" required>
+              </div>
+              <div>
+                <label for="glasswareType">Tipo</label>
+                <select id="glasswareType" required>
+                  <option value="">Selecciona el tipo</option>
+                  <option value="Copa Martini">Copa Martini</option>
+                  <option value="Copa Coupé">Copa Coupé</option>
+                  <option value="Vaso Highball">Vaso Highball</option>
+                  <option value="Vaso Rocks / Old Fashioned">Vaso Rocks / Old Fashioned</option>
+                  <option value="Copa de vino">Copa de vino</option>
+                  <option value="Flauta">Flauta</option>
+                  <option value="Copa Nick & Nora">Copa Nick & Nora</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="field-full">
+                <label for="glasswarePhoto">Foto de la copa o vaso (opcional)</label>
+                <input id="glasswarePhoto" type="file" accept="image/*" capture="environment">
+                <p class="muted">Puedes elegir una foto del teléfono o tomar una con la cámara.</p>
+              </div>
+              <div class="field-full">
+                <label for="glasswareQuantity">Cantidad de copas nuevas</label>
+                <input id="glasswareQuantity" type="number" min="1" step="1" value="1" required>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="submit">Registrar entrada y crear ticket</button>
+              <button class="btn secondary" id="clearGlasswareForm" type="button">Limpiar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Cristalería registrada</h2>
+          <div id="glasswareList" class="recipe-list" aria-live="polite"><p class="muted">Cargando cristalería...</p></div>
+        </div>
+        <div class="panel">
+          <h2>Tickets de cristalería</h2>
+          <p class="muted">Historial de entradas de copas y vasos.</p>
+          <div id="glasswareTicketsList" class="recipe-list" aria-live="polite"><p class="muted">Cargando tickets...</p></div>
         </div>
       </section>
     </section>
@@ -733,8 +785,12 @@
     let publicRecipes = [];
     let allPublicRecipes = [];
     let inventoryItems = [];
+    let glasswareItems = [];
+    let glasswareTickets = [];
     let unsubRecipes = null;
     let unsubInventory = null;
+    let unsubGlassware = null;
+    let unsubGlasswareTickets = null;
     let privateRecipeCache = new Map();
 
     function showStatus(message, kind = "") {
@@ -1245,6 +1301,135 @@
         : '<p class="muted">Todavía no hay tragos disponibles según las botellas marcadas. Marca ☑ en las botellas que tienes y guarda los cambios.</p>';
     }
 
+    // Inventario de cristalería: las entradas generan tickets y suman existencias.
+    function renderGlassware() {
+      const list = $("glasswareList");
+      const ticketsList = $("glasswareTicketsList");
+      if (!list || !ticketsList) return;
+
+      if (!glasswareItems.length) {
+        list.innerHTML = '<p class="muted">Todavía no hay copas ni vasos registrados.</p>';
+      } else {
+        list.innerHTML = glasswareItems
+          .slice().sort((a,b) => String(a.name || "").localeCompare(String(b.name || ""), "es"))
+          .map(item => {
+            const photo = String(item.photo || "");
+            const image = photo.startsWith("data:image/") || /^https:\/\//i.test(photo)
+              ? '<img class="recipe-row-photo" src="' + escapeHTML(photo) + '" alt="Foto de ' + escapeHTML(item.name || "cristalería") + '" loading="lazy">'
+              : '<div class="recipe-row-photo" style="display:grid;place-items:center;color:var(--gold);font-size:25px">✦</div>';
+            return '<div class="recipe-row"><div class="recipe-row-info">' + image +
+              '<div><h3>' + escapeHTML(item.name || "Sin nombre") + '</h3><p>' +
+              escapeHTML(item.type || "Sin tipo") + ' · Existencias: <strong>' +
+              escapeHTML(item.quantity ?? 0) + '</strong></p></div></div></div>';
+          }).join("");
+      }
+
+      if (!glasswareTickets.length) {
+        ticketsList.innerHTML = '<p class="muted">Todavía no hay tickets. Al registrar copas nuevas, aparecerán aquí.</p>';
+      } else {
+        ticketsList.innerHTML = glasswareTickets.slice().sort((a,b) => {
+          const at = a.createdAt?.seconds || 0, bt = b.createdAt?.seconds || 0;
+          return bt - at;
+        }).map(ticket => {
+          const when = ticket.createdAt?.seconds
+            ? new Date(ticket.createdAt.seconds * 1000).toLocaleString("es-CL")
+            : "Fecha de registro";
+          return '<div class="inventory-item"><strong>' + escapeHTML(ticket.ticketNumber || "Ticket de entrada") +
+            '</strong><p>' + escapeHTML(ticket.itemName || "Cristalería") + ' · ' +
+            escapeHTML(ticket.itemType || "") + '</p><p>Entrada: <strong>+' +
+            escapeHTML(ticket.quantity ?? 0) + ' unidades</strong></p><p class="muted">' +
+            escapeHTML(when) + '</p></div>';
+        }).join("");
+      }
+    }
+
+    async function resizeGlasswarePhoto(file) {
+      if (!file) return "";
+      if (!file.type.startsWith("image/")) throw new Error("El archivo seleccionado no es una imagen.");
+      const source = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("No se pudo leer la foto."));
+        reader.readAsDataURL(file);
+      });
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("No se pudo abrir la foto."));
+        img.src = source;
+      });
+      const maxSide = 900;
+      const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg", 0.72);
+    }
+
+    $("clearGlasswareForm")?.addEventListener("click", () => $("glasswareForm").reset());
+
+    $("glasswareForm")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!currentUser || !allowedEmail(currentUser.email)) {
+        showStatus("Debes iniciar sesión con una cuenta autorizada.", "error");
+        return;
+      }
+      const name = $("glasswareName").value.trim();
+      const type = $("glasswareType").value;
+      const quantity = Number($("glasswareQuantity").value);
+      const file = $("glasswarePhoto").files?.[0];
+      if (!name || !type || !Number.isInteger(quantity) || quantity < 1) {
+        showStatus("Completa el nombre, tipo y una cantidad válida de al menos 1.", "error");
+        return;
+      }
+
+      const submitButton = $("glasswareForm").querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      try {
+        showStatus("Registrando cristalería y creando ticket...");
+        const photo = file ? await resizeGlasswarePhoto(file) : "";
+        const normalizedName = name.toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const existing = glasswareItems.find(item =>
+          String(item.name || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedName &&
+          String(item.type || "") === type
+        );
+        const itemId = existing?.id || crypto.randomUUID();
+        const newQuantity = Number(existing?.quantity || 0) + quantity;
+        const ticketId = crypto.randomUUID();
+        const ticketNumber = "CRIS-" + new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14) + "-" + ticketId.slice(0, 4).toUpperCase();
+
+        await setDoc(doc(db, "glasswareInventory", itemId), {
+          name,
+          type,
+          photo: photo || existing?.photo || "",
+          quantity: newQuantity,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser.uid
+        }, { merge: true });
+
+        await setDoc(doc(db, "glasswareTickets", ticketId), {
+          ticketNumber,
+          movement: "entrada",
+          itemId,
+          itemName: name,
+          itemType: type,
+          quantity,
+          createdAt: serverTimestamp(),
+          createdBy: currentUser.uid
+        });
+
+        $("glasswareForm").reset();
+        $("glasswareQuantity").value = "1";
+        showStatus("Cristalería registrada. Ticket " + ticketNumber + " creado correctamente.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("No se pudo registrar la cristalería. Revisa las reglas de Firestore para glasswareInventory y glasswareTickets.", "error");
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
     // El registro manual de productos se sustituyó por la lista de comprobación de ingredientes.
 
     function formatPreparationAmount(item) {
@@ -1364,8 +1549,12 @@
     function stopListeners() {
       if (unsubRecipes) unsubRecipes();
       if (unsubInventory) unsubInventory();
+      if (unsubGlassware) unsubGlassware();
+      if (unsubGlasswareTickets) unsubGlasswareTickets();
       unsubRecipes = null;
       unsubInventory = null;
+      unsubGlassware = null;
+      unsubGlasswareTickets = null;
     }
 
     function startListeners() {
@@ -1430,12 +1619,35 @@
             id: item.id,
             ...item.data()
           }));
-
           renderInventory();
         },
         error => {
           console.error(error);
           showStatus("No se pudo cargar el inventario privado. Comprueba las reglas.", "error");
+        }
+      );
+
+      unsubGlassware = onSnapshot(
+        collection(db, "glasswareInventory"),
+        snapshot => {
+          glasswareItems = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+          renderGlassware();
+        },
+        error => {
+          console.error(error);
+          showStatus("No se pudo cargar la cristalería. Comprueba las reglas de Firestore.", "error");
+        }
+      );
+
+      unsubGlasswareTickets = onSnapshot(
+        collection(db, "glasswareTickets"),
+        snapshot => {
+          glasswareTickets = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+          renderGlassware();
+        },
+        error => {
+          console.error(error);
+          showStatus("No se pudieron cargar los tickets de cristalería. Comprueba las reglas de Firestore.", "error");
         }
       );
     }
