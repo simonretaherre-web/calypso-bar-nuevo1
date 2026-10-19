@@ -1034,7 +1034,7 @@
           <div class="empty-state" style="grid-column:1/-1">
             <h3>No encontramos cócteles</h3>
             <p>
-              Puede que no haya recetas publicadas para estos filtros,
+              Puede que no haya cócteles disponibles según las botellas marcadas en el inventario,
               o que debas probar otra búsqueda.
             </p>
           </div>
@@ -1161,6 +1161,7 @@
           recipes = loaded
             .filter(recipe =>
               allowedNames.has(text(recipe.name).trim().toLocaleLowerCase("es"))
+              && recipe.availableByBottles === true
             )
             .map(recipe => {
               // En la carta pública, Manhattan muestra los ingredientes sin cantidades.
@@ -1222,8 +1223,8 @@
           });
 
           statusBox.textContent = recipes.length
-            ? "Carta conectada correctamente."
-            : "Todavía no hay recetas publicadas. Puedes publicarlas desde el panel de administración.";
+            ? "Carta conectada. Se muestran los cócteles que se pueden preparar con las botellas disponibles."
+            : "Todavía no hay cócteles disponibles según el inventario. Marca las botellas que tienes en el panel privado.";
 
           statusBox.className = recipes.length
             ? "status-box success"
