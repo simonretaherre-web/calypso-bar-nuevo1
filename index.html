@@ -1219,10 +1219,81 @@
             {
               id: "pisco-politan", name: "Pisco Politán", category: "Cócteles de autor",
               type: "con", photo: "",
-              story: "Ficha añadida a la carta. La receta y sus cantidades deben ser confirmadas por la administradora antes de publicarse completas.",
-              ingredients: [],
-              flavors: [], strength: "", spirit: "pisco", variants: []
-            }
+              story: "Cóctel de autor de pisco transparente con triple sec, limón y cranberry.",
+              ingredients: [
+                { name: "Pisco transparente", amount: 45, unit: "ml" },
+                { name: "Triple sec", amount: 30, unit: "ml" },
+                { name: "Jugo de limón", amount: 22, unit: "ml" },
+                { name: "Jugo de cranberry", amount: 30, unit: "ml" }
+              ],
+              flavors: ["cítrico", "frutal"], strength: "medio", spirit: "pisco", variants: []
+            },
+            {
+              id: "moscow-mule", name: "Moscow Mule", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Ficha de carta con cantidades y detalles registrados por la administradora.",
+              ingredients: [
+                { name: "Vodka", amount: 60, unit: "ml" },
+                { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ],
+              flavors: ["cítrico", "refrescante"], strength: "medio", spirit: "vodka", variants: []
+            },
+            {
+              id: "london-mule", name: "London Mule", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Ficha de carta con cantidades y detalles registrados por la administradora.",
+              ingredients: [
+                { name: "Gin London Dry", amount: 60, unit: "ml" },
+                { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ],
+              flavors: ["cítrico", "refrescante"], strength: "medio", spirit: "gin", variants: []
+            },
+            {
+              id: "penicillin", name: "Penicillin", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Ficha de carta con cantidades y detalles registrados por la administradora.",
+              ingredients: [
+                { name: "Whisky escocés", amount: 60, unit: "ml" },
+                { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ],
+              flavors: ["cítrico", "especiado"], strength: "fuerte", spirit: "whisky", variants: []
+            },
+            {
+              id: "penicilina-pisco", name: "Penicilina", category: "Cócteles de autor",
+              type: "con", photo: "",
+              story: "Versión con pisco añejo; ficha registrada por la administradora.",
+              ingredients: [
+                { name: "Pisco añejo", amount: 60, unit: "ml" },
+                { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ],
+              flavors: ["cítrico", "especiado"], strength: "fuerte", spirit: "pisco", variants: []
+            },
+            {
+              id: "dry-martini", name: "Dry Martini", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Ficha de carta con cantidades y detalles registrados por la administradora.",
+              ingredients: [
+                { name: "Gin London Dry", amount: 60, unit: "ml" },
+                { name: "Vermut dry", amount: 10, unit: "ml" }
+              ],
+              flavors: ["seco", "herbal"], strength: "fuerte", spirit: "gin", variants: []
+            },
+            {
+              id: "gibson", name: "Gibson", category: "Clásicos",
+              type: "con", photo: "",
+              story: "Ficha de carta con cantidades y detalles registrados por la administradora.",
+              ingredients: [
+                { name: "Gin London Dry", amount: 60, unit: "ml" },
+                { name: "Vermut dry", amount: 10, unit: "ml" }
+              ],
+              flavors: ["seco", "herbal"], strength: "fuerte", spirit: "gin", variants: []
+            },
           ];
           pendingRecipes.forEach(pending => {
             // Mostrar las fichas clásicas elegidas si aún no existe un documento equivalente.
