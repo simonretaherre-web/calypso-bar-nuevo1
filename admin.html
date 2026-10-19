@@ -1587,16 +1587,42 @@
           );
           allPublicRecipes = [...publicRecipes];
 
-          // Las fichas pendientes también quedan disponibles en «Preparar receta».
-          [
+          // Asegurar que las 26 recetas elegidas aparezcan en «Preparar receta».
+          // Si alguna aún no está guardada en Firebase, mostrar una ficha pendiente sin
+          // sobrescribir ni crear documentos en Firestore automáticamente.
+          const expectedRecipes = [
+            { id: "daiquiri", name: "Daiquiri" },
+            { id: "cosmopolitan", name: "Cosmopolitan" },
+            { id: "espresso-martini", name: "Espresso Martini" },
+            { id: "john-collins", name: "John Collins" },
+            { id: "margarita", name: "Margarita" },
+            { id: "aperol-spritz", name: "Aperol Spritz" },
+            { id: "pichuncho", name: "Pichuncho" },
+            { id: "daiquiri-mulato", name: "Daiquiri Mulato" },
+            { id: "pisco-politan", name: "Pisco Politán" },
+            { id: "espresso-rumtini", name: "Espresso Rumtini" },
+            { id: "phil-collins", name: "Phil Collins" },
+            { id: "margarita-blue", name: "Margarita Blue" },
+            { id: "spritz-sabor", name: "Spritz Sabor" },
+            { id: "mojito", name: "Mojito" },
+            { id: "mojito-sabor", name: "Mojito Sabor" },
+            { id: "caipirinha", name: "Caipirinha" },
+            { id: "caipiroska", name: "Caipiroska" },
+            { id: "pisco-sour", name: "Pisco Sour" },
+            { id: "sour-peruano", name: "Sour Peruano" },
+            { id: "bloody-mary", name: "Bloody Mary" },
+            { id: "bloody-maria", name: "Bloody Maria" },
+            { id: "old-fashioned", name: "Old Fashioned" },
+            { id: "rum-fashioned", name: "Rum Fashioned" },
             { id: "manhattan", name: "Manhattan" },
             { id: "negroni", name: "Negroni" },
             { id: "americano", name: "Americano" }
-          ].forEach(pending => {
+          ];
+          expectedRecipes.forEach(pending => {
             if (!allPublicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
               allPublicRecipes.push({
                 ...pending, category: "Clásicos", type: "con", photo: "", ingredients: [],
-                story: "Ficha pendiente de completar y guardar por la administradora.",
+                story: "Ficha pendiente: faltan datos por completar y guardar por la administradora.",
                 pendingSetup: true
               });
             }
