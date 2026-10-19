@@ -1514,6 +1514,11 @@
         document.querySelectorAll(".tab-content").forEach(section => {
           section.classList.toggle("hidden", section.id !== button.dataset.tab);
         });
+
+        // Al abrir «Preparar receta», dibujar la lista aunque el buscador no se haya tocado.
+        if (button.dataset.tab === "prepareTab") {
+          renderPrepareRecipes();
+        }
       });
     });
 
