@@ -1191,17 +1191,37 @@
         });
       });
 
+      const recipeAvailability = new Map();
       const available = allPublicRecipes.filter(recipe => {
+        if (recipe.pendingSetup) return false;
         const variants = Array.isArray(recipe.variants) ? recipe.variants : [];
         const recipeIngredients = (Array.isArray(recipe.ingredients) ? recipe.ingredients : [])
           .concat(...variants.map(variant => Array.isArray(variant.ingredients) ? variant.ingredients : []));
         const bottleKeys = [...new Set(recipeIngredients.map(item => normalizeProductName(typeof item === "string" ? item : item?.name || ""))
           .filter(key => key && bottlePattern.test(key)))];
-        return bottleKeys.length > 0 && bottleKeys.every(key => checklistByKey.get(key)?.hasProduct === true);
+        const canPrepare = bottleKeys.every(key => checklistByKey.get(key)?.hasProduct === true);
+        recipeAvailability.set(recipe.id, canPrepare);
+        return canPrepare;
       }).sort((a,b) => String(a.name||"").localeCompare(String(b.name||""),"es"));
+
+      // Publicar solo el resultado de disponibilidad, nunca el inventario privado ni sus cantidades.
+      // La carta pública usa este indicador para mostrar únicamente cócteles que se pueden preparar.
+      if (currentUser) {
+        allPublicRecipes.filter(recipe => recipe.id && !recipe.pendingSetup).forEach(recipe => {
+          const nextAvailability = recipeAvailability.get(recipe.id) === true;
+          if (recipe.availableByBottles !== nextAvailability) {
+            setDoc(doc(db, "recipesPublic", recipe.id), {
+              availableByBottles: nextAvailability
+            }, { merge: true }).catch(error => {
+              console.error("No se pudo publicar disponibilidad para " + recipe.name, error);
+            });
+          }
+        });
+      }
+
       $("availableCocktailsList").innerHTML = available.length
-        ? '<div class="recipe-list">' + available.map(recipe => '<div class="recipe-row"><div><h3>' + escapeHTML(recipe.name || "Trago") + '</h3><p>Botellas necesarias marcadas como disponibles</p></div></div>').join("") + '</div>'
-        : '<p class="muted">Todavía no hay tragos disponibles según las botellas marcadas. Marca ☑ en los productos embotellados que tienes.</p>';
+        ? '<div class="recipe-list">' + available.map(recipe => '<div class="recipe-row"><div><h3>' + escapeHTML(recipe.name || "Trago") + '</h3><p>Disponible en la carta pública porque las botellas necesarias están marcadas como disponibles</p></div></div>').join("") + '</div>'
+        : '<p class="muted">Todavía no hay tragos disponibles según las botellas marcadas. Marca ☑ en las botellas que tienes y guarda los cambios.</p>';
     }
 
     // El registro manual de productos se sustituyó por la lista de comprobación de ingredientes.
