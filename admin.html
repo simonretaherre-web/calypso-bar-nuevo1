@@ -1605,7 +1605,8 @@
             "pisco politan", "espresso rumtini", "phil collins", "margarita blue",
             "spritz sabor", "mojito", "mojito sabor", "caipirinha", "caipiroska",
             "pisco sour", "sour peruano", "bloody mary", "bloody maria",
-            "old fashioned", "rum fashioned", "manhattan", "negroni", "americano"
+            "old fashioned", "rum fashioned", "manhattan", "negroni", "americano",
+            "moscow mule", "london mule", "penicillin", "penicilina", "dry martini", "gibson"
           ]);
           const normalizeAllowedName = value => normalizeName(value);
 
@@ -1617,21 +1618,109 @@
           );
           // Mostrar Pisco Politán también en «Recetas» si todavía no existe en Firebase.
           // Es solo una ficha pendiente local: no crea ni modifica documentos automáticamente.
-          if (!publicRecipes.some(recipe => normalizeAllowedName(recipe.name) === "pisco politan")) {
-            publicRecipes.push({
-              id: "pisco-politan-pending",
-              name: "Pisco Politán",
-              category: "Cócteles de autor",
-              photo: "",
-              ingredients: [],
+          const recipePlaceholders = [
+            {
+              id: "pisco-politan-pending", name: "Pisco Politán", category: "Cócteles de autor", type: "con",
+              photo: "", story: "Cóctel de autor de pisco transparente con triple sec, limón y cranberry.",
+              ingredients: [
+                { name: "Pisco transparente", amount: 45, unit: "ml" },
+                { name: "Triple sec", amount: 30, unit: "ml" },
+                { name: "Jugo de limón", amount: 22, unit: "ml" },
+                { name: "Jugo de cranberry", amount: 30, unit: "ml" }
+              ],
+              method: "Agitado", glassware: "Copa cóctel", decoration: "Piel de naranja",
+              variants: [{ type: "con", ingredients: [
+                { name: "Pisco transparente", amount: 45, unit: "ml" },
+                { name: "Triple sec", amount: 30, unit: "ml" },
+                { name: "Jugo de limón", amount: 22, unit: "ml" },
+                { name: "Jugo de cranberry", amount: 30, unit: "ml" }
+              ], method: "Agitado", glassware: "Copa cóctel", decoration: "Piel de naranja" }],
               pendingSetup: true
-            });
-          }
-          allPublicRecipes = [...publicRecipes.filter(recipe => !recipe.pendingSetup)];
+            },
+            {
+              id: "moscow-mule-pending", name: "Moscow Mule", category: "Clásicos", type: "con", photo: "",
+              ingredients: [
+                { name: "Vodka", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ],
+              method: "Directo", glassware: "Taza de cobre", decoration: "Ramita de menta",
+              variants: [{ type: "con", ingredients: [
+                { name: "Vodka", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ], method: "Directo", glassware: "Taza de cobre", decoration: "Ramita de menta" }],
+              pendingSetup: true
+            },
+            {
+              id: "london-mule-pending", name: "London Mule", category: "Clásicos", type: "con", photo: "",
+              ingredients: [
+                { name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ],
+              method: "Directo", glassware: "Taza de cobre", decoration: "Ramita de menta",
+              variants: [{ type: "con", ingredients: [
+                { name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Ginger beer", amount: 200, unit: "ml" }
+              ], method: "Directo", glassware: "Taza de cobre", decoration: "Ramita de menta" }],
+              pendingSetup: true
+            },
+            {
+              id: "penicillin-pending", name: "Penicillin", category: "Clásicos", type: "con", photo: "",
+              ingredients: [
+                { name: "Whisky escocés", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ],
+              method: "Agitado", glassware: "Vaso corto", decoration: "Piel de limón o jengibre",
+              variants: [{ type: "con", ingredients: [
+                { name: "Whisky escocés", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ], method: "Agitado", glassware: "Vaso corto", decoration: "Piel de limón o jengibre" }],
+              pendingSetup: true
+            },
+            {
+              id: "penicilina-pisco-pending", name: "Penicilina (Pisco añejo)", category: "Cócteles de autor", type: "con", photo: "",
+              ingredients: [
+                { name: "Pisco añejo", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ],
+              method: "Agitado", glassware: "Vaso corto", decoration: "Piel de limón o jengibre",
+              variants: [{ type: "con", ingredients: [
+                { name: "Pisco añejo", amount: 60, unit: "ml" }, { name: "Jugo de limón", amount: 30, unit: "ml" },
+                { name: "Jugo de jengibre o jengibre en trozos", amount: 15, unit: "ml o 3 láminas" },
+                { name: "Syrup de miel", amount: 30, unit: "ml" }
+              ], method: "Agitado", glassware: "Vaso corto", decoration: "Piel de limón o jengibre" }],
+              pendingSetup: true
+            },
+            {
+              id: "dry-martini-pending", name: "Dry Martini", category: "Clásicos", type: "con", photo: "",
+              ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
+              method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebillana",
+              variants: [{ type: "con", ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
+                method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebillana" }],
+              pendingSetup: true
+            },
+            {
+              id: "gibson-pending", name: "Gibson", category: "Clásicos", type: "con", photo: "",
+              ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
+              method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebolla",
+              variants: [{ type: "con", ingredients: [{ name: "Gin London Dry", amount: 60, unit: "ml" }, { name: "Vermut dry", amount: 10, unit: "ml" }],
+                method: "Refrescado", glassware: "Copa cóctel", decoration: "Piel de limón y cebolla" }],
+              pendingSetup: true
+            }
+          ];
+          recipePlaceholders.forEach(pending => {
+            if (!publicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
+              publicRecipes.push(pending);
+            }
+          });
+          allPublicRecipes = [...publicRecipes];
 
-          // Asegurar que las 26 recetas elegidas aparezcan en «Preparar receta».
-          // Si alguna aún no está guardada en Firebase, mostrar una ficha pendiente sin
-          // sobrescribir ni crear documentos en Firestore automáticamente.
+          // Las fichas pendientes son locales hasta que la administradora las guarde en Firestore.
+
+          // Mantener las recetas anteriores elegidas en «Preparar receta» sin borrar datos.
+          // Las nuevas fichas completas de arriba se muestran localmente hasta guardarlas en Firestore.
           const expectedRecipes = [
             { id: "daiquiri", name: "Daiquiri" },
             { id: "cosmopolitan", name: "Cosmopolitan" },
@@ -1658,7 +1747,13 @@
             { id: "rum-fashioned", name: "Rum Fashioned" },
             { id: "manhattan", name: "Manhattan" },
             { id: "negroni", name: "Negroni" },
-            { id: "americano", name: "Americano" }
+            { id: "americano", name: "Americano" },
+            { id: "moscow-mule", name: "Moscow Mule" },
+            { id: "london-mule", name: "London Mule" },
+            { id: "penicillin", name: "Penicillin" },
+            { id: "penicilina-pisco", name: "Penicilina (Pisco añejo)" },
+            { id: "dry-martini", name: "Dry Martini" },
+            { id: "gibson", name: "Gibson" }
           ];
           expectedRecipes.forEach(pending => {
             if (!allPublicRecipes.some(recipe => normalizeAllowedName(recipe.name) === normalizeAllowedName(pending.name))) {
