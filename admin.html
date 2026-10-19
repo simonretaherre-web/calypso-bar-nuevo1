@@ -1114,8 +1114,9 @@
               </div>
             </div>
             <div class="actions">
-              <button class="btn secondary" type="button" data-edit="${escapeHTML(recipe.id)}">Editar</button>
-              <button class="btn danger" type="button" data-delete="${escapeHTML(recipe.id)}">Eliminar</button>
+              ${recipe.pendingSetup
+                ? '<button class="btn secondary" type="button" data-complete-pending="' + escapeHTML(recipe.name) + '">Completar receta</button>'
+                : '<button class="btn secondary" type="button" data-edit="' + escapeHTML(recipe.id) + '">Editar</button><button class="btn danger" type="button" data-delete="' + escapeHTML(recipe.id) + '">Eliminar</button>'}
             </div>
           </div>
         `;
@@ -1128,6 +1129,30 @@
 
       recipeList.querySelectorAll("[data-delete]").forEach(button => {
         button.addEventListener("click", () => deleteRecipe(button.dataset.delete));
+      });
+
+      recipeList.querySelectorAll("[data-complete-pending]").forEach(button => {
+        button.addEventListener("click", () => {
+          $("recipeId").value = "";
+          $("recipeName").value = button.dataset.completePending;
+          $("recipeCategory").value = "Cócteles de autor";
+          $("recipePhoto").value = "";
+          $("cbStory").value = "";
+          $("recipeGlassware").value = "";
+          $("recipeMethod").value = "";
+          $("recipeDecoration").value = "";
+          $("withEnabled").checked = true;
+          $("withPublished").checked = true;
+          $("withIngredients").value = "";
+          $("withoutEnabled").checked = false;
+          $("withoutPublished").checked = false;
+          $("withoutIngredients").value = "";
+          $("editorTitle").textContent = "Completar receta · " + button.dataset.completePending;
+          document.querySelectorAll(".tab-button").forEach(item => item.classList.toggle("active", item.dataset.tab === "recipesTab"));
+          document.querySelectorAll(".tab-content").forEach(section => section.classList.toggle("hidden", section.id !== "recipesTab"));
+          $("recipeName").focus();
+          showStatus("Completa los datos de Pisco Politán y guarda la receta cuando la administradora confirme la fórmula.", "success");
+        });
       });
 
       const select = $("prepareRecipeSelect");
@@ -1590,7 +1615,19 @@
           publicRecipes = recipesFromFirebase.filter(recipe =>
             allowedNames.has(normalizeAllowedName(recipe.name))
           );
-          allPublicRecipes = [...publicRecipes];
+          // Mostrar Pisco Politán también en «Recetas» si todavía no existe en Firebase.
+          // Es solo una ficha pendiente local: no crea ni modifica documentos automáticamente.
+          if (!publicRecipes.some(recipe => normalizeAllowedName(recipe.name) === "pisco politan")) {
+            publicRecipes.push({
+              id: "pisco-politan-pending",
+              name: "Pisco Politán",
+              category: "Cócteles de autor",
+              photo: "",
+              ingredients: [],
+              pendingSetup: true
+            });
+          }
+          allPublicRecipes = [...publicRecipes.filter(recipe => !recipe.pendingSetup)];
 
           // Asegurar que las 26 recetas elegidas aparezcan en «Preparar receta».
           // Si alguna aún no está guardada en Firebase, mostrar una ficha pendiente sin
