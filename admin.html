@@ -1133,25 +1133,29 @@
 
       recipeList.querySelectorAll("[data-complete-pending]").forEach(button => {
         button.addEventListener("click", () => {
+          const pendingRecipe = publicRecipes.find(recipe =>
+            String(recipe.name || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "") ===
+            String(button.dataset.completePending || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "")
+          ) || {};
           $("recipeId").value = "";
-          $("recipeName").value = button.dataset.completePending;
-          $("recipeCategory").value = "Cócteles de autor";
-          $("recipePhoto").value = "";
-          $("cbStory").value = "";
-          $("recipeGlassware").value = "";
-          $("recipeMethod").value = "";
-          $("recipeDecoration").value = "";
+          $("recipeName").value = pendingRecipe.name || button.dataset.completePending;
+          $("recipeCategory").value = pendingRecipe.category || "Cócteles de autor";
+          $("recipePhoto").value = pendingRecipe.photo || "";
+          $("cbStory").value = pendingRecipe.story || "";
+          $("recipeGlassware").value = pendingRecipe.glassware || "";
+          $("recipeMethod").value = pendingRecipe.method || "";
+          $("recipeDecoration").value = pendingRecipe.decoration || "";
           $("withEnabled").checked = true;
           $("withPublished").checked = true;
-          $("withIngredients").value = "";
+          $("withIngredients").value = formatIngredientLines(pendingRecipe.ingredients || []);
           $("withoutEnabled").checked = false;
           $("withoutPublished").checked = false;
           $("withoutIngredients").value = "";
-          $("editorTitle").textContent = "Completar receta · " + button.dataset.completePending;
+          $("editorTitle").textContent = "Completar receta · " + (pendingRecipe.name || button.dataset.completePending);
           document.querySelectorAll(".tab-button").forEach(item => item.classList.toggle("active", item.dataset.tab === "recipesTab"));
           document.querySelectorAll(".tab-content").forEach(section => section.classList.toggle("hidden", section.id !== "recipesTab"));
           $("recipeName").focus();
-          showStatus("Completa los datos de Pisco Politán y guarda la receta cuando la administradora confirme la fórmula.", "success");
+          showStatus("Revisa los datos y pulsa Guardar receta para registrarlos en Firebase.", "success");
         });
       });
 
