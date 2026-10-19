@@ -34,6 +34,16 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Inventario privado de cristalería: solo administradores autorizados.
+    match /glasswareInventory/{itemId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Tickets privados de entradas de cristalería.
+    match /glasswareTickets/{ticketId} {
+      allow read, write: if isAdmin();
+    }
+
     // Bloquear el acceso a cualquier otra colección.
     match /{document=**} {
       allow read, write: if false;
