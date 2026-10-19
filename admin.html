@@ -397,7 +397,28 @@
     .prepare-card-ingredients li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 19px; }
     .prepare-card-ingredients li:last-child { border-bottom: 0; }
     .prepare-card-ingredients span { overflow-wrap: anywhere; }
+
     .prepare-card-ingredients strong { flex-shrink: 0; color: var(--gold-light); text-align: right; }
+    .prepare-card-technique {
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(212,175,98,.045);
+    }
+    .prepare-card-technique h4 {
+      margin: 0 0 5px;
+      color: var(--gold-light);
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .prepare-card-technique p {
+      margin: 0 0 12px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+    .prepare-card-technique p:last-child { margin-bottom: 0; }
 
     .inventory-item {
       border: 1px solid var(--border);
@@ -1273,6 +1294,15 @@
           : '<div class="prepare-card-placeholder" aria-hidden="true">✦</div>';
         const story = recipe.story || privateData.story || "";
         const category = recipe.category || privateData.category || "";
+        const legacyVariant = variants.find(item => item.method || item.glassware || item.decoration) || {};
+        const glassware = privateData.glassware || legacyVariant.glassware || "";
+        const method = privateData.method || legacyVariant.method || "";
+        const decoration = privateData.decoration || legacyVariant.decoration || "";
+        const techniqueMarkup = [
+          glassware ? '<div><h4>Cristalería</h4><p>' + escapeHTML(glassware) + '</p></div>' : "",
+          method ? '<div><h4>Método</h4><p>' + escapeHTML(method) + '</p></div>' : "",
+          decoration ? '<div><h4>Decoración</h4><p>' + escapeHTML(decoration) + '</p></div>' : ""
+        ].filter(Boolean).join("");
         const variantsMarkup = variants.map(variant => {
           const type = variant.type === "sin" ? "sin" : "con";
           const label = type === "sin" ? "Sin alcohol" : "Con alcohol";
@@ -1281,7 +1311,7 @@
           const list = items.map(item => `<li><span>${escapeHTML(item.name || "Ingrediente")}</span><strong>${escapeHTML(formatPreparationAmount(item))}</strong></li>`).join("");
           return `<div class="prepare-card-meta"><span class="prepare-card-tag ${typeClass}">${label}</span></div><div class="prepare-card-section">Ingredientes · 1 porción</div>${items.length ? `<ul class="prepare-card-ingredients">${list}</ul>` : '<p class="muted">Ingredientes aún no disponibles.</p>'}`;
         }).join("");
-        return `<article class="prepare-card">${photo}<div class="prepare-card-body"><h3>${escapeHTML(recipeName)}</h3><div class="prepare-card-meta">${category ? `<span class="prepare-card-tag">${escapeHTML(category)}</span>` : ""}</div>${story ? `<p class="prepare-card-story">${escapeHTML(story)}</p>` : ""}${variantsMarkup || '<p class="muted">No hay ingredientes guardados para esta receta.</p>'}</div></article>`;
+        return `<article class="prepare-card">${photo}<div class="prepare-card-body"><h3>${escapeHTML(recipeName)}</h3><div class="prepare-card-meta">${category ? `<span class="prepare-card-tag">${escapeHTML(category)}</span>` : ""}</div>${story ? `<p class="prepare-card-story">${escapeHTML(story)}</p>` : ""}${techniqueMarkup ? `<section class="prepare-card-technique" aria-label="Detalles de preparación">${techniqueMarkup}</section>` : '<p class="muted">Método, cristalería y decoración aún no registrados para esta receta.</p>'}${variantsMarkup || '<p class="muted">No hay ingredientes guardados para esta receta.</p>'}</div></article>`;
       }));
       if (renderId !== prepareSearchRenderId) return;
       grid.innerHTML = cards.join("");
