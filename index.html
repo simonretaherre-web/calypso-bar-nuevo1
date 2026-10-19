@@ -1158,11 +1158,12 @@
             "pisco sour", "sour peruano", "bloody mary", "bloody maria",
             "old fashioned", "rum fashioned", "manhattan", "negroni", "americano"
           ]);
+          const normalizeRecipeName = value => text(value).trim()
+            .toLocaleLowerCase("es")
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const normalizedAllowedNames = new Set([...allowedNames].map(normalizeRecipeName));
           recipes = loaded
-            .filter(recipe =>
-              allowedNames.has(text(recipe.name).trim().toLocaleLowerCase("es"))
-              && recipe.availableByBottles === true
-            )
+            .filter(recipe => normalizedAllowedNames.has(normalizeRecipeName(recipe.name)))
             .map(recipe => {
               // En la carta pública, Manhattan muestra los ingredientes sin cantidades.
               // No modifica Firebase ni las medidas de la receta privada.
@@ -1217,9 +1218,11 @@
             }
           ];
           pendingRecipes.forEach(pending => {
-            // No mostrar fichas de respaldo sin disponibilidad confirmada por el inventario.
-            if (pending.availableByBottles === true &&
-                !recipes.some(recipe => text(recipe.name).trim().toLocaleLowerCase("es") === pending.name.toLocaleLowerCase("es"))) {
+            // Mostrar las fichas clásicas elegidas si aún no existe un documento equivalente.
+            // No se escribe nada en Firebase automáticamente.
+            if (!recipes.some(recipe =>
+              normalizeRecipeName(recipe.name) === normalizeRecipeName(pending.name)
+            )) {
               recipes.push(pending);
             }
           });
