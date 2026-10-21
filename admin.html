@@ -1104,6 +1104,13 @@
         recipeList.innerHTML = publicRecipes.map(recipe => {
           const photo = String(recipe.photo || recipe.image || recipe.imageUrl || "").trim();
           const safePhoto = /^https?:\/\//i.test(photo) ? photo : "";
+          const missingFields = [];
+          if (!safePhoto) missingFields.push("foto");
+          if (!String(recipe.story || "").trim()) missingFields.push("descripción");
+          if (!String(recipe.glassware || "").trim()) missingFields.push("cristalería");
+          if (!String(recipe.decoration || "").trim()) missingFields.push("decoración");
+          if (!String(recipe.method || "").trim()) missingFields.push("método");
+          if (!Array.isArray(recipe.ingredients) || recipe.ingredients.length === 0) missingFields.push("ingredientes");
           return `
           <div class="recipe-row">
             <div class="recipe-row-info">
@@ -1111,6 +1118,7 @@
               <div>
                 <h3>${escapeHTML(recipe.name || "Receta sin nombre")}</h3>
                 <p>${escapeHTML(recipe.category || "Sin categoría")}</p>
+                <p>${missingFields.length ? "Pendiente: " + escapeHTML(missingFields.join(", ")) : "Ficha completa"}</p>
               </div>
             </div>
             <div class="actions">
@@ -1624,7 +1632,7 @@
             "baileys affogato",
             "mojito coco",
             "laguna azul",
-            "pete puto",
+            "pitfuto",
             "pina colada con baileys",
             "baileys pasion",
             "purpura rey",
