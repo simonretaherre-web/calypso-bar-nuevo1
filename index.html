@@ -558,7 +558,6 @@
     <nav class="filters" aria-label="Filtrar cócteles">
       <button class="filter-button active" data-filter="todos" type="button">Todos</button>
       <button class="filter-button" data-filter="con" type="button">Con alcohol</button>
-      <button class="filter-button" data-filter="sin" type="button">Sin alcohol</button>
     </nav>
 
     <div class="search-row">
@@ -590,15 +589,10 @@
     <div class="modal-panel">
       <h2 id="modalTitle">¿Qué puedo tomar?</h2>
       <p class="modal-description" id="modalDescription">
-        Primero, elige qué tipo de bebida prefieres.
+        Encontraremos opciones de la carta con alcohol.
       </p>
 
       <div id="typeStep">
-        <label class="form-label" for="drinkType">Tipo de bebida</label>
-        <select class="field" id="drinkType">
-          <option value="sin">Sin alcohol</option>
-          <option value="con">Con alcohol</option>
-        </select>
 
         <div class="modal-actions">
           <button class="secondary-button" id="closeModal" type="button">Cancelar</button>
@@ -662,7 +656,6 @@
     const modal = document.getElementById("recommendModal");
     const typeStep = document.getElementById("typeStep");
     const preferencesStep = document.getElementById("preferencesStep");
-    const drinkType = document.getElementById("drinkType");
 
     let recipes = [];
     let currentFilter = "todos";
@@ -851,7 +844,6 @@
       if (!activeRecommendation || !recommendation) return true;
       if (recipe.type !== recommendation.type) return false;
 
-      if (recipe.type === "sin") return true;
 
       const flavor = recommendation.flavor;
       const spirit = recommendation.spirit;
@@ -1071,7 +1063,7 @@
       typeStep.classList.remove("hidden");
       preferencesStep.classList.add("hidden");
       document.getElementById("modalDescription").textContent =
-        "Primero, elige qué tipo de bebida prefieres.";
+        "Encontraremos opciones de la carta con alcohol.";
     }
 
     function closeModal() {
@@ -1086,24 +1078,6 @@
     });
 
     document.getElementById("continueRecommend").addEventListener("click", () => {
-      if (drinkType.value === "sin") {
-        recommendation = {
-          type: "sin",
-          flavor: "cualquiera",
-          spirit: "cualquiera",
-          strength: "cualquiera"
-        };
-
-        activeRecommendation = true;
-        setFilter("sin", true);
-        closeModal();
-        document.getElementById("recipeGrid").scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-        return;
-      }
-
       typeStep.classList.add("hidden");
       preferencesStep.classList.remove("hidden");
       document.getElementById("modalDescription").textContent =
@@ -1302,6 +1276,8 @@
               recipes.push(pending);
             }
           });
+
+          recipes = recipes.filter(recipe => recipe.type === "con");
 
           statusBox.textContent = recipes.length
             ? "Carta conectada. Se muestran los cócteles que se pueden preparar con las botellas disponibles."
