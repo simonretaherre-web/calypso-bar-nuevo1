@@ -1025,7 +1025,7 @@
           <div class="empty-state" style="grid-column:1/-1">
             <h3>No encontramos cócteles</h3>
             <p>
-              Puede que no haya cócteles disponibles según las botellas marcadas en el inventario,
+              Puede que no haya cócteles publicados con ese nombre o ingrediente,
               o que debas probar otra búsqueda.
             </p>
           </div>
@@ -1279,8 +1279,8 @@
           recipes = recipes.filter(recipe => recipe.type === "con");
 
           statusBox.textContent = recipes.length
-            ? "Carta conectada. Se muestran los cócteles que se pueden preparar con las botellas disponibles."
-            : "Todavía no hay cócteles disponibles según el inventario. Marca las botellas que tienes en el panel privado.";
+            ? "Carta conectada. Se muestran los cócteles publicados."
+            : "Todavía no hay cócteles publicados para mostrar.";
 
           statusBox.className = recipes.length
             ? "status-box success"
