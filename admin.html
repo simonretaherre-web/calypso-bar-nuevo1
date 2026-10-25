@@ -1509,7 +1509,6 @@
       const query = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
       const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const filtered = allPublicRecipes.filter(recipe => {
-        if (recipe.availableByBottles !== true) return false;
         const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
         const haystack = normalize([recipe.name, recipe.category, recipe.story, ...ingredients.map(item => item.name)].join(" "));
         return haystack.includes(normalize(query));
