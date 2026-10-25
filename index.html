@@ -961,11 +961,22 @@
         : "";
 
       const mocktailPhoto = mocktailIllustration(recipe);
-      const displayPhoto = mocktailPhoto || recipe.photo;
-      const photoMarkup = displayPhoto
-        ? `<img class="recipe-photo" src="${escapeHtml(displayPhoto)}" alt="${escapeHtml(recipe.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')">
-           <div class="photo-placeholder hidden" aria-hidden="true">✦</div>`
-        : '<div class="photo-placeholder" aria-hidden="true">✦</div>';
+      // Galería de respaldo: si una receta no tiene foto guardada, mostrar una imagen
+      // de cóctel en lugar de dejar un espacio vacío. Las fotos ya cargadas se conservan.
+      const cocktailGallery = [
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1536935338788846bb9981813?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1513558161293-cdaf765edfd7?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=900&q=85",
+        "https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=900&q=85"
+      ];
+      const photoKey = Array.from(String(recipe.name || "")).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      const fallbackPhoto = cocktailGallery[photoKey % cocktailGallery.length];
+      const displayPhoto = mocktailPhoto || recipe.photo || fallbackPhoto;
+      const photoMarkup = `<img class="recipe-photo" src="${escapeHtml(displayPhoto)}" alt="Cóctel ${escapeHtml(recipe.name)}" loading="lazy" onerror="this.onerror=null;this.src='${cocktailGallery[0]}';">`;
 
       const ingredientsMarkup = recipe.ingredients.length
         ? `<ul class="ingredient-list">
