@@ -961,8 +961,6 @@
         : "";
 
       const mocktailPhoto = mocktailIllustration(recipe);
-      // Priorizar una búsqueda por el nombre del cóctel para evitar reutilizar una foto
-      // antigua que no corresponda. Se conservan las ilustraciones de bebidas sin alcohol.
       const recipeNameForPhoto = String(recipe.name || "cocktail")
         .replace(/sin alcohol/gi, "")
         .replace(/[()]/g, "")
@@ -970,9 +968,11 @@
       const recipeImageSearch = "https://loremflickr.com/900/700/" +
         encodeURIComponent(recipeNameForPhoto + ",cocktail,drink") +
         "?lock=" + encodeURIComponent(recipeNameForPhoto.toLowerCase().replace(/\\s+/g, "-"));
-      const savedPhoto = recipe.photo || "";
-      const displayPhoto = mocktailPhoto || recipeImageSearch;
-      const photoMarkup = `<img class="recipe-photo" src="${escapeHtml(displayPhoto)}" alt="Foto de ${escapeHtml(recipe.name)}" loading="lazy" onerror="if(this.dataset.triedSaved!=='1' && ${JSON.stringify(Boolean(true))} && '${escapeHtml(savedPhoto)}'){this.dataset.triedSaved='1';this.onerror=null;this.src='${escapeHtml(savedPhoto)}';}else{this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22 viewBox=%220 0 600 400%22%3E%3Crect width=%22600%22 height=%22400%22 fill=%22%23080808%22/%3E%3Ctext x=%22300%22 y=%22200%22 fill=%22%23d4af62%22 font-size=%2224%22 text-anchor=%22middle%22>CALYPSO BAR%3C/text%3E%3C/svg%3E';}">`;
+      // La foto guardada en Firebase tiene prioridad; la alternativa solo se usa si falta o falla.
+      const savedPhoto = text(recipe.photo);
+      const fallbackPhoto = mocktailPhoto || recipeImageSearch;
+      const displayPhoto = savedPhoto || fallbackPhoto;
+      const photoMarkup = `<img class="recipe-photo" src="${escapeHtml(displayPhoto)}" alt="Foto de ${escapeHtml(recipe.name)}" loading="lazy" onerror="if('${Boolean(savedPhoto)}'==='true'&&!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.onerror=null;this.src='${escapeHtml(fallbackPhoto)}';}else{this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22 viewBox=%220 0 600 400%22%3E%3Crect width=%22600%22 height=%22400%22 fill=%22%23080808%22/%3E%3Ctext x=%22300%22 y=%22200%22 fill=%22%23d4af62%22 font-size=%2224%22 text-anchor=%22middle%22>CALYPSO BAR%3C/text%3E%3C/svg%3E';}">`;
 
       const ingredientsMarkup = recipe.ingredients.length
         ? `<ul class="ingredient-list">
