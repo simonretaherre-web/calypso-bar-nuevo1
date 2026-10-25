@@ -1150,7 +1150,7 @@
             .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const normalizedAllowedNames = new Set([...allowedNames].map(normalizeRecipeName));
           recipes = loaded
-            .filter(recipe => normalizedAllowedNames.has(normalizeRecipeName(recipe.name)) && recipe.availableByBottles === true)
+            .filter(recipe => normalizedAllowedNames.has(normalizeRecipeName(recipe.name)))
             .map(recipe => {
               // En la carta pública, Manhattan muestra los ingredientes sin cantidades.
               // No modifica Firebase ni las medidas de la receta privada.
