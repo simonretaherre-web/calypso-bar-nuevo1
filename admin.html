@@ -924,7 +924,7 @@
         $("recipeId").value = id;
         $("recipeName").value = publicData.name || privateData.name || "";
         $("recipeCategory").value = publicData.category || privateData.category || "";
-        $("recipePhoto").value = publicData.photo || privateData.photo || "";
+        $("recipePhoto").value = publicData.photo || publicData.image || publicData.imageUrl || publicData.imageURL || publicData.photoUrl || publicData.photoURL || publicData.image_url || publicData.photo_url || publicData.picture || privateData.photo || privateData.image || privateData.imageUrl || privateData.imageURL || privateData.photoUrl || privateData.photoURL || privateData.image_url || privateData.photo_url || privateData.picture || "";
         $("cbStory").value = publicData.story || privateData.story || "";
         const legacyVariant = (Array.isArray(privateData.variants) ? privateData.variants : [])
           .find(item => item.method || item.glassware || item.decoration) || {};
@@ -1102,8 +1102,8 @@
         recipeList.innerHTML = '<p class="muted">No hay recetas publicadas. Puedes crear una receta usando el formulario de arriba.</p>';
       } else {
         recipeList.innerHTML = publicRecipes.map(recipe => {
-          const photo = String(recipe.photo || recipe.image || recipe.imageUrl || "").trim();
-          const safePhoto = /^https?:\/\//i.test(photo) ? photo : "";
+          const photo = String(recipe.photo || recipe.image || recipe.imageUrl || recipe.imageURL || recipe.photoUrl || recipe.photoURL || recipe.image_url || recipe.photo_url || recipe.picture || recipe.thumbnail || "").trim();
+          const safePhoto = (/^https?:\/\//i.test(photo) || /^data:image\//i.test(photo)) ? photo : "";
           const missingFields = [];
           if (!safePhoto) missingFields.push("foto");
           if (!String(recipe.story || "").trim()) missingFields.push("descripción");
@@ -1533,8 +1533,8 @@
           variants = [{ type: recipe.type || "con", ingredients: recipe.ingredients }];
         }
         const recipeName = recipe.name || privateData.name || "Receta sin nombre";
-        const photoValue = String(recipe.photo || recipe.image || recipe.imageUrl || privateData.photo || "").trim();
-        const safePhoto = /^https?:\/\//i.test(photoValue);
+        const photoValue = String(recipe.photo || recipe.image || recipe.imageUrl || recipe.imageURL || recipe.photoUrl || recipe.photoURL || recipe.image_url || recipe.photo_url || recipe.picture || recipe.thumbnail || privateData.photo || privateData.image || privateData.imageUrl || privateData.imageURL || privateData.photoUrl || privateData.photoURL || privateData.image_url || privateData.photo_url || privateData.picture || "").trim();
+        const safePhoto = /^https?:\/\//i.test(photoValue) || /^data:image\//i.test(photoValue);
         const photo = safePhoto
           ? `<img class="prepare-card-photo" src="${escapeHTML(photoValue)}" alt="Foto de ${escapeHTML(recipeName)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="prepare-card-placeholder hidden" aria-hidden="true">✦</div>`
           : '<div class="prepare-card-placeholder" aria-hidden="true">✦</div>';
