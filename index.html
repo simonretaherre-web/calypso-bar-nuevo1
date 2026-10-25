@@ -749,7 +749,7 @@
         id: documentId,
         name: text(recipe.name) || "Cóctel sin nombre",
         category: text(recipe.category) || "Otros",
-        photo: text(recipe.photo || recipe.image || recipe.imageUrl)
+        photo: text(recipe.photo || recipe.image || recipe.imageUrl || recipe.imageURL || recipe.photoUrl || recipe.photoURL || recipe.image_url || recipe.photo_url || recipe.picture || recipe.thumbnail)
       };
 
       if (Array.isArray(recipe.variants) && recipe.variants.length) {
