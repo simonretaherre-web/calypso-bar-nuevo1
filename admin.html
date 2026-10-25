@@ -1306,14 +1306,37 @@
       });
 
       const recipeAvailability = new Map();
-      const available = allPublicRecipes.filter(recipe => {
+      const canMakeWithInventory = recipe => {
         if (recipe.pendingSetup) return false;
-        const variants = Array.isArray(recipe.variants) ? recipe.variants : [];
-        const recipeIngredients = (Array.isArray(recipe.ingredients) ? recipe.ingredients : [])
-          .concat(...variants.map(variant => Array.isArray(variant.ingredients) ? variant.ingredients : []));
-        const bottleKeys = [...new Set(recipeIngredients.map(item => normalizeProductName(typeof item === "string" ? item : item?.name || ""))
-          .filter(key => key && bottlePattern.test(key)))];
-        const canPrepare = bottleKeys.every(key => checklistByKey.get(key)?.hasProduct === true);
+        const variants = (Array.isArray(recipe.variants) ? recipe.variants : [])
+          .filter(variant => variant.published !== false && Array.isArray(variant.ingredients) && variant.ingredients.length);
+        const ingredientSets = variants.length
+          ? variants.map(variant => variant.ingredients)
+          : [Array.isArray(recipe.ingredients) ? recipe.ingredients : []];
+        const canMakeSet = ingredients => {
+          if (!ingredients.length) return false;
+          return ingredients.every(raw => {
+            const ingredient = typeof raw === "string" ? { name: raw, amount: "", unit: "" } : (raw || {});
+            const key = normalizeProductName(ingredient.name || ingredient.ingredient || "");
+            if (!key) return false;
+            const saved = checklistByKey.get(key);
+            if (!saved || saved.hasProduct !== true) return false;
+            const amount = Number(String(ingredient.amount ?? ingredient.quantity ?? "").replace(",", "."));
+            const unit = String(ingredient.unit || "").trim().toLowerCase();
+            if (Number.isFinite(amount) && amount > 0 && ["ml", "mililitro", "mililitros"].includes(unit)) {
+              const capacity = Number(saved.totalCapacity);
+              const fraction = Number(saved.remainingFraction);
+              if (!Number.isFinite(capacity) || capacity <= 0 || !Number.isFinite(fraction) || fraction < 0) return false;
+              const remaining = capacity * fraction;
+              if (remaining + 1e-6 < amount) return false;
+            }
+            return true;
+          });
+        };
+        return ingredientSets.some(canMakeSet);
+      };
+      const available = allPublicRecipes.filter(recipe => {
+        const canPrepare = canMakeWithInventory(recipe);
         recipeAvailability.set(recipe.id, canPrepare);
         return canPrepare;
       }).sort((a,b) => String(a.name||"").localeCompare(String(b.name||""),"es"));
@@ -1486,6 +1509,7 @@
       const query = $("prepareRecipeSearch").value.trim().toLocaleLowerCase("es");
       const normalize = value => String(value || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const filtered = allPublicRecipes.filter(recipe => {
+        if (recipe.availableByBottles !== true) return false;
         const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
         const haystack = normalize([recipe.name, recipe.category, recipe.story, ...ingredients.map(item => item.name)].join(" "));
         return haystack.includes(normalize(query));
